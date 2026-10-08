@@ -17,8 +17,8 @@ COLS = (
     "employment_type_raw, description_text"
 )
 EST_OUTPUT_TOKENS = 220
-OPEN_BATCH = "state NOT IN ('JOB_STATE_SUCCEEDED', 'JOB_STATE_FAILED', 'JOB_STATE_CANCELLED', " \
-    "'JOB_STATE_EXPIRED', 'COLLECTED')"  # fmt: skip
+# The docs say JOB_STATE_*, the live API says BATCH_STATE_*: match on the suffix.
+DEAD = ("_FAILED", "_CANCELLED", "_EXPIRED")  # finished without results
 
 
 def now() -> str:
@@ -26,7 +26,8 @@ def now() -> str:
 
 
 def open_batches(conn: sqlite3.Connection) -> list[str]:
-    return [r[0] for r in conn.execute(f"SELECT name FROM batches WHERE {OPEN_BATCH}")]
+    rows = conn.execute("SELECT name, state FROM batches WHERE state != 'COLLECTED'")
+    return [name for name, state in rows if not state.endswith(DEAD)]
 
 
 def triage(conn: sqlite3.Connection, limit: int | None = None) -> tuple[list[dict], dict]:
@@ -152,7 +153,7 @@ async def collect(conn: sqlite3.Connection) -> list[str]:
     async with gemini.make_client() as client:
         for name in open_batches(conn):
             state, file_name = await gemini.batch_status(client, name)
-            if state != "JOB_STATE_SUCCEEDED" or not file_name:
+            if not state.endswith("_SUCCEEDED") or not file_name:
                 with conn:
                     conn.execute("UPDATE batches SET state = ? WHERE name = ?", (state, name))
                 report.append(f"{name}: {state}")
