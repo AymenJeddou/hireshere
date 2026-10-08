@@ -141,3 +141,13 @@ def test_idempotent_second_run(conn):
     assert db.apply_result(conn, ok(*jobs), "t1").new == 5
     second = db.apply_result(conn, ok(*jobs), "t2")
     assert (second.new, second.updated, second.expired) == (0, 0, 0)
+
+
+def test_board_removed_from_seed_list_is_retired(conn):
+    db.apply_result(conn, ok(job(1)), "t1")
+    db.apply_result(conn, ok(job(9, OTHER), board=OTHER), "t1")
+    assert db.sync_boards(conn, [OTHER], "t2") == 1
+    assert brd(conn)["active"] == 0
+    assert row(conn, "lever:acme:1")["expired_at"] == "t2"
+    assert row(conn, "lever:other:9")["expired_at"] is None
+    assert db.sync_boards(conn, [OTHER], "t3") == 0

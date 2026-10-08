@@ -43,7 +43,9 @@ async def fetch_all(boards: list[Board]):
 
 
 async def cmd_fetch(conn, limit: int | None) -> str:
-    db.sync_boards(conn, load_boards())
+    retired = db.sync_boards(conn, load_boards(), now())
+    if retired:
+        print(f"  retired {retired} boards no longer in the seed list", file=sys.stderr)
     boards = db.active_boards(conn)[:limit] if limit else db.active_boards(conn)
     run_id = db.start_run(conn, now())
     t = {"boards_ok": 0, "boards_failed": 0, "new": 0, "updated": 0, "expired": 0}

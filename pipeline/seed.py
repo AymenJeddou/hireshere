@@ -15,8 +15,9 @@ import random
 import re
 import sys
 from pathlib import Path
+from types import SimpleNamespace
 
-from pipeline import config
+from pipeline import config, db
 from pipeline.http import FetchError, get_json, make_client
 from pipeline.models import Board
 from pipeline.run import fetch_all, load_boards
@@ -138,6 +139,20 @@ async def build(rit: Path, ats_root: Path, extra: int) -> list[dict]:
     return rows
 
 
+def noise(jobs: list) -> str | None:
+    """Why a top-up board is not worth fetching, or None. Jobs need location_raw,
+    remote_flag_raw and title. Only applied to ats-scrapers top-ups: remoteintech
+    companies are curated, and their location text often omits "remote"."""
+    if not jobs:
+        return "no open jobs"
+    remote = sum(bool(REMOTE.search(f"{j.location_raw} {j.remote_flag_raw or ''}")) for j in jobs)
+    if remote / len(jobs) < 0.05:
+        return f"only {remote}/{len(jobs)} remote-looking jobs"
+    if len(jobs) >= 50 and len({j.title for j in jobs}) / len(jobs) < 0.10:
+        return f"template spam: {len({j.title for j in jobs})} titles for {len(jobs)} jobs"
+    return None
+
+
 async def validate(boards: list[Board]) -> list[Board]:
     keep, dropped = [], {}
     async for res in fetch_all(boards):
@@ -146,16 +161,33 @@ async def validate(boards: list[Board]) -> list[Board]:
             dropped[f"{b.ats}/{b.slug}"] = res.error
         elif not res.jobs:
             dropped[f"{b.ats}/{b.slug}"] = "no open jobs"
-        elif b.source_of_entry == "ats-scrapers" and not any(
-            REMOTE.search(f"{j.location_raw} {j.remote_flag_raw or ''}") for j in res.jobs
-        ):
-            dropped[f"{b.ats}/{b.slug}"] = "no remote-looking jobs"
+        elif b.source_of_entry == "ats-scrapers" and (why := noise(res.jobs)):
+            dropped[f"{b.ats}/{b.slug}"] = why
         else:
             keep.append(b)
     for k, v in sorted(dropped.items()):
         print(f"drop {k}: {v}", file=sys.stderr)
     print(f"kept {len(keep)} of {len(boards)}", file=sys.stderr)
     return sorted(keep, key=lambda b: (b.ats, b.slug))
+
+
+def prune(db_path: str, path: str = config.BOARDS_CSV) -> None:
+    """Apply noise() to the current seed list using jobs already in the database."""
+    conn = db.connect(db_path)
+    keep = []
+    for b in load_boards(path):
+        jobs = conn.execute(
+            "SELECT title, location_raw, remote_flag_raw FROM jobs "
+            "WHERE source = ? AND board_slug = ? AND expired_at IS NULL",
+            (b.ats, b.slug),
+        ).fetchall()
+        why = noise([SimpleNamespace(**dict(j)) for j in jobs])
+        if b.source_of_entry == "ats-scrapers" and why:
+            print(f"prune {b.ats}/{b.slug} ({b.company_name}): {why}", file=sys.stderr)
+        else:
+            keep.append(b.model_dump())
+    write(path, keep)
+    print(f"kept {len(keep)} boards", file=sys.stderr)
 
 
 def write(path: str, rows: list[dict]) -> None:
@@ -180,10 +212,14 @@ def main(argv=None) -> None:
     v = sub.add_parser("validate")
     v.add_argument("--input", default=CANDIDATES)
     v.add_argument("--output", default=config.BOARDS_CSV)
+    pr = sub.add_parser("prune", help="drop noisy top-up boards using jobs already in the db")
+    pr.add_argument("--db", default=config.DB_PATH)
     args = p.parse_args(argv)
 
     if args.cmd == "build":
         write(CANDIDATES, asyncio.run(build(args.rit, args.ats, args.extra)))
+    elif args.cmd == "prune":
+        prune(args.db)
     else:
         kept = asyncio.run(validate(load_boards(args.input)))
         write(args.output, [k.model_dump() for k in kept])

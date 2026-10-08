@@ -77,9 +77,30 @@ def connect(path: str = config.DB_PATH) -> sqlite3.Connection:
     return conn
 
 
-def sync_boards(conn: sqlite3.Connection, boards: list[Board]) -> None:
-    """Add boards from the seed list. Existing rows keep their health state."""
+def sync_boards(conn: sqlite3.Connection, boards: list[Board], now: str = "") -> int:
+    """Add boards from the seed list. Existing rows keep their health state.
+
+    Boards no longer in the seed list are retired and their open jobs expired:
+    a deliberate removal, unlike a fetch failure. Returns how many were retired.
+    """
+    keep = {(b.ats, b.slug) for b in boards}
     with conn:
+        gone = [
+            (r["ats"], r["slug"])
+            for r in conn.execute("SELECT ats, slug FROM boards WHERE active = 1")
+            if (r["ats"], r["slug"]) not in keep
+        ]
+        for ats, slug in gone:
+            conn.execute(
+                "UPDATE boards SET active = 0, last_error = 'removed from seed list' "
+                "WHERE ats = ? AND slug = ?",
+                (ats, slug),
+            )
+            conn.execute(
+                "UPDATE jobs SET expired_at = ? WHERE source = ? AND board_slug = ? "
+                "AND expired_at IS NULL",
+                (now, ats, slug),
+            )
         conn.executemany(
             """INSERT INTO boards (ats, slug, company_name, website, source_of_entry)
                VALUES (?, ?, ?, ?, ?)
@@ -87,6 +108,7 @@ def sync_boards(conn: sqlite3.Connection, boards: list[Board]) -> None:
                  website = excluded.website, source_of_entry = excluded.source_of_entry""",
             [(b.ats, b.slug, b.company_name, b.website, b.source_of_entry) for b in boards],
         )
+    return len(gone)
 
 
 def active_boards(conn: sqlite3.Connection) -> list[Board]:
