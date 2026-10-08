@@ -49,10 +49,10 @@ def build(conn: sqlite3.Connection) -> dict[str, list[dict]]:
     for (jid, title, company, location, url, seen, source, _), e, verified in rows(conn):
         base = None
         for code, country in config.COUNTRIES.items():
-            v, reason_en = verdict(e, code, country, "en", location or "")
+            v, reason_en = verdict(e, code, country, "en", location or "", title)
             if v not in SHOWN:
                 continue
-            _, reason_fr = verdict(e, code, country, "fr", location or "")
+            _, reason_fr = verdict(e, code, country, "fr", location or "", title)
             if base is None:
                 base = {
                     "id": jid,

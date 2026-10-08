@@ -160,8 +160,7 @@ const boards = totalBoards();
     }
 
     <p class="fine">
-      {tr(lang, "updated")}
-      {formatDate(site.updated, lang, true)} · <a href={href(lang, "sources")}>{tr(lang, "nav_sources")}</a>
+      {`${tr(lang, "updated")} ${formatDate(site.updated, lang, true)}`} · <a href={href(lang, "sources")}>{tr(lang, "nav_sources")}</a>
     </p>
   </article>
 </div>

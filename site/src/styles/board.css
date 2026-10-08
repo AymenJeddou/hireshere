@@ -35,6 +35,7 @@
 }
 .verdicts legend {
   margin-bottom: var(--space-2);
+  padding: 0;
 }
 .verdict-toggle {
   position: relative;
@@ -64,6 +65,17 @@
 }
 .toggle-body .lamp {
   color: var(--v);
+}
+.toggle-body .check {
+  display: none;
+  margin-inline-end: -0.15rem;
+}
+.verdict-toggle input:checked + .toggle-body .check {
+  display: block;
+}
+.verdict-toggle input:not(:checked) + .toggle-body {
+  color: var(--ink-3);
+  border-style: dashed;
 }
 .toggle-count {
   font-weight: 500;
@@ -116,6 +128,35 @@
   justify-content: space-between;
   align-items: baseline;
   gap: var(--space-4);
+}
+.unclear-note {
+  display: block;
+}
+.unclear-note[hidden] {
+  display: none;
+}
+.empty-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+.alert-prompt {
+  display: none;
+  border-bottom: 1px solid var(--line);
+  padding: var(--space-3) 0;
+}
+.alert-prompt a {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 44px;
+  font-weight: 600;
+  font-size: var(--step-0);
+}
+@media (max-width: 980px) {
+  .alert-prompt {
+    display: block;
+  }
 }
 .count {
   color: var(--ink-2);
@@ -230,16 +271,15 @@
   align-items: center;
   gap: var(--space-2) var(--space-4);
 }
-.job-foot time {
-  color: var(--ink-3);
-  font-size: var(--step--1);
-  margin-inline-end: auto;
+.job-foot {
+  justify-content: flex-end;
 }
 .job-foot .apply {
   order: 2;
 }
 .report {
   order: 1;
+  margin-inline-end: auto;
 }
 .report summary {
   list-style: none;
@@ -335,12 +375,12 @@
     flex-direction: column-reverse;
     gap: var(--space-2);
   }
-  .job-foot .apply {
-    width: 100%;
+  .job article {
+    padding: var(--space-4) 0;
+    gap: var(--space-2);
   }
-  .job-foot time {
-    margin-inline-end: 0;
-    flex: 1;
+  .evidence {
+    padding: var(--space-2) var(--space-3);
   }
 }
 
@@ -380,9 +420,7 @@
   color: var(--ink-2);
   font-size: var(--step-0);
 }
-.alerts {
-  border-top: 3px solid var(--signal);
-}
+
 .alerts-form {
   display: grid;
   gap: var(--space-3);

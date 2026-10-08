@@ -36,6 +36,10 @@ REASONS = {
         "Ouvert partout, mais le fuseau {tz} exclut {fr_le}",
     ),
     "worldwide": ("Open to candidates worldwide", "Ouvert aux candidats du monde entier"),
+    "conflict": (
+        "The text says anywhere, but the posting is listed for {places}",
+        "Le texte dit « partout », mais l'annonce est publiée pour {places}",
+    ),
     "company_remote": (
         "Remote company, but the posting does not say this role is open worldwide",
         "Entreprise en télétravail, mais l'annonce ne dit pas que ce poste est ouvert partout",
@@ -69,20 +73,27 @@ ROLE_LEVEL_QUOTE = re.compile(
     r"|across the globe|globally remote|hiring worldwide|worldwide|location\s*:",
     re.I,
 )
+# Region names that can restrict a posting through its title or location field.
+LISTED_REGIONS = {
+    "americas": "Americas", "amer": "Americas", "latam": "LATAM", "north america": "North America",
+    "emea": "EMEA", "europe": "Europe", "apac": "APAC", "asia": "Asia", "africa": "Africa",
+    "mena": "MENA", "middle east": "Middle East", "oceania": "Oceania",
+}  # fmt: skip
+LISTED_REGION_RE = re.compile(r"\b(" + "|".join(LISTED_REGIONS) + r")\b", re.I)
 COMPANY_LEVEL_QUOTE = re.compile(
     r"\b(company|organi[sz]ation|workforce|team|we hire|our (staff|people|colleagues))\b", re.I
 )
 
 
 def verdict(
-    e: Extraction, code: str, country: dict, lang: str = "en", location: str = ""
+    e: Extraction, code: str, country: dict, lang: str = "en", location: str = "", title: str = ""
 ) -> tuple[Verdict, str]:
     """Verdict for one country plus a one-line reason in `lang`.
 
     `location` is the posting's raw location field; it decides whether a "worldwide"
     extraction rests on role-level evidence or on a company slogan.
     """
-    v, key, params = _decide(e, code, country, location)
+    v, key, params = _decide(e, code, country, location, title)
     i = LANGS.index(lang)
     fields = {"name": country["name"]} | {
         k: country.get(k, country["name"]) for k in ("fr_le", "fr_en", "fr_hors")
@@ -95,7 +106,7 @@ def verdict(
     return v, REASONS[key][i].format(**fields)
 
 
-def _decide(e: Extraction, code: str, country: dict, location: str):
+def _decide(e: Extraction, code: str, country: dict, location: str, title: str = ""):
     regions = set(country["regions"])
 
     if code in e.excluded_countries:
@@ -120,6 +131,16 @@ def _decide(e: Extraction, code: str, country: dict, location: str):
             return "not_eligible", "worldwide_tz", {"tz": _tz(e)}
         if not _role_level_worldwide(e, location):
             return "unclear", "company_remote", {}
+        # "Anywhere" in the text, but the title or location lists regions: those regions win.
+        if not ROLE_WORLDWIDE_LOCATION.search(location or ""):
+            listed = sorted(
+                {LISTED_REGIONS[m.lower()] for m in LISTED_REGION_RE.findall(f"{title} {location}")}
+            )
+            if listed:
+                if regions.intersection(listed):
+                    match = sorted(regions.intersection(listed))[0]
+                    return "likely", "region", {"region": match}
+                return "unclear", "conflict", {"places": ", ".join(listed)}
         return _cap(e, "eligible"), "worldwide", {}
 
     if e.allowed_regions:

@@ -10,12 +10,23 @@ interface Props {
 }
 const { lang } = Astro.props;
 const sampleCountry = countries[0];
-// Proof, not a claim: three real eligible jobs that carry a verbatim quote, from different companies.
-const seen = new Set<string>();
-const sample = jobsFor(sampleCountry.code)
-  .filter((j) => j.verdict === "eligible" && j.quote && j.confidence === "high")
-  .filter((j) => (seen.has(j.company) ? false : (seen.add(j.company), true)))
-  .slice(0, 3);
+// Proof, not a claim: one real job per verdict, each with a verbatim quote, from different companies.
+// The sample must agree with its own location field, so a reader never sees a doubtful example.
+const pool = jobsFor(sampleCountry.code).filter((j) => j.quote && j.confidence === "high");
+const used = new Set<string>();
+const sample = (["eligible", "likely", "unclear"] as const)
+  .map((v) => {
+    const job = pool.find(
+      (j) =>
+        j.verdict === v &&
+        !used.has(j.company) &&
+        (v !== "eligible" || /worldwide|global|anywhere|^remote$/i.test(j.location)) &&
+        (v !== "unclear" || /remote/i.test(j.quote)),
+    );
+    if (job) used.add(job.company);
+    return job;
+  })
+  .filter((j): j is NonNullable<typeof j> => Boolean(j));
 const steps = [
   ["home_how_1_t", "home_how_1"],
   ["home_how_2_t", "home_how_2"],
@@ -42,12 +53,12 @@ const steps = [
                     <span class="v-eligible c-count">
                       <Lamp verdict="eligible" />
                       <span class="num">{c.counts.eligible ?? 0}</span>
-                      <span class="sr-only">{labels.verdict.eligible[lang]}</span>
+                      <span class="c-word">{tr(lang, "eligible_n")}</span>
                     </span>
                     <span class="v-likely c-count">
                       <Lamp verdict="likely" />
                       <span class="num">{c.counts.likely ?? 0}</span>
-                      <span class="sr-only">{labels.verdict.likely[lang]}</span>
+                      <span class="c-word">{tr(lang, "likely_n")}</span>
                     </span>
                   </span>
                   <span class="c-sum">{tr(lang, "home_open", { n: openCount(c) })}</span>
@@ -177,6 +188,11 @@ const steps = [
     color: var(--v);
     font-weight: 700;
     font-size: var(--step-0);
+  }
+  .c-word {
+    font-weight: 500;
+    color: var(--ink-2);
+    font-size: var(--step--1);
   }
   .c-sum {
     grid-area: sum;

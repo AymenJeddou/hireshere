@@ -58,3 +58,15 @@ Short log, newest last. Format: date, decision, why.
 **2026-10-08. "Worldwide" needs role-level evidence.** Deterministic rule in `verdict.py`: worldwide is accepted only when the location field says so or the quote is about this role ("this position", "any country", "location: ..."). A company slogan ("we're a natively remote company") gives "unclear". Eligible precision on the eval set went from 84% to 94%, and every remaining eligible error is a "likely".
 
 **2026-10-08. Reasons in English and French from the same templates**, with French article forms per country in `config.COUNTRIES` ("la Tunisie", "au Maroc").
+
+**2026-10-08. Site: Astro 7.3.4, no client framework.** Pages are fully rendered at build time from the exported JSON; one small script filters rows by data attributes and keeps the filter state in the URL. Pinned to 7.3.4 rather than the release from the day before.
+
+**2026-10-08. Visual direction: professional, not themed.** The owner asked for a professional product with the best UX and UI. A themed direction (station departure board) was considered and dropped. DESIGN.md records the system: navy shell, Public Sans, shape-coded verdict lamps, evidence quote in every row.
+
+**2026-10-08. Unclear jobs are hidden by default but one tap away.** Eligible and Likely show first; the status line says how many Unclear jobs are hidden and offers to show them. Not-eligible jobs are never shown.
+
+**2026-10-08. A quote that is only a company slogan is not shown as evidence.** The row then shows the location field the verdict actually rests on.
+
+**2026-10-08. Listed regions beat "anywhere" text.** When a title or location field names regions ("AMERICAS - Remote") and the text says "anywhere in the world", the verdict is Likely when a listed region includes the country, otherwise Unclear with a reason naming the conflict. Found by the independent design review on the home page sample. Eval eligible precision: 98% (still tuned on the same set).
+
+**2026-10-08. Signups and error reports go to Cloudflare Pages Functions + D1** (owner's choice). `site/functions/api/` validates input, uses a honeypot field, reads the country list from the exported `meta.json`. Live from Phase 4.

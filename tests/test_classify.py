@@ -222,3 +222,18 @@ def test_export_shows_open_verdicts_only_and_never_descriptions(tmp_path):
     assert "SECRET" not in (tmp_path / "tn.json").read_text(encoding="utf-8")
     meta = json.loads((tmp_path / "meta.json").read_text(encoding="utf-8"))
     assert meta["countries"]["TN"]["counts"] == {"eligible": 1}
+
+
+def test_listed_region_beats_anywhere_text():
+    e = ex(
+        geo_scope="worldwide",
+        evidence_quote="This is a remote role, so you can be located anywhere in the world.",
+    )
+    loc = "Americas; Sao Paulo; Buenos Aires"
+    v, reason = verdict(e, "TN", TN, location=loc, title="Support Engineer (AMERICAS - Remote)")
+    assert v == "unclear" and "Americas" in reason
+    assert verdict(e, "TN", TN, location="EMEA; Rome", title="Engineer")[0] == "likely"
+    # A country in the location field does not override an explicit "anywhere" sentence.
+    assert (
+        verdict(e, "TN", TN, location="Remote (United States)", title="Engineer")[0] == "eligible"
+    )

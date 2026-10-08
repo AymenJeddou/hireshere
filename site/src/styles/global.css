@@ -222,6 +222,20 @@ time {
 .lang-switch {
   border: 1px solid var(--navy-700);
 }
+.lang-switch .long {
+  display: inline;
+}
+.lang-switch .short {
+  display: none;
+}
+@media (max-width: 860px) {
+  .lang-switch .long {
+    display: none;
+  }
+  .lang-switch .short {
+    display: inline;
+  }
+}
 
 @media (max-width: 860px) {
   .site-header .wrap {
@@ -233,7 +247,7 @@ time {
     margin-inline-start: auto;
   }
   .header-links a.text {
-    display: none;
+    padding-inline: 0.4rem;
   }
   .country-nav {
     order: 3;
@@ -323,6 +337,11 @@ time {
 }
 .btn svg {
   flex: none;
+}
+.btn-compact {
+  min-height: 40px;
+  padding: 0 0.9rem;
+  font-size: var(--step--1);
 }
 
 .field {

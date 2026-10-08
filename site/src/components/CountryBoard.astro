@@ -37,9 +37,14 @@ const i18n = {
   alertsInvalid: tr(lang, "alerts_invalid"),
   filters: tr(lang, "filters"),
   filtersActive: tr(lang, "filters_active"),
+  noneQ: tr(lang, "results_none_q"),
+  noneTitle: tr(lang, "results_none_title"),
+  showUnclear: tr(lang, "show_unclear"),
 };
 const sub = tr(lang, "country_sub", {
-  n: jobs.length,
+  open: verdictCount("eligible") + verdictCount("likely"),
+  unclear: verdictCount("unclear"),
+  country_en: country.fr_en,
   companies,
   country: name,
   country_le: country.fr_le,
@@ -67,6 +72,9 @@ const sub = tr(lang, "country_sub", {
               <label class={`verdict-toggle v-${v}`}>
                 <input type="checkbox" name="v" value={v} checked={v !== "unclear"} />
                 <span class="toggle-body">
+                  <svg class="check" width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                    <path d="M3 7.2 5.8 10 11 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
                   <Lamp verdict={v} size={14} />
                   <span class="toggle-label">{labels.verdict[v][lang]}</span>
                   <span class="toggle-count num" data-count={v}>
@@ -143,21 +151,44 @@ const sub = tr(lang, "country_sub", {
           </label>
         </div>
         <div class="filter-status">
-          <p class="count" aria-live="polite" data-status>
-            {tr(lang, "results_count", { shown: jobs.length, total: jobs.length })}
+          <p class="count" aria-live="polite">
+            <span data-status>{tr(lang, "results_count", { shown: jobs.length, total: jobs.length })}</span>
+            <span class="unclear-note" data-unclear-note hidden>
+              {tr(lang, "unclear_hidden")}{" "}
+              <button type="button" class="link-button" data-show-unclear></button>
+            </span>
           </p>
-          <button type="reset" class="link-button">{tr(lang, "filter_reset")}</button>
+          <button type="reset" class="link-button" data-reset-link>{tr(lang, "filter_reset")}</button>
         </div>
       </form>
 
       <ol class="jobs" data-jobs>
-        {jobs.map((job) => <JobRow job={job} lang={lang} />)}
+        {
+          jobs.map((job, i) => (
+            <>
+              <JobRow job={job} lang={lang} />
+              {i === 7 && (
+                <li class="alert-prompt">
+                  <a href="#alerts-title">
+                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+                      <path d="M2.5 4.5h13v9h-13zM2.5 5l6.5 5 6.5-5" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" />
+                    </svg>
+                    {tr(lang, "alerts_prompt", { country: name })}
+                  </a>
+                </li>
+              )}
+            </>
+          ))
+        }
       </ol>
 
       <div class="empty" data-empty hidden>
-        <h2>{tr(lang, "results_none_title")}</h2>
+        <h2 data-empty-title>{tr(lang, "results_none_title")}</h2>
         <p>{tr(lang, "results_none")}</p>
-        <button type="button" class="btn btn-secondary" data-reset>{tr(lang, "filter_reset")}</button>
+        <div class="empty-actions">
+          <button type="button" class="btn btn-secondary" data-empty-unclear hidden></button>
+          <button type="button" class="btn btn-secondary" data-reset>{tr(lang, "filter_reset")}</button>
+        </div>
       </div>
 
       <button type="button" class="btn btn-secondary more" data-more hidden></button>

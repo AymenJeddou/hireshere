@@ -47,13 +47,13 @@ ashby:lilt-production:741da8da-625e-468f-b551-6e0628e27295,TN,unclear,"Remote, b
 greenhouse:canonical:7836561,TN,likely,"Open to the EMEA region, which includes Tunisia",This is a remote role based in the AMER or EMEA Region.
 greenhouse:canonical:7267884,TN,eligible,Open to candidates worldwide,We are expanding our sales organisation globally and have open sales team manager roles in every region.
 greenhouse:canonical:5612564,TN,likely,"Open to the EMEA region, which includes Tunisia",Home Based - Americas; Home based - EMEA
-ashby:percona:e2c7b0ce-e95e-45fe-8462-03a4e67460f7,TN,eligible,Open to candidates worldwide,"This is a remote role, so you can be located anywhere in the world."
+ashby:percona:e2c7b0ce-e95e-45fe-8462-03a4e67460f7,TN,unclear,"The text says anywhere, but the posting is listed for Americas","This is a remote role, so you can be located anywhere in the world."
 greenhouse:canonical:5906452,TN,likely,"Open to the EMEA region, which includes Tunisia",Home based - EMEA
 ashby:assured:10405bcc-93ab-4527-beb4-af77433ef733,TN,unclear,"Remote, but the posting does not say where candidates may live","We're remote, but we regularly get together"
-greenhouse:canonical:4981245,TN,eligible,Open to candidates worldwide,Location: This role will be based remote globally
+greenhouse:canonical:4981245,TN,likely,"Open to the EMEA region, which includes Tunisia",Location: This role will be based remote globally
 greenhouse:canonical:6980703,TN,likely,"Open to the EMEA region, which includes Tunisia",These roles are home based in the EMEA time zone. You will be expected to be located in this region.
 greenhouse:canonical:5140562,TN,eligible,Open to candidates worldwide,"Home based - Worldwide; Office Based - Taipei, Taiwan"
-greenhouse:canonical:5566674,TN,eligible,Open to candidates worldwide,Location: This is a Globally remote role.
+greenhouse:canonical:5566674,TN,likely,"Open to the EMEA region, which includes Tunisia",Location: This is a Globally remote role.
 ashby:revenuecat:0ee633e4-d6c6-44c8-a4bb-f0fd0e32b22a,TN,likely,"Open to the EMEA region, which includes Tunisia",Americas; EMEA
 ashby:revenuecat:76a39fe0-eb34-4def-b462-7b0f9de80961,TN,likely,"Open to the EMEA region, which includes Tunisia",Americas; EMEA
 ashby:duck-duck-go:12b7b49c-ee06-4d70-8504-657343ebe4d0,TN,unclear,"Remote, but the posting does not say where candidates may live","Eligibility for company-sponsored health benefits is limited to team members based in the United States. This program does not extend to team members located in other countries, such as Canada or the"
@@ -88,7 +88,7 @@ greenhouse:gitlab:8799044002,TN,unclear,"Remote company, but the posting does no
 ashby:testgorilla:007f6b53-027e-477d-beb5-630715ed7470,TN,likely,Time zone window UTC-5 to UTC+3 includes Tunisia,Europe and Americas Time Zone (UTC -05:00 ~ UTC+3:00)
 lever:Pretto:fab12ac1-bf63-421a-a2dd-e8ef4c5c59d1,TN,unclear,"Remote company, but the posting does not say this role is open worldwide","Aucune limite territoriale. Tu travailles d’où tu veux, quand tu veux."
 greenhouse:canonical:3290946,TN,eligible,Open to candidates worldwide,Home based - Worldwide
-greenhouse:canonical:7778744,TN,eligible,Open to candidates worldwide,"This role will be home based, managing teams in worldwide."
+greenhouse:canonical:7778744,TN,likely,"Open to the EMEA region, which includes Tunisia","This role will be home based, managing teams in worldwide."
 greenhouse:canonical:3433732,TN,eligible,Open to candidates worldwide,"This is a home-based role, we are hiring worldwide."
 greenhouse:securityscorecard:8167848,TN,not_eligible,Limited to JP,Remote (Japan)
 ashby:supabase:3b5d54ca-741b-45ac-bd3f-31605a0d3541,TN,eligible,Open to candidates worldwide,We hire globally. We believe you can do your best work from anywhere.

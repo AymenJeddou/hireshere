@@ -16,6 +16,18 @@ export function initBoard(): void {
   const status = root.querySelector<HTMLElement>("[data-status]")!;
   const empty = root.querySelector<HTMLElement>("[data-empty]")!;
   const more = root.querySelector<HTMLButtonElement>("[data-more]")!;
+  const emptyTitle = root.querySelector<HTMLElement>("[data-empty-title]")!;
+  const emptyUnclear = root.querySelector<HTMLButtonElement>("[data-empty-unclear]")!;
+  const unclearNote = root.querySelector<HTMLElement>("[data-unclear-note]")!;
+  const showUnclear = root.querySelector<HTMLButtonElement>("[data-show-unclear]")!;
+  const resetLink = root.querySelector<HTMLElement>("[data-reset-link]")!;
+  const unclearBox = form.querySelector<HTMLInputElement>('input[name="v"][value="unclear"]')!;
+  const includeUnclear = () => {
+    unclearBox.checked = true;
+    apply();
+  };
+  showUnclear.addEventListener("click", includeUnclear);
+  emptyUnclear.addEventListener("click", includeUnclear);
   const counts = new Map(
     [...root.querySelectorAll<HTMLElement>("[data-count]")].map((el) => [el.dataset.count!, el]),
   );
@@ -81,6 +93,13 @@ export function initBoard(): void {
       : t.filters;
     status.textContent = fill(t.count, { shown: visible.size, total: matches.length });
     empty.hidden = matches.length > 0;
+    resetLink.hidden = matches.length === 0;
+    emptyTitle.textContent = st.q ? fill(t.noneQ, { q: st.q }) : t.noneTitle;
+    const unclearOff = !st.v.includes("unclear") && perVerdict.unclear > 0;
+    unclearNote.hidden = !unclearOff || matches.length === 0;
+    showUnclear.textContent = fill(t.showUnclear, { n: perVerdict.unclear });
+    emptyUnclear.hidden = !unclearOff;
+    emptyUnclear.textContent = fill(t.showUnclear, { n: perVerdict.unclear });
     const left = matches.length - visible.size;
     more.hidden = left <= 0;
     more.textContent = fill(t.more, { n: Math.min(PAGE, left) });

@@ -25,6 +25,8 @@ uv run python -m pipeline.run stats
 uv run python -m pipeline.run classify [--limit N] [--batch] [--yes]   # needs GEMINI_API_KEY
 uv run python -m pipeline.run classify-collect                         # store finished batches
 uv run python -m pipeline.classify.evalset sample|score [--country TN]
+uv run python -m pipeline.run export            # writes site/src/data/*.json
+cd site && npm install && npx astro build       # static site in site/dist
 uv run python -m pipeline.seed build --rit <remote-jobs clone> --ats <ats-scrapers clone> [--extra N]
 uv run python -m pipeline.seed validate
 ```
@@ -39,6 +41,8 @@ uv run python -m pipeline.seed validate
   file), `runner.py` (triage, cost estimate, storage), `evalset.py` (hand-checked eval).
 - Extractions are stored once per `content_hash` in `extractions`. Verdicts are computed from
   them at export time, never stored, so changing `verdict.py` or `COUNTRIES` needs no model calls.
+- `site/`: Astro site. Design system in `DESIGN.md`, product truth in `PRODUCT.md`.
+  `site/functions/api/` are Cloudflare Pages Functions (signups, reports) using D1 (`site/schema.sql`).
 - `data/boards.csv`: validated seed list, committed. `data/candidates.csv` is a build artifact, ignored.
 - `jobs.db` lives on the `data-latest` GitHub Release as `jobs.db.gz`, never in git.
   Local copy: `gh release download data-latest -p jobs.db.gz && gunzip jobs.db.gz`.
