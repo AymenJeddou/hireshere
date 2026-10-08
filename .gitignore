@@ -9,3 +9,9 @@ __pycache__/
 *.db-journal
 data/candidates.csv
 node_modules/
+site/node_modules/
+site/dist/
+site/.astro/
+site/src/data/*.json
+.impeccable/review/
+.impeccable/questions/

@@ -1,0 +1,18 @@
+---
+import CountryBoard from "../components/CountryBoard.astro";
+import Layout from "../layouts/Layout.astro";
+import { type Country, countries, countryName, site } from "../data";
+import { tr } from "../i18n";
+
+export function getStaticPaths() {
+  return countries.map((c) => ({ params: { country: c.code.toLowerCase() }, props: { country: c } }));
+}
+const { country } = Astro.props as { country: Country };
+const lang = "en";
+const name = countryName(country, lang);
+const vars = { country: name, country_en: country.fr_en, product: site.product };
+---
+
+<Layout lang={lang} page="country" country={country.code} title={tr(lang, "country_meta_title", vars)} description={tr(lang, "country_title", vars)}>
+  <CountryBoard country={country} lang={lang} />
+</Layout>

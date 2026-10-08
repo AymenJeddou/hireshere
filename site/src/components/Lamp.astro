@@ -1,0 +1,26 @@
+---
+// Verdict lamp: the state is carried by shape (full, half, ring), colour only reinforces it.
+import type { Verdict } from "../i18n";
+interface Props {
+  verdict: Verdict;
+  size?: number;
+}
+const { verdict, size = 12 } = Astro.props;
+---
+
+<svg class="lamp" width={size} height={size} viewBox="0 0 12 12" aria-hidden="true" focusable="false">
+  {verdict === "eligible" && <circle cx="6" cy="6" r="5.25" fill="currentColor" />}
+  {
+    verdict === "likely" && (
+      <>
+        <circle cx="6" cy="6" r="4.75" fill="none" stroke="currentColor" stroke-width="1.5" />
+        <path d="M6 1.25a4.75 4.75 0 0 1 0 9.5z" fill="currentColor" />
+      </>
+    )
+  }
+  {
+    verdict === "unclear" && (
+      <circle cx="6" cy="6" r="4.6" fill="none" stroke="currentColor" stroke-width="1.8" />
+    )
+  }
+</svg>

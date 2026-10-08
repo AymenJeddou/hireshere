@@ -1,0 +1,90 @@
+---
+import type { Job } from "../data";
+import { formatDate, labels, languageName, type Lang, tr } from "../i18n";
+import Lamp from "./Lamp.astro";
+
+interface Props {
+  job: Job;
+  lang: Lang;
+  /** Hide the report control (home page sample). */
+  compact?: boolean;
+}
+const { job, lang, compact = false } = Astro.props;
+const meta = [
+  job.scope,
+  job.seniority !== "unclear" ? labels.seniority[job.seniority as keyof typeof labels.seniority]?.[lang] : "",
+  job.engagement !== "unclear"
+    ? labels.engagement[job.engagement as keyof typeof labels.engagement]?.[lang]
+    : "",
+  ...job.languages.filter((l) => l !== "en").map((l) => languageName(l, lang)),
+].filter(Boolean);
+// Long multi-office location fields are cut to the first three places.
+const places = job.location.split(/;\s*/).filter(Boolean);
+const shortLocation = places.length > 3 ? `${places.slice(0, 3).join("; ")}…` : job.location;
+const titleId = `t-${job.id.replace(/[^a-zA-Z0-9]/g, "-")}`;
+---
+
+<li
+  class={`job v-${job.verdict}`}
+  data-id={job.id}
+  data-v={job.verdict}
+  data-f={job.family}
+  data-s={job.seniority}
+  data-e={job.engagement}
+  data-l={job.languages.join(" ")}
+  data-q={`${job.title} ${job.company}`.toLowerCase()}
+>
+  <article aria-labelledby={titleId}>
+    <div class="job-head">
+      <div class="job-id">
+        <h3 class="job-title" id={titleId}>{job.title}</h3>
+        <p class="job-meta">
+          <span class="company">{job.company}</span>
+          {meta.map((m) => <span>{m}</span>)}
+        </p>
+      </div>
+      <span class="verdict-tag">
+        <Lamp verdict={job.verdict} />
+        {labels.verdict[job.verdict][lang]}
+      </span>
+    </div>
+
+    <div class="evidence">
+      <p class="reason">
+        {job.reason[lang]}
+        {job.confidence === "low" && <span class="low"> · {tr(lang, "confidence_low")}</span>}
+      </p>
+      {
+        job.quote ? (
+          <figure class="quote">
+            <blockquote lang="und">
+              <p>{job.quote}</p>
+            </blockquote>
+            <figcaption class="sr-only">{tr(lang, "quote_label")}</figcaption>
+          </figure>
+        ) : (
+          <p class="quote-missing">{tr(lang, "quote_missing", { location: shortLocation || "—" })}</p>
+        )
+      }
+    </div>
+
+    <div class="job-foot">
+      <time datetime={job.seen}>{tr(lang, "first_seen", { date: formatDate(job.seen, lang) })}</time>
+      {
+        !compact && (
+          <details class="report">
+            <summary>{tr(lang, "report")}</summary>
+            <div class="report-slot" />
+          </details>
+        )
+      }
+      <a class="btn btn-primary apply" href={job.url} target="_blank" rel="noopener noreferrer">
+        {tr(lang, "apply")}
+        <span class="sr-only">{tr(lang, "apply_sr")}</span>
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+          <path d="M5 2.5h6.5V9M11.5 2.5 3 11" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
+        </svg>
+      </a>
+    </div>
+  </article>
+</li>

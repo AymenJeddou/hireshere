@@ -190,3 +190,35 @@ def test_reasons_in_french():
     assert v == "likely" and reason == "La plage horaire UTC-1 à UTC+3 inclut la Tunisie"
     v, reason = verdict(ex(geo_scope="regions", allowed_regions=["EMEA"]), "EG", EG, lang="fr")
     assert reason == "Ouvert à la région EMEA, qui inclut l'Égypte"
+
+
+def test_export_shows_open_verdicts_only_and_never_descriptions(tmp_path):
+    from pipeline import db
+    from pipeline.export import export
+    from pipeline.models import Board, FetchResult, Job
+
+    conn = db.connect(":memory:")
+    b = Board(ats="lever", slug="acme", company_name="Acme")
+    db.sync_boards(conn, [b])
+    jobs = [
+        Job(source="lever", board_slug="acme", source_job_id=str(i), company_name="Acme",
+            title=f"Job {i}", location_raw=loc, description_text="SECRET full text " + q,
+            apply_url=f"https://x/{i}")
+        for i, (loc, q) in enumerate([("Remote - Worldwide", "Work from anywhere."),
+                                      ("Remote (US)", "US only.")])
+    ]  # fmt: skip
+    db.apply_result(conn, FetchResult(board=b, ok=True, jobs=jobs), "2026-10-08T00:00:00")
+    for j, scope, quote in [(jobs[0], "worldwide", "Work from anywhere."),
+                            (jobs[1], "countries", "US only.")]:  # fmt: skip
+        e = ex(geo_scope=scope, evidence_quote=quote,
+               allowed_countries=["US"] if scope == "countries" else [])  # fmt: skip
+        runner.save(conn, dict(conn.execute("SELECT * FROM jobs WHERE id=?", (j.id,)).fetchone()),
+                    e, 1, 1)  # fmt: skip
+    export(conn, tmp_path)
+    tn = json.loads((tmp_path / "tn.json").read_text(encoding="utf-8"))
+    assert [j["title"] for j in tn] == ["Job 0"]
+    assert tn[0]["verdict"] == "eligible" and tn[0]["quote"] == "Work from anywhere."
+    assert tn[0]["reason"]["fr"] == "Ouvert aux candidats du monde entier"
+    assert "SECRET" not in (tmp_path / "tn.json").read_text(encoding="utf-8")
+    meta = json.loads((tmp_path / "meta.json").read_text(encoding="utf-8"))
+    assert meta["countries"]["TN"]["counts"] == {"eligible": 1}

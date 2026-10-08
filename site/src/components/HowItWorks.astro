@@ -1,0 +1,167 @@
+---
+import { site, totalBoards } from "../data";
+import { formatDate, href, labels, type Lang, tr, VERDICTS } from "../i18n";
+import Lamp from "./Lamp.astro";
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const fr = lang === "fr";
+const boards = totalBoards();
+---
+
+<div class="wrap">
+  <header class="page-head">
+    <h1>{tr(lang, "how_title")}</h1>
+  </header>
+  <article class="prose">
+    {
+      fr ? (
+        <p class="lede">
+          HiresHere répond à une seule question : puis-je postuler à ce poste en télétravail depuis
+          mon pays ? Voici comment chaque verdict est établi, et ses limites.
+        </p>
+      ) : (
+        <p class="lede">
+          HiresHere answers one question: can I apply for this remote job from my country? Here is
+          how every verdict is made, and where it can go wrong.
+        </p>
+      )
+    }
+
+    <h2>{fr ? "D’où viennent les offres" : "Where the jobs come from"}</h2>
+    {
+      fr ? (
+        <p>
+          Chaque jour, nous lisons les flux publics des systèmes de recrutement de {boards} entreprises
+          (Greenhouse, Lever, Ashby et SmartRecruiters). Ce sont les mêmes annonces que sur leurs pages
+          carrières. Une offre qui disparaît du flux est retirée le jour même. Nous ne copions jamais
+          LinkedIn, Indeed ou d’autres sites qui l’interdisent.
+        </p>
+      ) : (
+        <p>
+          Every day we read the public job feeds of {boards} companies’ hiring systems (Greenhouse,
+          Lever, Ashby and SmartRecruiters). These are the same postings you see on their careers
+          pages. A job that disappears from the feed is removed the same day. We never scrape
+          LinkedIn, Indeed or any site that forbids it.
+        </p>
+      )
+    }
+
+    <h2>{fr ? "Comment une annonce est lue" : "How a posting is read"}</h2>
+    {
+      fr ? (
+        <p>
+          Un modèle d’IA lit chaque annonce et relève qui peut postuler : pays et régions acceptés ou
+          exclus, fuseau horaire exigé, autorisation de travail requise, type de contrat et langues.
+          Il doit citer la phrase exacte sur laquelle il s’appuie. Nous vérifions que cette phrase
+          figure bien dans l’annonce ; sinon le verdict ne peut pas être « Éligible ».
+        </p>
+      ) : (
+        <p>
+          An AI model reads each posting and records who may apply: allowed or excluded countries and
+          regions, required time zones, work authorization, contract type and languages. It must quote
+          the exact sentence it relies on. We check that the sentence really appears in the posting;
+          if it does not, the verdict cannot be “Eligible”.
+        </p>
+      )
+    }
+    {
+      fr ? (
+        <p>
+          Le verdict pour votre pays est ensuite calculé par des règles simples et publiques, pas par
+          l’IA. Le champ de localisation de l’annonce l’emporte sur les slogans d’entreprise comme
+          « nous recrutons partout ».
+        </p>
+      ) : (
+        <p>
+          The verdict for your country is then computed by simple, fixed rules, not by the AI. The
+          posting’s location field outranks company slogans such as “we hire globally”.
+        </p>
+      )
+    }
+
+    <h2>{tr(lang, "legend_title")}</h2>
+    <dl class="legend">
+      {
+        VERDICTS.map((v) => (
+          <div>
+            <dt>
+              <span class={`verdict-tag v-${v}`}>
+                <Lamp verdict={v} />
+                {labels.verdict[v][lang]}
+              </span>
+            </dt>
+            <dd>{labels.verdictHelp[v][lang]}</dd>
+          </div>
+        ))
+      }
+    </dl>
+    {
+      fr ? (
+        <p>
+          Les offres réservées à d’autres pays, ou qui demandent une présence au bureau ailleurs, ne
+          sont pas affichées.
+        </p>
+      ) : (
+        <p>Jobs limited to other countries, or that need office attendance elsewhere, are not shown.</p>
+      )
+    }
+
+    <h2>{fr ? "Les limites" : "The limits"}</h2>
+    {
+      fr ? (
+        <ul>
+          <li>Les verdicts sont des estimations automatiques. Confirmez toujours auprès de l’employeur.</li>
+          <li>
+            Une annonce peut être vague, ou une entreprise peut ne pas embaucher partout malgré ce qu’elle
+            écrit. Dans le doute, nous préférons « Incertain » à un faux « Éligible ».
+          </li>
+          <li>
+            Nous n’affichons pas les descriptions complètes : seulement le titre, l’entreprise, le verdict,
+            une courte citation et le lien vers l’annonce d’origine.
+          </li>
+          <li>
+            Une erreur ? Utilisez « Signaler une erreur » sur l’offre. Chaque signalement nous aide à
+            corriger les règles.
+          </li>
+        </ul>
+      ) : (
+        <ul>
+          <li>Verdicts are automated estimates. Always confirm with the employer.</li>
+          <li>
+            A posting can be vague, or a company may not hire everywhere despite what it writes. When in
+            doubt we prefer “Unclear” over a wrong “Eligible”.
+          </li>
+          <li>
+            We do not republish full descriptions: only the title, company, verdict, a short quote and a
+            link to the original posting.
+          </li>
+          <li>
+            Spotted a mistake? Use “Report an error” on the job. Every report helps us fix the rules.
+          </li>
+        </ul>
+      )
+    }
+
+    <h2>{fr ? "Vos données" : "Your data"}</h2>
+    {
+      fr ? (
+        <p>
+          Pas de traceurs publicitaires. Si vous vous inscrivez aux alertes, nous gardons seulement votre
+          e-mail, votre pays et votre domaine.
+        </p>
+      ) : (
+        <p>
+          No advertising trackers. If you sign up for alerts we keep only your email, country and field.
+        </p>
+      )
+    }
+
+    <p class="fine">
+      {tr(lang, "updated")}
+      {formatDate(site.updated, lang, true)} · <a href={href(lang, "sources")}>{tr(lang, "nav_sources")}</a>
+    </p>
+  </article>
+</div>

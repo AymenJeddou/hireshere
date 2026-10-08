@@ -1,0 +1,91 @@
+---
+import "@fontsource-variable/public-sans";
+import "../styles/global.css";
+import { countries, countryName, site } from "../data";
+import { href, type Lang, type Page, tr } from "../i18n";
+
+interface Props {
+  lang: Lang;
+  page: Page;
+  title: string;
+  description: string;
+  country?: string;
+}
+const { lang, page, title, description, country } = Astro.props;
+const other: Lang = lang === "en" ? "fr" : "en";
+const otherHref = href(other, page, country);
+const canonical = new URL(href(lang, page, country), Astro.site).toString();
+const alternate = (l: Lang) => new URL(href(l, page, country), Astro.site).toString();
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#0e2a47" />
+    <link rel="canonical" href={canonical} />
+    <link rel="alternate" hreflang="en" href={alternate("en")} />
+    <link rel="alternate" hreflang="fr" href={alternate("fr")} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+  </head>
+  <body>
+    <a class="skip" href="#main">{tr(lang, "skip")}</a>
+    <header class="site-header">
+      <div class="wrap">
+        <a class="brand" href={href(lang, "home")}>
+          <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true">
+            <circle cx="11" cy="11" r="10" fill="none" stroke="#b9c7da" stroke-width="1.6"></circle>
+            <circle cx="11" cy="11" r="5.5" fill="#f2b705"></circle>
+          </svg>
+          {site.product}
+        </a>
+        <nav class="country-nav" aria-label={tr(lang, "nav_countries")}>
+          {
+            countries.map((c) => (
+              <a
+                href={href(lang, "country", c.code)}
+                aria-current={country === c.code ? "page" : undefined}
+                lang={lang}
+              >
+                <span class="name">{countryName(c, lang)}</span>
+                <span class="code" aria-hidden="true">{c.code}</span>
+              </a>
+            ))
+          }
+        </nav>
+        <div class="header-links">
+          <a class="text" href={href(lang, "how")} aria-current={page === "how" ? "page" : undefined}
+            >{tr(lang, "nav_how")}</a
+          >
+          <a class="lang-switch" href={otherHref} hreflang={other} lang={other}>
+            <span aria-hidden="true">{tr(lang, "switch_lang_short")}</span>
+            <span class="sr-only">{tr(lang, "switch_lang")}</span>
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="wrap">
+        <p class="disclaimer">{tr(lang, "footer_disclaimer")}</p>
+        <p>{tr(lang, "footer_data")}</p>
+        <nav aria-label="Footer">
+          <a href={href(lang, "how")}>{tr(lang, "nav_how")}</a>
+          <a href={href(lang, "sources")}>{tr(lang, "nav_sources")}</a>
+          <a href={otherHref} hreflang={other} lang={other}>{tr(lang, "switch_lang")}</a>
+        </nav>
+        <p>© {new Date(site.updated).getUTCFullYear()} {site.product} · {site.domain}</p>
+      </div>
+    </footer>
+  </body>
+</html>

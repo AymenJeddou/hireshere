@@ -1,0 +1,255 @@
+---
+import "../styles/board.css";
+import { countries, countryName, jobsFor, openCount, totalBoards } from "../data";
+import { href, labels, type Lang, tr } from "../i18n";
+import JobRow from "./JobRow.astro";
+import Lamp from "./Lamp.astro";
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const sampleCountry = countries[0];
+// Proof, not a claim: three real eligible jobs that carry a verbatim quote, from different companies.
+const seen = new Set<string>();
+const sample = jobsFor(sampleCountry.code)
+  .filter((j) => j.verdict === "eligible" && j.quote && j.confidence === "high")
+  .filter((j) => (seen.has(j.company) ? false : (seen.add(j.company), true)))
+  .slice(0, 3);
+const steps = [
+  ["home_how_1_t", "home_how_1"],
+  ["home_how_2_t", "home_how_2"],
+  ["home_how_3_t", "home_how_3"],
+] as const;
+---
+
+<div class="home">
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <h1>{tr(lang, "home_title")}</h1>
+        <p class="lede">{tr(lang, "home_lede", { boards: totalBoards() })}</p>
+      </div>
+      <nav class="chooser" aria-labelledby="pick">
+        <h2 id="pick">{tr(lang, "home_pick")}</h2>
+        <ul>
+          {
+            countries.map((c) => (
+              <li>
+                <a href={href(lang, "country", c.code)}>
+                  <span class="c-name">{countryName(c, lang)}</span>
+                  <span class="c-counts">
+                    <span class="v-eligible c-count">
+                      <Lamp verdict="eligible" />
+                      <span class="num">{c.counts.eligible ?? 0}</span>
+                      <span class="sr-only">{labels.verdict.eligible[lang]}</span>
+                    </span>
+                    <span class="v-likely c-count">
+                      <Lamp verdict="likely" />
+                      <span class="num">{c.counts.likely ?? 0}</span>
+                      <span class="sr-only">{labels.verdict.likely[lang]}</span>
+                    </span>
+                  </span>
+                  <span class="c-sum">{tr(lang, "home_open", { n: openCount(c) })}</span>
+                  <svg class="c-arrow" width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+                    <path d="M4 9h10M10 4.5 14.5 9 10 13.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path>
+                  </svg>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+    </div>
+  </section>
+
+  <section class="wrap sample" aria-labelledby="sample-title">
+    <div class="section-head">
+      <h2 id="sample-title">{tr(lang, "home_sample")}</h2>
+      <p>{tr(lang, "home_sample_note", { country: countryName(sampleCountry, lang) })}</p>
+    </div>
+    <ol class="jobs">
+      {sample.map((job) => <JobRow job={job} lang={lang} compact />)}
+    </ol>
+    <a class="btn btn-secondary see-all" href={href(lang, "country", sampleCountry.code)}>
+      {
+        tr(lang, "home_see_all", {
+          n: openCount(sampleCountry),
+          country: countryName(sampleCountry, lang),
+        })
+      }
+    </a>
+  </section>
+
+  <section class="wrap how" aria-labelledby="how-title">
+    <h2 id="how-title">{tr(lang, "home_how_title")}</h2>
+    <ol class="steps">
+      {
+        steps.map(([title, body]) => (
+          <li>
+            <h3>{tr(lang, title)}</h3>
+            <p>{tr(lang, body)}</p>
+          </li>
+        ))
+      }
+    </ol>
+    <a href={href(lang, "how")}>{tr(lang, "home_more")}</a>
+  </section>
+</div>
+
+<style>
+  .hero {
+    background: var(--navy-800);
+    color: #fff;
+    padding-block: var(--space-7) var(--space-8);
+    border-top: 1px solid var(--navy-700);
+  }
+  .hero-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    gap: var(--space-7);
+    align-items: center;
+  }
+  h1 {
+    font-size: var(--step-4);
+    font-weight: 750;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    max-width: 14ch;
+  }
+  .lede {
+    margin-top: var(--space-5);
+    font-size: var(--step-1);
+    line-height: 1.6;
+    color: var(--navy-200);
+    max-width: 52ch;
+  }
+  .chooser h2 {
+    font-size: var(--step--1);
+    font-weight: 600;
+    color: var(--navy-200);
+    margin-bottom: var(--space-3);
+    letter-spacing: 0.01em;
+  }
+  .chooser ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-2);
+  }
+  .chooser a {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    grid-template-areas: "name counts arrow" "sum sum arrow";
+    align-items: center;
+    gap: 0.15rem var(--space-4);
+    padding: var(--space-4) var(--space-5);
+    background: var(--surface);
+    color: var(--ink);
+    border-radius: var(--radius);
+    text-decoration: none;
+    box-shadow: var(--shadow);
+    transition: transform 0.25s var(--ease-out), box-shadow 0.25s var(--ease-out);
+  }
+  .chooser a:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 4px rgb(14 42 71 / 0.08), 0 12px 28px rgb(4 18 36 / 0.28);
+  }
+  .chooser a:hover .c-arrow {
+    transform: translateX(3px);
+  }
+  .c-name {
+    grid-area: name;
+    font-size: var(--step-2);
+    font-weight: 700;
+    letter-spacing: -0.015em;
+  }
+  .c-counts {
+    grid-area: counts;
+    display: flex;
+    gap: var(--space-3);
+  }
+  .c-count {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: var(--v);
+    font-weight: 700;
+    font-size: var(--step-0);
+  }
+  .c-sum {
+    grid-area: sum;
+    color: var(--ink-2);
+    font-size: var(--step--1);
+  }
+  .c-arrow {
+    grid-area: arrow;
+    color: var(--ink-3);
+    transition: transform 0.25s var(--ease-out);
+  }
+
+  .section-head {
+    display: grid;
+    gap: var(--space-2);
+    margin-bottom: var(--space-2);
+  }
+  .section-head h2,
+  .how h2 {
+    font-size: var(--step-3);
+    font-weight: 700;
+  }
+  .section-head p {
+    color: var(--ink-2);
+  }
+  .sample {
+    padding-top: var(--space-8);
+  }
+  .sample .jobs,
+  .section-head {
+    max-width: 860px;
+  }
+  .see-all {
+    margin-top: var(--space-5);
+  }
+  .how {
+    padding-top: var(--space-8);
+  }
+  .steps {
+    list-style: none;
+    margin: var(--space-5) 0 var(--space-5);
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-6);
+    counter-reset: step;
+  }
+  .steps li {
+    border-top: 2px solid var(--ink);
+    padding-top: var(--space-4);
+    display: grid;
+    gap: var(--space-2);
+    align-content: start;
+  }
+  .steps h3 {
+    font-size: var(--step-1);
+  }
+  .steps p {
+    color: var(--ink-2);
+    font-size: var(--step-0);
+  }
+
+  @media (max-width: 900px) {
+    .hero-grid {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--space-6);
+    }
+    .hero {
+      padding-block: var(--space-6) var(--space-7);
+    }
+    .steps {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--space-5);
+    }
+  }
+</style>

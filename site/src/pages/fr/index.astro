@@ -1,0 +1,11 @@
+---
+import Home from "../../components/Home.astro";
+import Layout from "../../layouts/Layout.astro";
+import { site, totalBoards } from "../../data";
+import { tr } from "../../i18n";
+const lang = "fr";
+---
+
+<Layout lang={lang} page="home" title={`${site.product}: ${tr(lang, "home_title")}`} description={tr(lang, "home_lede", { boards: totalBoards() })}>
+  <Home lang={lang} />
+</Layout>

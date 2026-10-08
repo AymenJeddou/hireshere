@@ -1,0 +1,247 @@
+---
+import "../styles/board.css";
+import { type Country, countryName, jobsFor, site } from "../data";
+import { formatDate, href, labels, languageName, type Lang, tr, VERDICTS } from "../i18n";
+import JobRow from "./JobRow.astro";
+import Lamp from "./Lamp.astro";
+
+interface Props {
+  country: Country;
+  lang: Lang;
+}
+const { country, lang } = Astro.props;
+const jobs = jobsFor(country.code);
+const name = countryName(country, lang);
+const companies = new Set(jobs.map((j) => j.company)).size;
+
+const count = (key: "family" | "seniority" | "engagement") =>
+  [...new Set(jobs.map((j) => j[key]))]
+    .map((v) => ({ v, n: jobs.filter((j) => j[key] === v).length }))
+    .sort((a, b) => b.n - a.n);
+const families = count("family");
+const seniorities = count("seniority");
+const engagements = count("engagement");
+const languages = [...new Set(jobs.flatMap((j) => j.languages))]
+  .map((v) => ({ v, n: jobs.filter((j) => j.languages.includes(v)).length }))
+  .sort((a, b) => b.n - a.n);
+const verdictCount = (v: string) => jobs.filter((j) => j.verdict === v).length;
+
+const i18n = {
+  count: tr(lang, "results_count"),
+  more: tr(lang, "more"),
+  sending: tr(lang, "sending"),
+  reportSent: tr(lang, "report_sent"),
+  reportFailed: tr(lang, "report_failed"),
+  alertsOk: tr(lang, "alerts_ok"),
+  alertsFailed: tr(lang, "alerts_failed"),
+  alertsInvalid: tr(lang, "alerts_invalid"),
+  filters: tr(lang, "filters"),
+  filtersActive: tr(lang, "filters_active"),
+};
+const sub = tr(lang, "country_sub", {
+  n: jobs.length,
+  companies,
+  country: name,
+  country_le: country.fr_le,
+  date: formatDate(site.updated, lang, true),
+});
+---
+
+<div class="wrap board" data-country={country.code} data-lang={lang} data-i18n={JSON.stringify(i18n)}>
+  <header class="page-head">
+    <h1>{tr(lang, "country_title", { country: name, country_en: country.fr_en })}</h1>
+    <p class="sub">{sub}</p>
+    <p class="note">
+      {tr(lang, "country_note")}{" "}
+      <a href={href(lang, "how")}>{tr(lang, "country_note_link")}</a>
+    </p>
+  </header>
+
+  <div class="board-layout">
+    <section class="results" aria-label={lang === "fr" ? "Offres" : "Jobs"}>
+      <form class="filters" role="search" onsubmit="return false">
+        <fieldset class="verdicts">
+          <legend class="legend-label">{tr(lang, "filter_verdict")}</legend>
+          {
+            VERDICTS.map((v) => (
+              <label class={`verdict-toggle v-${v}`}>
+                <input type="checkbox" name="v" value={v} checked={v !== "unclear"} />
+                <span class="toggle-body">
+                  <Lamp verdict={v} size={14} />
+                  <span class="toggle-label">{labels.verdict[v][lang]}</span>
+                  <span class="toggle-count num" data-count={v}>
+                    {verdictCount(v)}
+                  </span>
+                </span>
+              </label>
+            ))
+          }
+        </fieldset>
+
+        <button type="button" class="btn btn-secondary filter-toggle" aria-expanded="false" aria-controls="filter-row" data-filter-toggle>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M2 4h12M4.5 8h7M7 12h2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path>
+          </svg>
+          <span data-filter-label>{tr(lang, "filters")}</span>
+        </button>
+        <div class="filter-row" id="filter-row">
+          <label class="field search">
+            <span>{tr(lang, "filter_search")}</span>
+            <input type="search" name="q" placeholder={tr(lang, "filter_search_ph")} autocomplete="off" />
+          </label>
+          <label class="field">
+            <span>{tr(lang, "filter_family")}</span>
+            <select name="f">
+              <option value="">{tr(lang, "filter_any")}</option>
+              {
+                families.map(({ v, n }) => (
+                  <option value={v}>
+                    {labels.family[v as keyof typeof labels.family]?.[lang] ?? v} ({n})
+                  </option>
+                ))
+              }
+            </select>
+          </label>
+          <label class="field">
+            <span>{tr(lang, "filter_seniority")}</span>
+            <select name="s">
+              <option value="">{tr(lang, "filter_any")}</option>
+              {
+                seniorities.map(({ v, n }) => (
+                  <option value={v}>
+                    {labels.seniority[v as keyof typeof labels.seniority]?.[lang] ?? v} ({n})
+                  </option>
+                ))
+              }
+            </select>
+          </label>
+          <label class="field">
+            <span>{tr(lang, "filter_language")}</span>
+            <select name="l">
+              <option value="">{tr(lang, "filter_any")}</option>
+              {
+                languages.map(({ v, n }) => (
+                  <option value={v}>
+                    {languageName(v, lang)} ({n})
+                  </option>
+                ))
+              }
+            </select>
+          </label>
+          <label class="field">
+            <span>{tr(lang, "filter_engagement")}</span>
+            <select name="e">
+              <option value="">{tr(lang, "filter_any")}</option>
+              {
+                engagements.map(({ v, n }) => (
+                  <option value={v}>
+                    {labels.engagement[v as keyof typeof labels.engagement]?.[lang] ?? v} ({n})
+                  </option>
+                ))
+              }
+            </select>
+          </label>
+        </div>
+        <div class="filter-status">
+          <p class="count" aria-live="polite" data-status>
+            {tr(lang, "results_count", { shown: jobs.length, total: jobs.length })}
+          </p>
+          <button type="reset" class="link-button">{tr(lang, "filter_reset")}</button>
+        </div>
+      </form>
+
+      <ol class="jobs" data-jobs>
+        {jobs.map((job) => <JobRow job={job} lang={lang} />)}
+      </ol>
+
+      <div class="empty" data-empty hidden>
+        <h2>{tr(lang, "results_none_title")}</h2>
+        <p>{tr(lang, "results_none")}</p>
+        <button type="button" class="btn btn-secondary" data-reset>{tr(lang, "filter_reset")}</button>
+      </div>
+
+      <button type="button" class="btn btn-secondary more" data-more hidden></button>
+    </section>
+
+    <aside class="rail">
+      <section class="panel alerts" aria-labelledby="alerts-title">
+        <h2 id="alerts-title">{tr(lang, "alerts_title")}</h2>
+        <p>{tr(lang, "alerts_body", { country: name, country_en: country.fr_en })}</p>
+        <form class="alerts-form" method="post" action="/api/subscribe" novalidate>
+          <input type="hidden" name="country" value={country.code} />
+          <input type="hidden" name="lang" value={lang} />
+          <div class="hp" aria-hidden="true">
+            <label>Website <input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
+          </div>
+          <label class="field">
+            <span>{tr(lang, "alerts_email")}</span>
+            <input type="email" name="email" required autocomplete="email" inputmode="email" />
+          </label>
+          <label class="field">
+            <span>{tr(lang, "alerts_family")}</span>
+            <select name="family">
+              <option value="">{tr(lang, "alerts_all")}</option>
+              {
+                Object.entries(labels.family).map(([k, l]) => (
+                  <option value={k}>{l[lang]}</option>
+                ))
+              }
+            </select>
+          </label>
+          <button class="btn btn-primary" type="submit">{tr(lang, "alerts_submit")}</button>
+          <p class="form-msg" role="status" aria-live="polite"></p>
+          <p class="fine">{tr(lang, "alerts_privacy")}</p>
+        </form>
+      </section>
+
+      <section class="panel" aria-labelledby="legend-title">
+        <h2 id="legend-title">{tr(lang, "legend_title")}</h2>
+        <dl class="legend">
+          {
+            VERDICTS.map((v) => (
+              <div>
+                <dt>
+                  <span class={`verdict-tag v-${v}`}>
+                    <Lamp verdict={v} />
+                    {labels.verdict[v][lang]}
+                  </span>
+                </dt>
+                <dd>{labels.verdictHelp[v][lang]}</dd>
+              </div>
+            ))
+          }
+        </dl>
+        <p class="fine">
+          <a href={href(lang, "how")}>{tr(lang, "country_note_link")}</a>
+        </p>
+      </section>
+    </aside>
+  </div>
+
+  <template id="report-template">
+    <form class="report-form" method="post" action="/api/report">
+      <input type="hidden" name="job" />
+      <input type="hidden" name="country" value={country.code} />
+      <input type="hidden" name="verdict" />
+      <fieldset>
+        <legend class="legend-label">{tr(lang, "report_q")}</legend>
+        <label class="radio"><input type="radio" name="kind" value="wrong_verdict" required />{tr(lang, "report_wrong")}</label>
+        <label class="radio"><input type="radio" name="kind" value="closed" />{tr(lang, "report_closed")}</label>
+        <label class="radio"><input type="radio" name="kind" value="other" />{tr(lang, "report_info")}</label>
+      </fieldset>
+      <label class="field">
+        <span>{tr(lang, "report_note")}</span>
+        <textarea name="note" maxlength="500" rows="2"></textarea>
+      </label>
+      <div class="report-actions">
+        <button class="btn btn-secondary" type="submit">{tr(lang, "report_send")}</button>
+        <p class="form-msg" role="status" aria-live="polite"></p>
+      </div>
+    </form>
+  </template>
+</div>
+
+<script>
+  import { initBoard } from "../scripts/board";
+  initBoard();
+</script>

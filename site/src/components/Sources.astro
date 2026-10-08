@@ -1,0 +1,108 @@
+---
+import { site } from "../data";
+import { type Lang, tr } from "../i18n";
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const fr = lang === "fr";
+const systems = [
+  { key: "greenhouse", name: "Greenhouse", url: "https://www.greenhouse.com" },
+  { key: "lever", name: "Lever", url: "https://www.lever.co" },
+  { key: "ashby", name: "Ashby", url: "https://www.ashbyhq.com" },
+  { key: "smartrecruiters", name: "SmartRecruiters", url: "https://www.smartrecruiters.com" },
+];
+const boards = site.boards as Record<string, number>;
+---
+
+<div class="wrap">
+  <header class="page-head">
+    <h1>{tr(lang, "sources_title")}</h1>
+  </header>
+  <article class="prose">
+    <p class="lede">
+      {
+        fr
+          ? "Chaque offre renvoie vers son annonce d’origine. Voici d’où viennent les données et à qui nous devons la liste des entreprises."
+          : "Every job links back to its original posting. Here is where the data comes from, and who we owe the company list to."
+      }
+    </p>
+
+    <h2>{fr ? "Systèmes de recrutement" : "Hiring systems"}</h2>
+    <p>
+      {
+        fr
+          ? "Nous lisons les flux d’offres publics que ces systèmes publient pour le compte des entreprises."
+          : "We read the public job feeds these systems publish on behalf of each company."
+      }
+    </p>
+    <table class="sources-table">
+      <thead>
+        <tr>
+          <th scope="col">{fr ? "Système" : "System"}</th>
+          <th scope="col" class="n">{fr ? "Entreprises suivies" : "Companies tracked"}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          systems.map((s) => (
+            <tr>
+              <td>
+                <a href={s.url} rel="noopener">
+                  {s.name}
+                </a>
+              </td>
+              <td class="n num">{boards[s.key] ?? 0}</td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+
+    <h2>{fr ? "Liste des entreprises" : "Company list"}</h2>
+    <ul>
+      <li>
+        <a href="https://github.com/remoteintech/remote-jobs" rel="noopener">remoteintech/remote-jobs</a>
+        {fr ? " : liste d’entreprises ouvertes au télétravail. Licence ISC, © 2024 Lene Saile." : ": a list of remote-friendly companies. ISC License, © 2024 Lene Saile."}
+      </li>
+      <li>
+        <a href="https://github.com/kalil0321/ats-scrapers" rel="noopener">kalil0321/ats-scrapers</a>
+        {fr ? " : correspondance entre entreprises et systèmes de recrutement. Licence MIT, © 2026 Kalil Bouzigues." : ": the mapping from companies to their hiring systems. MIT License, © 2026 Kalil Bouzigues."}
+      </li>
+    </ul>
+
+    <h2>{fr ? "Ce que nous ne faisons pas" : "What we don’t do"}</h2>
+    <p>
+      {
+        fr
+          ? "Nous ne copions pas LinkedIn, Indeed, Glassdoor ni aucun site qui l’interdit, et nous ne republions pas les descriptions complètes des offres."
+          : "We don’t scrape LinkedIn, Indeed, Glassdoor or any site that forbids it, and we don’t republish full job descriptions."
+      }
+    </p>
+  </article>
+</div>
+
+<style>
+  .sources-table {
+    width: 100%;
+    max-width: 480px;
+    border-collapse: collapse;
+    margin-bottom: var(--space-4);
+    font-size: var(--step-0);
+  }
+  .sources-table th,
+  .sources-table td {
+    text-align: start;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .sources-table th {
+    color: var(--ink-2);
+    font-weight: 600;
+    font-size: var(--step--1);
+  }
+  .sources-table .n {
+    text-align: end;
+  }
+</style>

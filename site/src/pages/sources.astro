@@ -1,0 +1,10 @@
+---
+import Sources from "../components/Sources.astro";
+import Layout from "../layouts/Layout.astro";
+import { site } from "../data";
+import { tr } from "../i18n";
+---
+
+<Layout lang="en" page="sources" title={`${tr("en", "sources_title")} | ${site.product}`} description={tr("en", "footer_data")}>
+  <Sources lang="en" />
+</Layout>

@@ -186,6 +186,8 @@ def main(argv=None) -> None:
     c.add_argument("--batch", action="store_true", help="submit through the Batch API (half price)")
     c.add_argument("--yes", action="store_true", help="run even if the estimate is over the cap")
     sub.add_parser("classify-collect", help="store results of finished batches")
+    x = sub.add_parser("export", help="write per-country JSON for the site")
+    x.add_argument("--out", default="site/src/data")
     args = p.parse_args(argv)
 
     conn = db.connect(args.db)
@@ -198,6 +200,10 @@ def main(argv=None) -> None:
 
         lines = asyncio.run(runner.collect(conn)) or ["No open batches."]
         report = "\n".join(f"- {x}" for x in lines)
+    elif args.cmd == "export":
+        from pipeline.export import export
+
+        report = export(conn, args.out)
     else:
         report = cmd_stats(conn)
     print(report)
