@@ -50,3 +50,11 @@ Short log, newest last. Format: date, decision, why.
 **2026-10-08. Daily classification uses the Batch API.** Half price; the workflow waits up to 30 minutes for results, otherwise the next run collects them. The live API reports `BATCH_STATE_*` states while the docs say `JOB_STATE_*`; the code matches on the suffix.
 
 **2026-10-08. Eval set labelling is blind.** `evalset sample` writes labels and predictions to separate files, so whoever labels does not see the model's answer. The sample oversamples eligible and likely predictions, because their precision is what users feel.
+
+**2026-10-08. Eval set drafted by Claude, blind.** 200 labels written from the postings before looking at predictions; marked "draft label by Claude (AI), needs human review". Scores were then used to tune the prompt and the verdict function, so they overstate generalisation until a fresh set is labelled.
+
+**2026-10-08. Location field beats region words and slogans.** Prompt rule: a specific city or country in the location field sets the scope, even for remote roles; a region mentioned as a sales territory is not a hiring region. Re-classified 712 postings. "Unclear" predictions that were really US-only dropped from 24 to 3.
+
+**2026-10-08. "Worldwide" needs role-level evidence.** Deterministic rule in `verdict.py`: worldwide is accepted only when the location field says so or the quote is about this role ("this position", "any country", "location: ..."). A company slogan ("we're a natively remote company") gives "unclear". Eligible precision on the eval set went from 84% to 94%, and every remaining eligible error is a "likely".
+
+**2026-10-08. Reasons in English and French from the same templates**, with French article forms per country in `config.COUNTRIES` ("la Tunisie", "au Maroc").

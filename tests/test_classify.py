@@ -174,3 +174,19 @@ def test_eval_score(tmp_path, monkeypatch):
     assert "precision(eligible) = 50% over 2" in out
     assert "precision(not_eligible) = 100% over 1" in out
     assert "at least likely: 100%" in out
+
+
+def test_worldwide_needs_role_level_evidence():
+    slogan = ex(geo_scope="worldwide", evidence_quote="We're a natively remote company.")
+    assert verdict(slogan, "TN", TN, location="Remote")[0] == "unclear"
+    assert verdict(slogan, "TN", TN, location="Remote, Global")[0] == "eligible"
+    role = ex(geo_scope="worldwide", evidence_quote="This role can be based anywhere in the world.")
+    assert verdict(role, "TN", TN, location="Remote")[0] == "eligible"
+
+
+def test_reasons_in_french():
+    e = ex(geo_scope="timezone_only", timezone_utc_min=-1, timezone_utc_max=3)
+    v, reason = verdict(e, "TN", TN, lang="fr")
+    assert v == "likely" and reason == "La plage horaire UTC-1 à UTC+3 inclut la Tunisie"
+    v, reason = verdict(ex(geo_scope="regions", allowed_regions=["EMEA"]), "EG", EG, lang="fr")
+    assert reason == "Ouvert à la région EMEA, qui inclut l'Égypte"

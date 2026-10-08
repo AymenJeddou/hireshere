@@ -14,6 +14,7 @@ Fields:
   timezone_only = only a time zone or working-hours constraint.
   unclear = remote but no location rule stated.
   The location field is authoritative. If it names a city, country or region ("Boston", "Poland", "Remote, EMEA", "Remote, AMER", "Iceland (Remote)"), use that scope even when the text contains company culture slogans such as "Work Anywhere company", "we hire globally", "work from anywhere", "fully distributed team" or "remote-first". Those slogans describe the company, not who may apply for this role. Only a statement about this specific role overrides the location field.
+  This applies to remote roles too: "Massachusetts - Boston" with a remote flag means a remote role in the US (geo_scope countries, allowed_countries ["US"]); "Sofia, Bulgaria" means ["BG"]; a list of named countries means exactly those countries. A region mentioned only as a sales territory or customer base ("supporting EMEA customers", "Sales Director, EMEA") or as "open internally" is not a hiring region.
 - allowed_countries: ISO 3166-1 alpha-2 codes of countries where the candidate may be located. "Remote (US)" or "US-based" means ["US"]. A city location for an onsite or hybrid role means that city's country. Empty if none named.
 - excluded_countries: ISO-2 codes explicitly excluded ("except", "not available in").
 - allowed_regions: named regions only, from the allowed list. "Worldwide" if the posting says so.

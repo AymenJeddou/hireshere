@@ -30,13 +30,13 @@ def predictions(conn, code: str) -> dict[str, tuple[str, str, str]]:
     """job id -> (verdict, reason, evidence) for open classified jobs."""
     out = {}
     for r in conn.execute(
-        "SELECT j.id, e.data FROM jobs j JOIN extractions e ON e.content_hash = j.content_hash "
-        "WHERE j.expired_at IS NULL"
+        "SELECT j.id, j.location_raw, e.data FROM jobs j "
+        "JOIN extractions e ON e.content_hash = j.content_hash WHERE j.expired_at IS NULL"
     ):
         data = json.loads(r["data"])
         data.pop("evidence_verified", None)
         e = Extraction(**data)
-        v, reason = verdict(e, code, config.COUNTRIES[code])
+        v, reason = verdict(e, code, config.COUNTRIES[code], location=r["location_raw"] or "")
         out[r["id"]] = (v, reason, e.evidence_quote)
     return out
 

@@ -9,8 +9,8 @@ greenhouse:canonical:3326693,TN,eligible,Open to candidates worldwide,Home based
 greenhouse:gohiring:8035006,TN,likely,Time zone window UTC-3 to UTC+5 includes Tunisia,Wohnsitz in der CET-Zeitzone. (oder maximal ±4 Stunden Abweichung) für eine effiziente Zusammenarbeit im Tagesgeschäft.
 greenhouse:canonical:5103218,TN,likely,"Open to the EMEA region, which includes Tunisia","This role may be held anywhere in European, Middle Eastern, African or Americas regions or time zones."
 greenhouse:fingerprint:6188157004,TN,eligible,Open to candidates worldwide,"Fingerprint is a globally dispersed, 100% remote company. ... people can join our workforce from almost any country"
-lever:aerostrat:5f8cfe7b-49e1-49d6-9a74-2acc1040aa36,TN,unclear,"Remote, but the posting does not say where candidates may live",At Aerostrat we pride ourselves on our excellent work environment with a fully remote team and tools
-greenhouse:liveperson:8189648,TN,likely,"Open to the EMEA region, which includes Tunisia",Be the senior technical focal point of customer issues raised within the EMEA region.
+lever:aerostrat:5f8cfe7b-49e1-49d6-9a74-2acc1040aa36,TN,not_eligible,Limited to US,Seattle
+greenhouse:liveperson:8189648,TN,not_eligible,Limited to BG,"Sofia, Bulgaria"
 greenhouse:canonical:6643483,TN,likely,"Open to the EMEA region, which includes Tunisia",These roles are home based in the EMEA time zone. You will be expected to be located in this region.
 lever:veeva:4520bd58-4ede-48e7-9efa-a4bea6739a98,TN,unclear,"Remote, but the posting does not say where candidates may live","This is a remote, full-time permanent role with Veeva. This is a customer-facing role and we have no work location requirement if you are in close proximity to an airport"
 ashby:lilt-production:1ddc1d03-b747-4e2e-b45a-e648f4ee3a95,TN,not_eligible,Limited to FR,Location field: France (Remote)
@@ -18,29 +18,29 @@ ashby:revenuecat:8e4061ba-d01a-4c4c-a72e-9f13fbd3fbc7,TN,likely,"Open to the EME
 greenhouse:canonical:2808065,TN,likely,"Open to the EMEA region, which includes Tunisia",This role will be based remotely in the AMERICAs and/or EMEA regions.
 lever:gohighlevel:ab0b9373-1219-4194-ae9a-6bdf50891749,TN,not_eligible,Requires existing work authorization in IN,Location field: India
 greenhouse:canonical:5906460,TN,likely,"Open to the EMEA region, which includes Tunisia",Home based - EMEA
-greenhouse:wikimedia:8136610,TN,eligible,Open to candidates worldwide,The Wikimedia Foundation is a remote-first organization with staff members including contractors based 40+ countries*.
+greenhouse:wikimedia:8136610,TN,unclear,"Remote company, but the posting does not say this role is open worldwide",The Wikimedia Foundation is a remote-first organization with staff members including contractors based 40+ countries*.
 greenhouse:canonical:4144793,TN,likely,"Open to the EMEA region, which includes Tunisia",Home Based - Americas; Home based - EMEA
-lever:veeva:1005af73-beb1-4ce6-b155-cfe516b3bfbb,TN,unclear,"Remote, but the posting does not say where candidates may live","As a Work Anywhere company, we support your flexibility to work from home or in the office, so you can thrive in your ideal environment."
+lever:veeva:1005af73-beb1-4ce6-b155-cfe516b3bfbb,TN,not_eligible,Limited to US,The salary range listed here has been provided to comply with local regulations and represents a potential base salary range for this role.
 greenhouse:canonical:6292448,TN,eligible,Open to candidates worldwide,"This is a home-based role, we are hiring worldwide."
-greenhouse:fingerprint:6188236004,TN,eligible,Open to candidates worldwide,"Additionally, because Fingerprint is an all-remote company and people can join our workforce from almost any country, we do not sponsor visas."
+greenhouse:fingerprint:6188236004,TN,eligible,Open to candidates worldwide,"because Fingerprint is an all-remote company and people can join our workforce from almost any country, we do not sponsor visas."
 greenhouse:feinternational:8653136002,TN,eligible,Open to candidates worldwide,"Work from anywhere. Funden operates across San Francisco, New York, and London, and this role can be based wherever you are."
 ashby:lilt-production:6fb6b640-beaa-4642-b563-80c7a8c0c216,TN,not_eligible,Limited to IN,Location field: India (Remote)
 greenhouse:canonical:4676823,TN,eligible,Open to candidates worldwide,Home based - Worldwide
 ashby:railway:4856389c-44d8-4635-ba51-5fc1b8a49ca8,TN,eligible,Open to candidates worldwide,Global
-greenhouse:canonical:5359697,TN,likely,"Open to the EMEA region, which includes Tunisia",Location: We are hiring for remote roles in Americas. We will also consider applicants in EMEA who can accommodate a shifted schedule to support Silicon partners in Americas.
-lever:veeva:28657ea2-6fa4-4d40-a5d3-6570d87bbc23,TN,unclear,"Remote, but the posting does not say where candidates may live","As a Work Anywhere company, we support your flexibility to work from home or in the office, so you can thrive in your ideal environment."
-lever:collabora:fb757480-1900-48c6-b903-2db192408c63,TN,likely,Time zone window UTC-5 to UTC+3 includes Tunisia,Location: Fully remote (preference for EU or East Coast US hours)
+greenhouse:canonical:5359697,TN,likely,"Open to the EMEA region, which includes Tunisia",We are hiring for remote roles in Americas. We will also consider applicants in EMEA who can accommodate a shifted schedule to support Silicon partners in Americas.
+lever:veeva:28657ea2-6fa4-4d40-a5d3-6570d87bbc23,TN,not_eligible,Limited to US,Massachusetts - Boston
+lever:collabora:fb757480-1900-48c6-b903-2db192408c63,TN,likely,Time zone window UTC-5 to UTC+2 includes Tunisia,Location: Fully remote (preference for EU or East Coast US hours)
 ashby:supabase:98ef6a11-9898-4960-9931-1264285849f3,TN,eligible,Open to candidates worldwide,We hire globally. We believe you can do your best work from anywhere.
 ashby:supabase:06752423-eebb-472c-95b5-c7ff2559fd60,TN,eligible,Open to candidates worldwide,We hire globally. We believe you can do your best work from anywhere.
 greenhouse:doitintl:7812509003,TN,likely,"Open to the EMEA region, which includes Tunisia",This role is based remotely and open internally for Do'ers based in EMEA and US East locations.
 greenhouse:canonical:3275433,TN,eligible,Open to candidates worldwide,"These are fully remote roles, open to candidates across the globe."
-lever:veeva:0371466d-53b7-4ffe-95a4-435cbfd558d8,TN,unclear,"Remote, but the posting does not say where candidates may live","As a Work Anywhere company, we support your flexibility to work from home or in the office, so you can thrive in your ideal environment."
+lever:veeva:0371466d-53b7-4ffe-95a4-435cbfd558d8,TN,not_eligible,Limited to US,Pennsylvania - Philadelphia
 greenhouse:canonical:3572118,TN,eligible,Open to candidates worldwide,Home based - Worldwide
-lever:veeva:27f2355a-02e0-47a3-93a0-db1baf9eeaf9,TN,unclear,"Remote, but the posting does not say where candidates may live","As a Work Anywhere company, we support your flexibility to work from home or in the office, so you can thrive in your ideal environment."
+lever:veeva:27f2355a-02e0-47a3-93a0-db1baf9eeaf9,TN,not_eligible,Limited to US,Wisconsin - Madison
 greenhouse:canonical:7646454,TN,likely,"Open to the EMEA region, which includes Tunisia",This role will be based remotely in the EMEA region.
-ashby:posthog:82ef4227-e7a6-4e59-a128-2b3333951e21,TN,eligible,Open to candidates worldwide,We're a natively remote company.
+ashby:posthog:82ef4227-e7a6-4e59-a128-2b3333951e21,TN,unclear,"Remote company, but the posting does not say this role is open worldwide",We're a natively remote company.
 greenhouse:canonical:6132532,TN,eligible,Open to candidates worldwide,Home based - Worldwide
-ashby:primer:9565b51a-4553-45ba-86c0-abffb25fc602,TN,unclear,"Remote, but the posting does not say where candidates may live",Location field: Remote
+ashby:primer:9565b51a-4553-45ba-86c0-abffb25fc602,TN,unclear,The posting does not state where candidates may work from,Remote
 ashby:supabase:a069c886-1107-408e-88b4-e1aa8d33d4bc,TN,likely,"Open to the EMEA region, which includes Tunisia","Remote, EMEA; Europe"
 greenhouse:alphasense:8547394002,TN,not_eligible,Limited to IN,Remote - India
 ashby:lilt-production:741da8da-625e-468f-b551-6e0628e27295,TN,unclear,"Remote, but the posting does not say where candidates may live","Work on diverse projects from anywhere, any time you want."
@@ -52,41 +52,41 @@ greenhouse:canonical:5906452,TN,likely,"Open to the EMEA region, which includes 
 ashby:assured:10405bcc-93ab-4527-beb4-af77433ef733,TN,unclear,"Remote, but the posting does not say where candidates may live","We're remote, but we regularly get together"
 greenhouse:canonical:4981245,TN,eligible,Open to candidates worldwide,Location: This role will be based remote globally
 greenhouse:canonical:6980703,TN,likely,"Open to the EMEA region, which includes Tunisia",These roles are home based in the EMEA time zone. You will be expected to be located in this region.
-greenhouse:canonical:5140562,TN,eligible,Open to candidates worldwide,Home based - Worldwide
+greenhouse:canonical:5140562,TN,eligible,Open to candidates worldwide,"Home based - Worldwide; Office Based - Taipei, Taiwan"
 greenhouse:canonical:5566674,TN,eligible,Open to candidates worldwide,Location: This is a Globally remote role.
 ashby:revenuecat:0ee633e4-d6c6-44c8-a4bb-f0fd0e32b22a,TN,likely,"Open to the EMEA region, which includes Tunisia",Americas; EMEA
 ashby:revenuecat:76a39fe0-eb34-4def-b462-7b0f9de80961,TN,likely,"Open to the EMEA region, which includes Tunisia",Americas; EMEA
 ashby:duck-duck-go:12b7b49c-ee06-4d70-8504-657343ebe4d0,TN,unclear,"Remote, but the posting does not say where candidates may live","Eligibility for company-sponsored health benefits is limited to team members based in the United States. This program does not extend to team members located in other countries, such as Canada or the"
-ashby:railway:6ddcfe47-6cce-469b-ba6d-4f0e83440c9d,TN,eligible,Open to candidates worldwide,This is a remote position available anywhere in the world!
-lever:veeva:3dd97881-8ce1-47cb-9a79-af50fcb28aef,TN,unclear,"Remote, but the posting does not say where candidates may live","As a Work Anywhere company, we support your flexibility to work from home or in the office, so you can thrive in your ideal environment."
+ashby:railway:6ddcfe47-6cce-469b-ba6d-4f0e83440c9d,TN,eligible,Open to candidates worldwide,"This is a remote position available anywhere in the world! Linkedin makes us show a country, but we hire the best people wherever they are."
+lever:veeva:3dd97881-8ce1-47cb-9a79-af50fcb28aef,TN,not_eligible,Limited to US,Massachusetts - Boston
 ashby:assured:bc94b141-7a54-4e58-9dec-df3fcb292740,TN,unclear,"Remote, but the posting does not say where candidates may live","We're remote, but we regularly get together"
 ashby:witnessai:bb08b164-13c5-4415-b553-764560f2c318,TN,unclear,"Remote, but the posting does not say where candidates may live",Location: Remote
 greenhouse:canonical:1747487,TN,eligible,Open to candidates worldwide,Location: This role is available remotely in any timezone.
 greenhouse:gitlab:8725981002,TN,not_eligible,Limited to DE,As a Senior Professional Services Engagement Manager focused on Germany
-lever:veeva:eecef0a6-2c45-4392-8ae4-cce15e0d9b12,TN,unclear,"Remote, but the posting does not say where candidates may live","As a Work Anywhere company, we support your flexibility to work from home or in the office, so you can thrive in your ideal environment."
+lever:veeva:eecef0a6-2c45-4392-8ae4-cce15e0d9b12,TN,not_eligible,Limited to US,Massachusetts - Boston
 ashby:revenuecat:54153e40-8c3d-4512-b65a-a1515d7bef53,TN,likely,"Open to the EMEA region, which includes Tunisia",Americas; APAC; EMEA
 greenhouse:canonical:5002072,TN,likely,"Open to the EMEA region, which includes Tunisia","This role can be filled in European, Middle East and African time zones."
 greenhouse:gitlab:8801523002,TN,likely,"Open to the EMEA region, which includes Tunisia",This is a contract opportunity -- individuals must be based in EMEA
-greenhouse:doitintl:7997204003,TN,likely,"Open to the EMEA region, which includes Tunisia",This role is based remotely in Central & Eastern Europe.
+greenhouse:doitintl:7997204003,TN,not_eligible,Limited to RO,This role is based remotely in Central & Eastern Europe.
 ashby:revenuecat:7a64d716-1a66-49d0-910b-a07d36d0b498,TN,likely,"Open to the EMEA region, which includes Tunisia",Americas; EMEA
 ashby:percona:74eb45a3-fb7f-4078-bb62-97048b7623e8,TN,likely,"Open to the EMEA region, which includes Tunisia",EMEA; Rome; Zagreb; Warsaw; Madrid
 lever:veeva:5efc2ced-5646-4d83-aa9b-310b5a9f30b7,TN,unclear,"Remote, but the posting does not say where candidates may live","This is a remote, full-time permanent role with Veeva. This is a customer-facing role and we have no work location requirement if you are in close proximity to an airport and able to meet travel requi"
-lever:veeva:a85f5b3c-f762-4820-b457-d069c288ea03,TN,unclear,"Remote, but the posting does not say where candidates may live","As a Work Anywhere company, we support your flexibility to work from home or in the office, so you can thrive in your ideal environment."
-greenhouse:ifit:4235813009,TN,unclear,"Remote, but the posting does not say where candidates may live",Location field: Remote
-lever:veeva:2b597ff7-91ef-4416-ae6e-9aa29e85ec7f,TN,unclear,"Remote, but the posting does not say where candidates may live","As a Work Anywhere company, we support your flexibility to work from home or in the office, so you can thrive in your ideal environment."
-ashby:revenuecat:4f224392-9e03-4597-a523-f129c61df93b,TN,likely,"Open to the EMEA region, which includes Tunisia",APAC; Americas (EST only); EMEA
+lever:veeva:a85f5b3c-f762-4820-b457-d069c288ea03,TN,not_eligible,Limited to US,Massachusetts - Boston
+greenhouse:ifit:4235813009,TN,unclear,The posting does not state where candidates may work from,"Your employment at iFIT is ""at-will""."
+lever:veeva:2b597ff7-91ef-4416-ae6e-9aa29e85ec7f,TN,not_eligible,Limited to US,New York - New York City
+ashby:revenuecat:4f224392-9e03-4597-a523-f129c61df93b,TN,likely,"Open to the EMEA region, which includes Tunisia",Location field: APAC; Americas (EST only); EMEA
 ashby:supabase:f6035bf8-4f44-4425-9944-d5509a3c8652,TN,eligible,Open to candidates worldwide,We hire globally. We believe you can do your best work from anywhere.
 greenhouse:canonical:6371231,TN,likely,"Open to the EMEA region, which includes Tunisia",This role will be based remotely in the EMEA region.
 ashby:supabase:bd5ce178-84c9-469e-89f4-493c21b50622,TN,eligible,Open to candidates worldwide,We hire globally. We believe you can do your best work from anywhere.
 greenhouse:reddit:8249469,TN,not_eligible,Requires office attendance outside Tunisia,This role is required to be based in person in Los Angeles or New York.
 greenhouse:fastly:7733190,TN,not_eligible,Time zone window UTC-8 to UTC-6 excludes Tunisia,"This position is open to remote workers in the following preferred regions: Pacific Timezone, Mountain Timezone, Central Timezone"
-greenhouse:liveperson:8141812,TN,unclear,"Remote, but the posting does not say where candidates may live",#LI-Remote
+greenhouse:liveperson:8141812,TN,not_eligible,Limited to BG,"Sofia, Bulgaria"
 greenhouse:canonical:7646448,TN,likely,"Open to the EMEA region, which includes Tunisia",Location: This role will be based remotely in the EMEA region.
 ashby:ramp:100c09be-f179-406f-893e-8a212f32c642,TN,not_eligible,Limited to US,"Remote (US); San Francisco, CA; New York, NY (HQ)"
 greenhouse:reddit:8180811,TN,not_eligible,Limited to US,This role is completely remote friendly within the United States.
-greenhouse:gitlab:8799044002,TN,eligible,Open to candidates worldwide,GitLab hires new team members in countries around the world. All of our roles are remote
+greenhouse:gitlab:8799044002,TN,unclear,"Remote company, but the posting does not say this role is open worldwide","GitLab hires new team members in countries around the world. All of our roles are remote, however some roles may carry specific location-based eligibility requirements."
 ashby:testgorilla:007f6b53-027e-477d-beb5-630715ed7470,TN,likely,Time zone window UTC-5 to UTC+3 includes Tunisia,Europe and Americas Time Zone (UTC -05:00 ~ UTC+3:00)
-lever:Pretto:fab12ac1-bf63-421a-a2dd-e8ef4c5c59d1,TN,eligible,Open to candidates worldwide,"Aucune limite territoriale. Tu travailles d’où tu veux, quand tu veux."
+lever:Pretto:fab12ac1-bf63-421a-a2dd-e8ef4c5c59d1,TN,unclear,"Remote company, but the posting does not say this role is open worldwide","Aucune limite territoriale. Tu travailles d’où tu veux, quand tu veux."
 greenhouse:canonical:3290946,TN,eligible,Open to candidates worldwide,Home based - Worldwide
 greenhouse:canonical:7778744,TN,eligible,Open to candidates worldwide,"This role will be home based, managing teams in worldwide."
 greenhouse:canonical:3433732,TN,eligible,Open to candidates worldwide,"This is a home-based role, we are hiring worldwide."
@@ -96,10 +96,10 @@ ashby:supabase:590a0742-97f1-47f4-81a2-567efc939ae2,TN,likely,"Open to the Afric
 greenhouse:canonical:8160237,TN,likely,"Open to the EMEA region, which includes Tunisia","These are remote based positions, available across EMEA and the Americas."
 ashby:supabase:f035bda1-b5d3-4c5b-8736-b9c335fe1c3b,TN,eligible,Open to candidates worldwide,We hire globally. We believe you can do your best work from anywhere.
 greenhouse:canonical:5915299,TN,eligible,Open to candidates worldwide,Home based - Worldwide
-lever:veeva:9533cdfe-5383-427b-affa-2ffe03598250,TN,unclear,"Remote, but the posting does not say where candidates may live","As a Work Anywhere company, we support your flexibility to work from home or in the office, so you can thrive in your ideal environment."
-lever:veeva:71b9c465-ddc3-4657-8a9e-3294fcaafc74,TN,unclear,"Remote, but the posting does not say where candidates may live","As a Work Anywhere company, we support your flexibility to work from home or in the office, so you can thrive in your ideal environment."
+lever:veeva:9533cdfe-5383-427b-affa-2ffe03598250,TN,not_eligible,Limited to US,Location field: New York - New York City
+lever:veeva:71b9c465-ddc3-4657-8a9e-3294fcaafc74,TN,not_eligible,Limited to US,California - Pleasanton
 greenhouse:canonical:4754075,TN,likely,"Open to the EMEA region, which includes Tunisia",This role will be based remotely in the EMEA region.
-greenhouse:gitlab:8522265002,TN,likely,"Open to the EMEA region, which includes Tunisia","Staff Forward Deployed Engineer, Agentic SDLC - (EMEA Only)"
+greenhouse:gitlab:8522265002,TN,not_eligible,"Limited to IE, FR, DE, NL, GB","Remote Ireland; Remote, France; Remote, Germany; Remote, Netherlands; Remote, United Kingdom"
 greenhouse:canonical:4633682,TN,eligible,Open to candidates worldwide,Home based - Worldwide
 ashby:lilt-production:e47c578c-6d3f-44ae-beea-f2aee0a5d2e7,TN,not_eligible,Limited to VN,Location field: Vietnam (Remote)
 greenhouse:canonical:3003389,TN,likely,"Open to the EMEA region, which includes Tunisia",Home Based - Americas; Home based - EMEA
@@ -115,33 +115,33 @@ greenhouse:canonical:8249005,TN,eligible,Open to candidates worldwide,Location: 
 ashby:railway:541836a1-6d3f-47bf-845f-5f48fe547568,TN,eligible,Open to candidates worldwide,This is a remote position available anywhere in the world!
 ashby:railway:d93c8794-6058-4295-83a0-092b05664f34,TN,eligible,Open to candidates worldwide,Global
 ashby:assured:2624a7c0-ddc1-4708-82aa-54fd4cf6e25f,TN,unclear,"Remote, but the posting does not say where candidates may live","We're remote, but we regularly get together"
-lever:veeva:bd588bcb-bffd-4f29-b869-0d8c53e8f706,TN,unclear,"Remote, but the posting does not say where candidates may live","As a Work Anywhere company, we support your flexibility to work from home or in the office, so you can thrive in your ideal environment."
+lever:veeva:bd588bcb-bffd-4f29-b869-0d8c53e8f706,TN,not_eligible,Limited to US,"As a Work Anywhere company, we support your flexibility to work from home or in the office, so you can thrive in your ideal environment."
 lever:extremenetworks:96d48118-e18c-4b74-ad16-27c99334aa41,TN,not_eligible,Limited to US,"Location field: Salem, New Hampshire, United States"
-greenhouse:canonical:7124193,TN,eligible,Open to candidates worldwide,We are expanding our sales organisation globally and have open roles in every region.
+greenhouse:canonical:7124193,TN,eligible,Open to candidates worldwide,Home based - Worldwide
 greenhouse:canonical:6492597,TN,likely,"Open to the EMEA region, which includes Tunisia",This role will be based remotely in the EMEA region.
 ashby:aven:724a3f08-34d3-4305-8135-ea3236224766,TN,unclear,"Remote, but the posting does not say where candidates may live",Location field: Remote
 greenhouse:fingerprint:5984610004,TN,eligible,Open to candidates worldwide,"Fingerprint is a globally dispersed, 100% remote company. ... people can join our workforce from almost any country"
-ashby:posthog:43dbf072-0fc1-48c9-8c1e-7416db7d4a14,TN,unclear,"Remote, but the posting does not say where candidates may live",We're a natively remote company.
+ashby:posthog:43dbf072-0fc1-48c9-8c1e-7416db7d4a14,TN,unclear,"Remote company, but the posting does not say this role is open worldwide",We're a natively remote company.
 lever:spotify:e2c7bbb8-f873-42c7-811f-0bd45bf452ae,TN,not_eligible,Requires hybrid office days outside Tunisia,This role is based in New York
-lever:veeva:2f50ecd3-4a60-4d12-bf9f-d4be07947ea4,TN,unclear,"Remote, but the posting does not say where candidates may live","As a Work Anywhere company, we support your flexibility to work from home or in the office, so you can thrive in your ideal environment."
+lever:veeva:2f50ecd3-4a60-4d12-bf9f-d4be07947ea4,TN,not_eligible,Limited to US,Massachusetts - Boston
 ashby:searchapi:5a2fed74-7616-4c4a-a80e-cd671d2a9d9a,TN,not_eligible,"Limited to LT, MK, CA, IL, HR",Remote - Lithuania; Remote - North Macedonia; Remote - Canada; Remote - Israel; Remote; Remote - Croatia; Remote - Argentina; Remote - Italy; Remote - Sweden; Remote - Luxembourg; Remote - Portugal
 greenhouse:canonical:3227084,TN,eligible,Open to candidates worldwide,Home based - Worldwide
 greenhouse:canonical:5127399,TN,likely,"Open to the Africa region, which includes Tunisia","This role may be based remotely in the Americas, Europe, Middle East or Africa time zones."
 greenhouse:canonical:3748266,TN,likely,"Open to the EMEA region, which includes Tunisia","Location: Remote-based, Americas and EMEA"
-ashby:percona:90673210-45ab-47e3-8906-9ce20e1039e1,TN,eligible,Open to candidates worldwide,Percona is proud to be a remote-only and globally dispersed workforce – we have colleagues in more than 50 countries!
+ashby:percona:90673210-45ab-47e3-8906-9ce20e1039e1,TN,unclear,"Remote company, but the posting does not say this role is open worldwide",Percona is proud to be a remote-only and globally dispersed workforce – we have colleagues in more than 50 countries!
 ashby:hostinger:4f0da35b-674f-400f-9cd3-80ce868d33e7,TN,not_eligible,"Limited to PL, ES",Senior Partnerships Product Manager | Based in Europe
 lever:spotify:e04833c0-9cff-4b5e-b217-91a3bcb57051,TN,not_eligible,Requires hybrid office days outside Tunisia,This role is based in Toronto
 greenhouse:wikimedia:8127761,TN,likely,Time zone window UTC-4 to UTC+2 includes Tunisia,This role is remote and open to candidates across UTC+2 to UTC-4 (Central European through Eastern Time).
 ashby:supabase:b4a2f5e5-5c51-4c1a-abde-a89de27451c7,TN,eligible,Open to candidates worldwide,We hire globally. We believe you can do your best work from anywhere.
-ashby:railway:7d42f0e8-15a5-453d-8992-9e8638846077,TN,eligible,Open to candidates worldwide,This is a remote position available anywhere in the world!
-lever:veeva:f2307cc5-4f6a-41b3-8efa-e61253d57e40,TN,unclear,"Remote, but the posting does not say where candidates may live","As a Work Anywhere company, we support your flexibility to work from home or in the office, so you can thrive in your ideal environment."
+ashby:railway:7d42f0e8-15a5-453d-8992-9e8638846077,TN,eligible,Open to candidates worldwide,"This is a remote position available anywhere in the world! Linkedin makes us show a country, but we hire the best people wherever they are."
+lever:veeva:f2307cc5-4f6a-41b3-8efa-e61253d57e40,TN,not_eligible,Limited to US,Location field: Ohio - Columbus
 ashby:linear:26c77e48-b4ef-455d-a02c-3ef68fc6f9f9,TN,not_eligible,Limited to North America,This role is open to candidates based in North America. You can work from anywhere within this region.
 greenhouse:canonical:5144666,TN,eligible,Open to candidates worldwide,Home based - Worldwide
 greenhouse:openzeppelin:7985565003,TN,unclear,"Remote, but the posting does not say where candidates may live",Enjoy the flexibility of fully remote work 🌎
 greenhouse:fleetio:5184846007,TN,not_eligible,Limited to US,"Whether you’re working remotely from anywhere in the U.S. or from our HQ in Birmingham, AL, you’ll find a collaborative, customer-centric culture"
 greenhouse:customerio:7778291,TN,likely,"Open to the EMEA region, which includes Tunisia",EMEA Remote
 greenhouse:canonical:4192903,TN,eligible,Open to candidates worldwide,Home based - Worldwide
-lever:veeva:b9c2e15e-bb0a-4a6b-bc61-075729a60bf9,TN,unclear,"Remote, but the posting does not say where candidates may live","As a Work Anywhere company, we support your flexibility to work from home or in the office, so you can thrive in your ideal environment."
+lever:veeva:b9c2e15e-bb0a-4a6b-bc61-075729a60bf9,TN,not_eligible,Limited to US,Pennsylvania - Philadelphia
 greenhouse:grafanalabs:6161250004,TN,not_eligible,Limited to CA,This is a fully remote position and we're considering candidates in Canada EST.
 greenhouse:doitintl:7990995003,TN,not_eligible,"Limited to GB, IE, EE, NL, SE","This role is based remotely as a full-time employee in the UK, Ireland, Estonia, the Netherlands, Sweden and Israel. We are also open to contractors in Eastern Europe and Portugal."
 greenhouse:canonical:3313558,TN,eligible,Open to candidates worldwide,Home based - Worldwide
@@ -152,25 +152,25 @@ greenhouse:canonical:4175808,TN,likely,"Open to the EMEA region, which includes 
 greenhouse:canonical:7785136,TN,likely,"Open to the EMEA region, which includes Tunisia",This is a remote role based in the EMEA region.
 lever:gohighlevel:a718fab2-3fc6-4acd-b364-883f5fc59cac,TN,not_eligible,Requires existing work authorization in IN,Location field: India
 ashby:mapbox:6f44da03-b4ee-4706-aa8c-da6dbca4063d,TN,not_eligible,Requires hybrid office days outside Tunisia,"Our annual base compensation for this role ranges from $175,100 - $236,900 for most US locations and 5% to 10% higher for US locations with a higher cost of labor."
-lever:veeva:567e9222-fadd-4691-8c59-8cb4aceded54,TN,unclear,"Remote, but the posting does not say where candidates may live","As a Work Anywhere company, we support your flexibility to work from home or in the office, so you can thrive in your ideal environment."
+lever:veeva:567e9222-fadd-4691-8c59-8cb4aceded54,TN,not_eligible,Limited to US,California - Pleasanton
 greenhouse:canonical:7953864,TN,likely,"Open to the EMEA region, which includes Tunisia","This is a globally remote role; you can be based in EMEA, APAC, or the Americas, depending on the team’s location."
 greenhouse:alphasense:8596193002,TN,not_eligible,Limited to US,"New York, New York, United States; Remote - United States"
 greenhouse:canonical:5422575,TN,eligible,Open to candidates worldwide,Home based - Worldwide
 ashby:1password:0b37fa60-5cbc-4b9a-84c9-4afe50634db7,TN,not_eligible,"Limited to US, CA",This is a remote opportunity within Canada and the US.
-lever:veeva:3db9efa2-ad50-4448-85c6-682ef0647165,TN,unclear,"Remote, but the posting does not say where candidates may live","As a Work Anywhere company, we support your flexibility to work from home or in the office, so you can thrive in your ideal environment."
+lever:veeva:3db9efa2-ad50-4448-85c6-682ef0647165,TN,not_eligible,Limited to US,Massachusetts - Boston
 greenhouse:gitlab:8861745002,TN,not_eligible,"Limited to CA, GB, US","Remote, Canada; Remote, United Kingdom; Remote, United States"
 greenhouse:openzeppelin:4254142003,TN,eligible,Open to candidates worldwide,Enjoy the flexibility of fully remote work 🌎
-lever:coderpad:87764c1e-1d06-4938-ac1a-b770155d9c07,TN,eligible,Open to candidates worldwide,"While these benefits are specific for full-time US-based employees, qualified candidates from other countries may be considered at CoderPad."
+lever:coderpad:87764c1e-1d06-4938-ac1a-b770155d9c07,TN,not_eligible,Limited to US,"While these benefits are specific for full-time US-based employees, qualified candidates from other countries may be considered at CoderPad."
 greenhouse:canonical:5881447,TN,likely,"Open to the EMEA region, which includes Tunisia",This is a home-based position available in EMEA and the Americas.
 greenhouse:fingerprint:5991354004,TN,likely,"Open to the EMEA region, which includes Tunisia",We’re looking for a Senior Android Engineer based in EMEA with a strong background in Native Android development to join our Mobile team.
 greenhouse:canonical:5172247,TN,eligible,Open to candidates worldwide,Home based - Worldwide
-lever:veeva:2de78235-1ca4-42ff-9bab-b22779ca61f3,TN,unclear,"Remote, but the posting does not say where candidates may live","This is a remote, full-time permanent role with Veeva. This is a customer-facing role and we have no work location requirement if you are in close proximity to an airport"
+lever:veeva:2de78235-1ca4-42ff-9bab-b22779ca61f3,TN,unclear,"Remote, but the posting does not say where candidates may live",This is a customer-facing role and we have no work location requirement if you are in close proximity to an airport and able to meet future travel requirements.
 ashby:lilt-production:babda2aa-7449-4410-834f-b40940291c02,TN,not_eligible,Limited to IN,Location field: India (Remote)
 ashby:lightdash:309706bc-1081-48b6-89dc-f769bbe17e6d,TN,not_eligible,Limited to Europe,Analytics Engineering Advocate - Europe
 greenhouse:canonical:7607749,TN,likely,"Open to the EMEA region, which includes Tunisia",This role will be based remotely in the Americas or EMEA region.
-lever:veeva:185d290c-84d7-4f81-bde4-4771d98aac91,TN,unclear,"Remote, but the posting does not say where candidates may live","As a Work Anywhere company, we support your flexibility to work from home or in the office, so you can thrive in your ideal environment."
-greenhouse:netlify:8823312002,TN,unclear,"Remote, but the posting does not say where candidates may live","As a fully distributed company, we aim to create a company culture where the best idea can come from anywhere"
-lever:veeva:d609428f-c520-4f4f-8784-a26786613ad5,TN,unclear,"Remote, but the posting does not say where candidates may live","As a Work Anywhere company, we support your flexibility to work from home or in the office, so you can thrive in your ideal environment."
+lever:veeva:185d290c-84d7-4f81-bde4-4771d98aac91,TN,not_eligible,Limited to US,California - Pleasanton
+greenhouse:netlify:8823312002,TN,unclear,"Remote company, but the posting does not say this role is open worldwide","As a fully distributed company, we aim to create a company culture where the best idea can come from anywhere"
+lever:veeva:d609428f-c520-4f4f-8784-a26786613ad5,TN,not_eligible,Limited to US,Massachusetts - Boston
 greenhouse:canonical:7410479,TN,eligible,Open to candidates worldwide,Home based - Worldwide
 greenhouse:canonical:6394147,TN,likely,"Open to the EMEA region, which includes Tunisia",This role will be based remotely in the EMEA region.
 greenhouse:canonical:5370815,TN,eligible,Open to candidates worldwide,Home based - Worldwide
@@ -182,20 +182,20 @@ ashby:lilt-production:13ba8074-5325-4dd1-8fea-593e2a525382,TN,not_eligible,Limit
 greenhouse:canonical:2804965,TN,likely,"Open to the EMEA region, which includes Tunisia","Based in EMEA timezones (Europe, the Middle East and Africa)"
 greenhouse:chainguard:4710647006,TN,not_eligible,Limited to GB,United Kingdom - Remote
 ashby:supabase:48950725-e0d9-4025-92d9-f75e1b60ce45,TN,eligible,Open to candidates worldwide,We hire globally. We believe you can do your best work from anywhere.
-greenhouse:securityscorecard:8164385,TN,unclear,"Remote, but the posting does not say where candidates may live",Remote
+greenhouse:securityscorecard:8164385,TN,unclear,The posting does not state where candidates may work from,"Specific to each country, we offer a competitive salary, stock options, Health benefits, and unlimited PTO, parental leave, tuition reimbursements, and much more!"
 greenhouse:toast:8221127,TN,not_eligible,Requires hybrid office days outside Tunisia,Remote Canada
 ashby:supabase:59083a14-b2b6-4dd8-8037-739aa1ad1e22,TN,eligible,Open to candidates worldwide,We hire globally. We believe you can do your best work from anywhere.
 ashby:revenuecat:67f2b9e7-a6ee-48f5-a1e7-c448cfb22759,TN,likely,"Open to the EMEA region, which includes Tunisia",Americas; EMEA
-lever:veeva:75114d56-e8e2-4635-91dc-1dfcee747c07,TN,unclear,"Remote, but the posting does not say where candidates may live","As a Work Anywhere company, we support your flexibility to work from home or in the office, so you can thrive in your ideal environment."
+lever:veeva:75114d56-e8e2-4635-91dc-1dfcee747c07,TN,not_eligible,Limited to US,Massachusetts - Boston
 greenhouse:canonical:5798264,TN,eligible,Open to candidates worldwide,"Location: Worldwide, home based, except in locations where we have an office, such as London, Taipei and Beijing"
 greenhouse:canonical:7982278,TN,eligible,Open to candidates worldwide,Home based - Worldwide
 ashby:stickermule:2f01bd23-9eda-446a-a56a-b530d84cb9bb,TN,unclear,"Remote, but the posting does not say where candidates may live",Fully remote
 greenhouse:canonical:4468036,TN,eligible,Open to candidates worldwide,Home based - Worldwide
 ashby:lilt-production:b7790c9d-8ded-4b15-aec1-fa03b8371242,TN,not_eligible,Limited to GB,AI Training Contributor - English (Great Britain) - Remote
-lever:veeva:b2397e64-e869-483a-888e-1e86b9f9b045,TN,unclear,"Remote, but the posting does not say where candidates may live","As a Work Anywhere company, we support your flexibility to work from home or in the office, so you can thrive in your ideal environment."
+lever:veeva:b2397e64-e869-483a-888e-1e86b9f9b045,TN,not_eligible,Limited to US,Massachusetts - Boston
 greenhouse:canonical:6643484,TN,likely,"Open to the EMEA region, which includes Tunisia",These roles are home based in the EMEA time zone. You will be expected to be located in this region.
 lever:extremenetworks:b30bb8b9-7bf9-456c-81c7-4bdbcbe5a74a,TN,not_eligible,Limited to US,Location Preference: Central or Eastern US
-greenhouse:canonical:5569916,TN,likely,"Open to the EMEA region, which includes Tunisia","This role may be office based in London, or Remote in EMEA Time Zones."
+greenhouse:canonical:5569916,TN,not_eligible,Requires hybrid office days outside Tunisia,"This role may be office based in London, or Remote in EMEA Time Zones."
 greenhouse:reddit:8031491,TN,not_eligible,Limited to US,Remote - United States
-lever:appen-2:b66cbdf1-684b-449b-8779-5859fa4419fa,TN,eligible,Open to candidates worldwide,Our AI assisted data annotation platform and global crowd of more than 1 million contributors in over 200 countries support model pre-training
+lever:appen-2:b66cbdf1-684b-449b-8779-5859fa4419fa,TN,eligible,Open to candidates worldwide,Anywhere
 ashby:tgc:b502456e-5b19-4941-af1d-444483eabcd7,TN,eligible,Open to candidates worldwide,Location: Remote (global opportunities)

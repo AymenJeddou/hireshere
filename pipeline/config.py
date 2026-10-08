@@ -19,10 +19,42 @@ BOARDS_CSV = "data/boards.csv"
 # regions are the region names (pipeline/classify/schema.py REGIONS) that include it.
 _NORTH_AFRICA = ["Africa", "North Africa", "MENA", "EMEA"]
 COUNTRIES = {
-    "TN": {"name": "Tunisia", "utc_offset": 1, "regions": _NORTH_AFRICA},
-    "MA": {"name": "Morocco", "utc_offset": 1, "regions": _NORTH_AFRICA},
-    "DZ": {"name": "Algeria", "utc_offset": 1, "regions": _NORTH_AFRICA},
-    "EG": {"name": "Egypt", "utc_offset": 2, "regions": [*_NORTH_AFRICA, "Middle East"]},
+    "TN": {
+        "name": "Tunisia",
+        "name_fr": "Tunisie",
+        "fr_le": "la Tunisie",
+        "fr_en": "en Tunisie",
+        "fr_hors": "hors de Tunisie",
+        "utc_offset": 1,
+        "regions": _NORTH_AFRICA,
+    },
+    "MA": {
+        "name": "Morocco",
+        "name_fr": "Maroc",
+        "fr_le": "le Maroc",
+        "fr_en": "au Maroc",
+        "fr_hors": "hors du Maroc",
+        "utc_offset": 1,
+        "regions": _NORTH_AFRICA,
+    },
+    "DZ": {
+        "name": "Algeria",
+        "name_fr": "Algérie",
+        "fr_le": "l'Algérie",
+        "fr_en": "en Algérie",
+        "fr_hors": "hors d'Algérie",
+        "utc_offset": 1,
+        "regions": _NORTH_AFRICA,
+    },
+    "EG": {
+        "name": "Egypt",
+        "name_fr": "Égypte",
+        "fr_le": "l'Égypte",
+        "fr_en": "en Égypte",
+        "fr_hors": "hors d'Égypte",
+        "utc_offset": 2,
+        "regions": [*_NORTH_AFRICA, "Middle East"],
+    },
 }
 
 # Phase 2 classifier. Prices are USD per million tokens for standard (non-batch) calls,
