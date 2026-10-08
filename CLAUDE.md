@@ -1,0 +1,40 @@
+# HiresHere: notes for Claude Code
+
+Read `docs/SPEC.md` (the brief), `docs/ROADMAP.md` (status) and `docs/DECISIONS.md` (why things are the way they are) before changing anything.
+
+## Rules from the owner
+
+- Minimal code: stdlib plus httpx and pydantic. No frameworks. Pick the simpler option and log it in `docs/DECISIONS.md`.
+- Free tiers only. Ask before anything that costs money.
+- No secrets in git. Env vars, `.env.example`.
+- Tests for anything that parses or decides. No network in tests.
+- Small commits. No em-dashes in any text written for the owner.
+- Product name and domain only come from `pipeline/config.py` (`PRODUCT_NAME`, `DOMAIN`).
+- Countries are configuration (`config.COUNTRIES`), never code branches.
+- Never scrape sites that forbid it. Never republish full descriptions on the site.
+- Do not start a phase until the owner says so.
+
+## Commands
+
+```
+uv sync
+uv run pytest -q
+uv run ruff check . && uv run ruff format --check .
+uv run python -m pipeline.run fetch [--limit 20]
+uv run python -m pipeline.run stats
+uv run python -m pipeline.seed build --rit <remote-jobs clone> --ats <ats-scrapers clone> [--extra N]
+uv run python -m pipeline.seed validate
+```
+
+## Layout
+
+- `pipeline/connectors/<ats>.py`: `parse(data, board)` (pure, tested) and `fetch(client, board)`.
+- `pipeline/db.py`: schema and the five diff rules. `apply_result` is the heart of it.
+- `pipeline/run.py`: CLI and the concurrent fetcher.
+- `data/boards.csv`: validated seed list, committed. `data/candidates.csv` is a build artifact, ignored.
+- `jobs.db` lives on the `data-latest` GitHub Release as `jobs.db.gz`, never in git.
+  Local copy: `gh release download data-latest -p jobs.db.gz && gunzip jobs.db.gz`.
+
+## Git
+
+Commit as Aymen Jeddou (repo-local config). No AI co-author trailers.

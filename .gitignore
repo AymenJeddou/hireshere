@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+.ruff_cache/
+.env
+*.db
+*.db.gz
+*.db-journal
+data/candidates.csv
+node_modules/
