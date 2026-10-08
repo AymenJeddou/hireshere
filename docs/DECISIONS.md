@@ -28,3 +28,5 @@ Short log, newest last. Format: date, decision, why.
 **2026-10-08. GitHub Actions versions pinned to exact tags.** `astral-sh/setup-uv` no longer publishes floating major tags.
 
 **2026-10-08. Release `data-latest` is created with `--latest=false`.** It holds data, not code, and should not show as the repo's latest release.
+
+**2026-10-08. `stats` keyword counts use substring LIKE.** "mena" was dropped because it matched "Blumenau". Phase 2 uses word-boundary regex and Claude, not these counts.

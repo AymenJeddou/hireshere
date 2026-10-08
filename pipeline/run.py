@@ -12,7 +12,7 @@ from pipeline.connectors import CONNECTORS
 from pipeline.http import FetchError, make_client
 from pipeline.models import Board, FetchResult
 
-REMOTE_WORDS = ["remote", "worldwide", "anywhere", "emea", "africa", "mena"]
+REMOTE_WORDS = ["remote", "worldwide", "anywhere", "emea", "africa"]
 
 
 def now() -> str:
