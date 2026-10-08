@@ -70,3 +70,11 @@ Short log, newest last. Format: date, decision, why.
 **2026-10-08. Listed regions beat "anywhere" text.** When a title or location field names regions ("AMERICAS - Remote") and the text says "anywhere in the world", the verdict is Likely when a listed region includes the country, otherwise Unclear with a reason naming the conflict. Found by the independent design review on the home page sample. Eval eligible precision: 98% (still tuned on the same set).
 
 **2026-10-08. Signups and error reports go to Cloudflare Pages Functions + D1** (owner's choice). `site/functions/api/` validates input, uses a honeypot field, reads the country list from the exported `meta.json`. Live from Phase 4.
+
+**2026-10-08. Hosting: Cloudflare Pages project `hireshere` + D1 database `hireshere`** (binding `DB`, config in `site/wrangler.jsonc`). Deploys use an account API token (Pages Edit, D1 Edit, Account Settings Read) stored as `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT_ID` GitHub secrets; browser OAuth (`wrangler login`) hung on the owner's laptop. The daily workflow now runs fetch, classify (batch), export, build and deploy in one job.
+
+**2026-10-08. D1 schema applied with `--command`, not `--file`.** `wrangler d1 execute --file` uploads through a separate endpoint that failed with "fetch failed" from this network; the schema is small enough to send inline.
+
+**2026-10-08. One source of truth for data: the `data-latest` release.** Local classification runs (the 712-posting re-run) were merged into the release database by content hash, newest extraction wins. From now on, download the release before working locally and upload after, so CI and local never diverge.
+
+**2026-10-08. CI builds the site from an empty export** so a broken page cannot ship even though real data is never committed.

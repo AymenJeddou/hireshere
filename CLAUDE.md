@@ -45,7 +45,11 @@ uv run python -m pipeline.seed validate
   `site/functions/api/` are Cloudflare Pages Functions (signups, reports) using D1 (`site/schema.sql`).
 - `data/boards.csv`: validated seed list, committed. `data/candidates.csv` is a build artifact, ignored.
 - `jobs.db` lives on the `data-latest` GitHub Release as `jobs.db.gz`, never in git.
-  Local copy: `gh release download data-latest -p jobs.db.gz && gunzip jobs.db.gz`.
+  Local copy: `gh release download data-latest -p jobs.db.gz && gunzip jobs.db.gz`. Download before
+  working locally and upload (`gh release upload data-latest jobs.db.gz --clobber`) after, or CI and
+  local diverge.
+- Live site: https://hireshere.pages.dev (Cloudflare Pages project `hireshere`, D1 `hireshere`).
+  Deploy by hand: `cd site && npx wrangler pages deploy --branch main` with CLOUDFLARE_* from `.env`.
 
 ## Git
 
