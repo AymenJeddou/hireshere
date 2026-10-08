@@ -78,3 +78,5 @@ Short log, newest last. Format: date, decision, why.
 **2026-10-08. One source of truth for data: the `data-latest` release.** Local classification runs (the 712-posting re-run) were merged into the release database by content hash, newest extraction wins. From now on, download the release before working locally and upload after, so CI and local never diverge.
 
 **2026-10-08. CI builds the site from an empty export** so a broken page cannot ship even though real data is never committed.
+
+**2026-10-08. hireshere.app on Cloudflare DNS.** Bought at Name.com, nameservers moved to Cloudflare (zone on the same account). Apex and www are CNAMEs to hireshere.pages.dev, attached to the Pages project. A Pages Functions middleware 301-redirects www and the pages.dev host to the apex so there is one canonical address; per-deployment preview URLs are untouched.
