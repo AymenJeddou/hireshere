@@ -22,6 +22,9 @@ uv run pytest -q
 uv run ruff check . && uv run ruff format --check .
 uv run python -m pipeline.run fetch [--limit 20]
 uv run python -m pipeline.run stats
+uv run python -m pipeline.run classify [--limit N] [--batch] [--yes]   # needs GEMINI_API_KEY
+uv run python -m pipeline.run classify-collect                         # store finished batches
+uv run python -m pipeline.classify.evalset sample|score [--country TN]
 uv run python -m pipeline.seed build --rit <remote-jobs clone> --ats <ats-scrapers clone> [--extra N]
 uv run python -m pipeline.seed validate
 ```
@@ -30,7 +33,12 @@ uv run python -m pipeline.seed validate
 
 - `pipeline/connectors/<ats>.py`: `parse(data, board)` (pure, tested) and `fetch(client, board)`.
 - `pipeline/db.py`: schema and the five diff rules. `apply_result` is the heart of it.
-- `pipeline/run.py`: CLI and the concurrent fetcher.
+- `pipeline/run.py`: CLI and the concurrent fetcher. Loads `.env` for local runs.
+- `pipeline/classify/`: `schema.py` (what the model extracts), `prompt.py` (prompt, pre-filter,
+  excerpt), `verdict.py` (pure per-country verdict), `gemini.py` (the only provider-specific
+  file), `runner.py` (triage, cost estimate, storage), `evalset.py` (hand-checked eval).
+- Extractions are stored once per `content_hash` in `extractions`. Verdicts are computed from
+  them at export time, never stored, so changing `verdict.py` or `COUNTRIES` needs no model calls.
 - `data/boards.csv`: validated seed list, committed. `data/candidates.csv` is a build artifact, ignored.
 - `jobs.db` lives on the `data-latest` GitHub Release as `jobs.db.gz`, never in git.
   Local copy: `gh release download data-latest -p jobs.db.gz && gunzip jobs.db.gz`.

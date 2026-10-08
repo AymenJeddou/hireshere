@@ -30,3 +30,23 @@ Short log, newest last. Format: date, decision, why.
 **2026-10-08. Release `data-latest` is created with `--latest=false`.** It holds data, not code, and should not show as the repo's latest release.
 
 **2026-10-08. `stats` keyword counts use substring LIKE.** "mena" was dropped because it matched "Blumenau". Phase 2 uses word-boundary regex and Claude, not these counts.
+
+**2026-10-08. Pruned 16 noisy top-up boards (343 to 327).** Rule, in `seed.noise()`, applied only to `ats-scrapers` top-ups: under 5% remote-looking jobs, or 50+ jobs with under 10% unique titles (template spam such as AO Garcia Agency, 3503 jobs and 254 titles). remoteintech boards are exempt because their location text often omits "remote" even when the posting is remote. `seed prune` re-applies the rule from the database without network.
+
+**2026-10-08. Boards removed from the seed list are retired and their jobs expired.** Unlike a fetch failure, removal is deliberate, so expiring is correct.
+
+**2026-10-08. Phase 2 on Gemini instead of Claude.** The Anthropic account has no credit; Google AI Studio has $5. `gemini-2.5-flash-lite` is closed to new users, so the default is `gemini-3.1-flash-lite` ($0.25 in, $1.50 out per million tokens; Batch half). Plain REST through httpx, no SDK. Everything except `gemini.py` is provider-agnostic.
+
+**2026-10-08. No prompt caching.** The system prompt (about 1k tokens) is below the implicit caching minimum, and explicit caching adds storage fees for no gain at this size.
+
+**2026-10-08. Excerpts instead of full descriptions.** Full descriptions would have cost about $3.70 for the backfill in Batch mode. The excerpt keeps the opening (role, seniority) and every paragraph with eligibility keywords. Real usage in the trial: about 1,130 input and 170 output tokens per posting.
+
+**2026-10-08. Extraction schema additions.** `timezone_utc_min` and `timezone_utc_max` (numbers) next to the free-text `timezone_requirement`, so the verdict function never parses text. Regions are a fixed enum.
+
+**2026-10-08. Verdicts are computed, not stored.** Only extractions are stored (one per `content_hash`). The verdict function runs at export time, so tuning it or adding a country costs nothing.
+
+**2026-10-08. Verdict rules, cautious by design.** Explicit exclusion, on-site or hybrid elsewhere, required work authorization elsewhere, a country list without ours, a region list without ours, or a time zone window that misses our offset: not_eligible. Our country listed: eligible. Worldwide: eligible. A region that contains ours, or a time zone window that contains our offset: likely. Remote with no location rule: unclear. A low-confidence extraction is capped at likely, and an evidence quote that is not verbatim in the posting forces low confidence.
+
+**2026-10-08. Daily classification uses the Batch API.** Half price; the workflow waits up to 30 minutes for results, otherwise the next run collects them. The live API reports `BATCH_STATE_*` states while the docs say `JOB_STATE_*`; the code matches on the suffix.
+
+**2026-10-08. Eval set labelling is blind.** `evalset sample` writes labels and predictions to separate files, so whoever labels does not see the model's answer. The sample oversamples eligible and likely predictions, because their precision is what users feel.

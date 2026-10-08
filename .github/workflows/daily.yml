@@ -15,11 +15,12 @@ env:
   GH_TOKEN: ${{ github.token }}
   TAG: data-latest
   JOBS_DB: jobs.db
+  GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
 
 jobs:
   fetch:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 75
     steps:
       - uses: actions/checkout@v7
       - uses: astral-sh/setup-uv@v10.2.0
@@ -37,6 +38,20 @@ jobs:
 
       - name: Fetch
         run: uv run python -m pipeline.run fetch
+
+      # Classify new jobs through the Batch API (half price). Collect results for up to
+      # 30 minutes; anything still running is collected by the next day's run.
+      - name: Classify
+        if: env.GEMINI_API_KEY != ''
+        run: |
+          uv run python -m pipeline.run classify-collect
+          uv run python -m pipeline.run classify --batch
+          for i in $(seq 30); do
+            out=$(uv run python -m pipeline.run classify-collect)
+            echo "$out"
+            echo "$out" | grep -qE "collected|No open batches|FAILED|CANCELLED|EXPIRED" && break
+            sleep 60
+          done
 
       - name: Stats
         run: uv run python -m pipeline.run stats

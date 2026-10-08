@@ -150,3 +150,27 @@ def test_evidence_must_be_verbatim():
     assert runner.verify_evidence(e, j)
     e = ex(evidence_quote="Open to candidates in Africa.")
     assert not runner.verify_evidence(e, j) and e.confidence == "low"
+
+
+def test_eval_score(tmp_path, monkeypatch):
+    from pipeline.classify import evalset
+
+    preds = tmp_path / "p.csv"
+    labels = tmp_path / "l.csv"
+    preds.write_text(
+        "job_id,country,predicted,reason,evidence\n"
+        "a,TN,eligible,r,e\nb,TN,eligible,r,e\nc,TN,not_eligible,r,e\nd,TN,unclear,r,e\n",
+        encoding="utf-8",
+    )
+    labels.write_text(
+        "job_id,company,title,location,apply_url,label,notes\n"
+        "a,,,,,eligible,\nb,,,,,likely,\nc,,,,,not_eligible,\nd,,,,,,\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(evalset, "PREDICTIONS", preds)
+    monkeypatch.setattr(evalset, "LABELS", labels)
+    out = evalset.score("TN")
+    assert "Labelled: 3 of 4" in out
+    assert "precision(eligible) = 50% over 2" in out
+    assert "precision(not_eligible) = 100% over 1" in out
+    assert "at least likely: 100%" in out

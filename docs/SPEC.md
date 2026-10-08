@@ -47,7 +47,7 @@ Site (Phase 3): static site (Astro), reads the exported JSON,
   hosted on Cloudflare Pages (free, works with a private repo)
 ```
 
-Stack: Python 3.12, `uv`, `httpx`, `pydantic`, `sqlite3` (stdlib), `pytest`, `ruff`. Anthropic Python SDK (Phase 2 only). Astro (Phase 3 only). GitHub Actions for scheduling and CI.
+Stack: Python 3.12, `uv`, `httpx`, `pydantic`, `sqlite3` (stdlib), `pytest`, `ruff`. Gemini REST API through httpx (Phase 2, no SDK). Astro (Phase 3 only). GitHub Actions for scheduling and CI.
 
 Repo layout:
 
@@ -142,12 +142,15 @@ A pure Python function (no AI) turns those fields into a per-country verdict `el
 
 Implementation notes:
 
-- Use the current cheapest Claude Haiku model. Look up the exact model ID in the official Anthropic docs at build time and read it from env var `CLASSIFIER_MODEL`.
-- Structured outputs / tool use for strict JSON. Cache the system prompt. Batch API for the first backfill. Classify each job once, keyed by `content_hash`.
-- Cheap pre-filter: skip jobs that are clearly on-site.
-- 200-job hand-checked evaluation set; report precision for "eligible" and "not_eligible" before anything goes public.
-- Reference price (October 2026): Haiku 5.5 at $0.10 per million input tokens and $0.50 per million output tokens. Print an estimated cost before every batch and ask for confirmation above $5.
-- SmartRecruiters jobs have no description from the list endpoint; fetch the posting detail for candidates before classifying.
+- **Update (2026-10-08):** the owner has Gemini credit, not Anthropic credit, so Phase 2 runs on Google Gemini (`gemini-3.1-flash-lite`, the cheapest model open to new accounts). Only `pipeline/classify/gemini.py` is provider-specific; a Claude version is one file. Model ID from env var `CLASSIFIER_MODEL`.
+- Strict JSON through `responseJsonSchema`. Batch API (half price) for the backfill and the daily run. Each posting is classified once, keyed by `content_hash`.
+- System prompt caching does not apply: the prompt is about 1k tokens, under the caching minimum.
+- Cheap pre-filter before calling the model: skip jobs whose workplace flag says on-site or hybrid, or that show no remote signal anywhere.
+- Only an excerpt is sent: the first 1200 characters plus every paragraph that mentions location, remote, time zones, authorization, contract type or language, capped at 4000 characters.
+- The evidence quote must appear verbatim in the posting; if not, confidence drops to low, which caps the verdict at "likely".
+- 200-job hand-checked evaluation set (`pipeline/classify/evalset.py`); report precision for "eligible" and "not_eligible" before anything goes public.
+- Print an estimated cost before every run and refuse above $5 without `--yes`.
+- SmartRecruiters jobs have no description from the list endpoint; they are classified from title, location and workplace flag only (to improve later by fetching the posting detail).
 
 ## 8. Site (Phase 3)
 
