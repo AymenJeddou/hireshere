@@ -43,6 +43,22 @@ CREATE TABLE IF NOT EXISTS jobs (
 );
 CREATE INDEX IF NOT EXISTS jobs_board ON jobs (source, board_slug);
 CREATE INDEX IF NOT EXISTS jobs_classify ON jobs (classify_status);
+CREATE TABLE IF NOT EXISTS extractions (
+    content_hash TEXT PRIMARY KEY,
+    model TEXT NOT NULL,
+    data TEXT NOT NULL,
+    input_tokens INTEGER,
+    output_tokens INTEGER,
+    created_at TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS batches (
+    name TEXT PRIMARY KEY,
+    model TEXT NOT NULL,
+    submitted_at TEXT NOT NULL,
+    requests INTEGER NOT NULL,
+    state TEXT NOT NULL,
+    finished_at TEXT
+);
 CREATE TABLE IF NOT EXISTS runs (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     started_at TEXT NOT NULL,

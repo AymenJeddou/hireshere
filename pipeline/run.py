@@ -129,18 +129,75 @@ def cmd_stats(conn) -> str:
     return "\n".join(out)
 
 
+async def cmd_classify(conn, limit: int | None, batch: bool, yes: bool) -> str:
+    from pipeline.classify import runner
+
+    if busy := runner.open_batches(conn):
+        return f"A batch is still open ({', '.join(busy)}). Run classify-collect first."
+    jobs, counts = runner.triage(conn, limit)
+    tin, tout, usd = runner.estimate(jobs, batch)
+    mode = "batch" if batch else "sync"
+    lines = [
+        f"## {config.PRODUCT_NAME} classify ({mode}, {config.CLASSIFIER_MODEL})",
+        "",
+        f"Pre-filtered as on-site or no remote signal: {counts['skipped']}. "
+        f"Reused earlier extractions: {counts['reused']}.",
+        f"To classify: {len(jobs)} unique postings, about {tin:,} input and {tout:,} output "
+        f"tokens, estimated **${usd:.2f}**.",
+    ]
+    if not jobs:
+        return "\n".join(lines)
+    if usd > config.MAX_USD_WITHOUT_CONFIRM and not yes:
+        lines.append(f"Over ${config.MAX_USD_WITHOUT_CONFIRM:.0f}: not started. Re-run with --yes.")
+        return "\n".join(lines)
+    print("\n".join(lines), file=sys.stderr)
+    if batch:
+        name = await runner.submit_batch(conn, jobs)
+        lines.append(f"Submitted batch `{name}`. Run classify-collect later.")
+    else:
+        t = await runner.run_sync(conn, jobs)
+        real = (t["input_tokens"] * config.PRICE_IN + t["output_tokens"] * config.PRICE_OUT) / 1e6
+        lines.append(
+            f"Classified {t['done']}, errors {t['errors']}. Actual tokens: "
+            f"{t['input_tokens']:,} in, {t['output_tokens']:,} out, about ${real:.2f}."
+        )
+    return "\n".join(lines)
+
+
+def load_dotenv(path: str = ".env") -> None:
+    """Minimal .env support for local runs. Real environment variables win."""
+    if os.path.exists(path):
+        for line in open(path, encoding="utf-8"):
+            key, sep, value = line.strip().partition("=")
+            if sep and not key.startswith("#"):
+                os.environ.setdefault(key.strip(), value.strip())
+
+
 def main(argv=None) -> None:
+    load_dotenv()
     p = argparse.ArgumentParser(prog="pipeline.run")
     p.add_argument("--db", default=config.DB_PATH)
     sub = p.add_subparsers(dest="cmd", required=True)
     f = sub.add_parser("fetch", help="fetch every active board and diff into the database")
     f.add_argument("--limit", type=int, help="only fetch the first N boards (quick test)")
     sub.add_parser("stats", help="print totals")
+    c = sub.add_parser("classify", help="extract eligibility fields for pending jobs")
+    c.add_argument("--limit", type=int, help="only classify N postings")
+    c.add_argument("--batch", action="store_true", help="submit through the Batch API (half price)")
+    c.add_argument("--yes", action="store_true", help="run even if the estimate is over the cap")
+    sub.add_parser("classify-collect", help="store results of finished batches")
     args = p.parse_args(argv)
 
     conn = db.connect(args.db)
     if args.cmd == "fetch":
         report = asyncio.run(cmd_fetch(conn, args.limit))
+    elif args.cmd == "classify":
+        report = asyncio.run(cmd_classify(conn, args.limit, args.batch, args.yes))
+    elif args.cmd == "classify-collect":
+        from pipeline.classify import runner
+
+        lines = asyncio.run(runner.collect(conn)) or ["No open batches."]
+        report = "\n".join(f"- {x}" for x in lines)
     else:
         report = cmd_stats(conn)
     print(report)

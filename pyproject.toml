@@ -22,3 +22,6 @@ select = ["E", "F", "I", "UP", "B"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[tool.ruff.lint.per-file-ignores]
+"pipeline/classify/prompt.py" = ["E501"] # prompt prose
