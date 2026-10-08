@@ -4,7 +4,7 @@
 |---|---|---|
 | 0 | Repo, docs, CI | done |
 | 1 | Ingestion: seed list, 4 ATS connectors, SQLite diff, CLI, daily workflow | done (2026-10-08) |
-| 2 | Classification (Gemini), verdict function, 200-job eval set | in progress: backfill running, eval labels pending |
+| 2 | Classification (Gemini), verdict function, 200-job eval set | built and running daily; blocked on labelling the 200-job eval set |
 | 3 | Astro site, country pages, filters, alerts signup | not started |
 | 4 | Cloudflare Pages, custom domain, end to end automation, monitoring | not started |
 | 5 | Hiring method and payment guidance, "hired here before", FR/AR UI, more countries | not started |
