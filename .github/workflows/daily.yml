@@ -1,0 +1,50 @@
+name: daily
+on:
+  schedule:
+    - cron: "17 4 * * *" # once a day, 04:17 UTC
+  workflow_dispatch:
+
+concurrency:
+  group: daily
+  cancel-in-progress: false
+
+permissions:
+  contents: write # needed to create and update the data-latest release
+
+env:
+  GH_TOKEN: ${{ github.token }}
+  TAG: data-latest
+  JOBS_DB: jobs.db
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10.2.0
+        with:
+          python-version: "3.12"
+      - run: uv sync --locked --no-dev
+
+      - name: Download previous database
+        run: |
+          if gh release download "$TAG" --pattern jobs.db.gz; then
+            gunzip jobs.db.gz
+          else
+            echo "No previous database, starting fresh."
+          fi
+
+      - name: Fetch
+        run: uv run python -m pipeline.run fetch
+
+      - name: Stats
+        run: uv run python -m pipeline.run stats
+
+      - name: Upload database
+        run: |
+          gzip -9 -k jobs.db
+          gh release view "$TAG" >/dev/null 2>&1 || gh release create "$TAG" \
+            --title "Latest data" --latest=false \
+            --notes "Rolling SQLite snapshot updated by the daily workflow. Not a code release."
+          gh release upload "$TAG" jobs.db.gz --clobber
