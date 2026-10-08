@@ -1,0 +1,13 @@
+{
+  // Cloudflare Pages project for the HiresHere site. Build output and Functions live in site/.
+  "name": "hireshere",
+  "pages_build_output_dir": "./dist",
+  "compatibility_date": "2026-09-15",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "hireshere",
+      "database_id": "f399b8aa-2976-4d79-a1fd-7108b48caa3b"
+    }
+  ]
+}
