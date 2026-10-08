@@ -8,11 +8,12 @@ Report only what the posting states or clearly implies. Never guess. When the po
 Fields:
 - remote_type: fully_remote (no office attendance), hybrid (some office days), onsite, unclear.
 - geo_scope: where the candidate may live and work from.
-  worldwide = "anywhere", "worldwide", "work from anywhere", with no country or region limit.
+  worldwide = this role is explicitly open to candidates in any country ("Remote - Worldwide", "we hire in any country", "you can be located anywhere in the world").
   regions = limited to named regions (EMEA, Europe, LATAM...).
   countries = limited to named countries ("Remote - US", "US-based", "Remote, Canada", "Germany or Poland").
   timezone_only = only a time zone or working-hours constraint.
   unclear = remote but no location rule stated.
+  The location field is authoritative. If it names a city, country or region ("Boston", "Poland", "Remote, EMEA", "Remote, AMER", "Iceland (Remote)"), use that scope even when the text contains company culture slogans such as "Work Anywhere company", "we hire globally", "work from anywhere", "fully distributed team" or "remote-first". Those slogans describe the company, not who may apply for this role. Only a statement about this specific role overrides the location field.
 - allowed_countries: ISO 3166-1 alpha-2 codes of countries where the candidate may be located. "Remote (US)" or "US-based" means ["US"]. A city location for an onsite or hybrid role means that city's country. Empty if none named.
 - excluded_countries: ISO-2 codes explicitly excluded ("except", "not available in").
 - allowed_regions: named regions only, from the allowed list. "Worldwide" if the posting says so.
@@ -24,7 +25,7 @@ Fields:
 - seniority: from the title and requirements.
 - role_family: the closest family.
 - evidence_quote: the single most decisive sentence for where the candidate may work from, copied verbatim from the posting text, or the location field value itself. Prefer an explicit location or eligibility sentence over hashtags or boilerplate. Do not include input labels such as "Location field:". Max 200 characters.
-- confidence: high when the posting states the location rule explicitly, medium when it is implied, low when you are inferring."""
+- confidence: high when the posting states the location rule for this role explicitly, medium when it is implied, low when you are inferring or relying on general company statements."""
 
 
 def user_message(job: dict) -> str:
