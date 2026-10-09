@@ -17,4 +17,4 @@
 - Human review of the 200 draft eval labels in `data/eval/eval.csv`, then a fresh labelled sample to measure precision without tuning bias.
 - Web Analytics: enable in the Pages project (token lacks the analytics permission).
 - Monitoring: the daily job fails (GitHub emails the owner) if the export is empty. Watch whether the cron fires; the first scheduled run (2026-10-09 04:17 UTC) never started. If it keeps missing, trigger it from a Cloudflare cron instead.
-- Sending the email alerts (needs an email provider; free tier to pick in Phase 4).
+- Email alerts: code, unsubscribe and workflow step are live; sending starts once `RESEND_API_KEY` is set (owner is setting up Resend and verifying hireshere.app). No double opt-in yet: add a confirmation email if spam signups appear.

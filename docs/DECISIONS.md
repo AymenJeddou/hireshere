@@ -80,3 +80,7 @@ Short log, newest last. Format: date, decision, why.
 **2026-10-08. CI builds the site from an empty export** so a broken page cannot ship even though real data is never committed.
 
 **2026-10-08. hireshere.app on Cloudflare DNS.** Bought at Name.com, nameservers moved to Cloudflare (zone on the same account). Apex and www are CNAMEs to hireshere.pages.dev, attached to the Pages project. A Pages Functions middleware 301-redirects www and the pages.dev host to the apex so there is one canonical address; per-deployment preview URLs are untouched.
+
+**2026-10-09. Unknown paths return a real 404.** Without `404.html`, Cloudflare Pages served the home page with 200 for any address (bot scans, `/robots.txt`). Added a 404 page plus generated `robots.txt` and `sitemap.xml` (both built from the site URL, so the domain stays in one place).
+
+**2026-10-09. Email alerts through Resend's free tier** (owner's choice of a free provider). Cloudflare Email Sending needs Workers Paid (about $5/month). Resend free: 3,000 emails/month, 100/day, so the sender stops at 95 a run and the rest go out next run. `pipeline/alerts.py` reads subscribers from D1 through the REST API, sends each one the eligible/likely jobs first seen since their last digest (or signup), then records `last_sent_at`, so a missed day catches up and nothing is sent twice. Unsubscribe links carry HMAC-SHA256(email) with `UNSUBSCRIBE_SECRET`, verified in `site/functions/api/unsubscribe.js`; both the link and the RFC 8058 one-click header are supported.
