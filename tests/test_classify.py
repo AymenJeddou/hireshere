@@ -237,3 +237,31 @@ def test_listed_region_beats_anywhere_text():
     assert (
         verdict(e, "TN", TN, location="Remote (United States)", title="Engineer")[0] == "eligible"
     )
+
+
+def test_alert_pick_and_token():
+    from pipeline.alerts import pick, render, unsubscribe_token
+
+    def job(id_, verdict, family, scope=""):
+        r = {"en": "r", "fr": "r"}
+        return {"id": id_, "verdict": verdict, "family": family, "title": id_.upper(),
+                "company": "X", "scope": scope, "url": f"https://x/{id_}", "reason": r}  # fmt: skip
+
+    jobs = [job("a", "eligible", "data"), job("b", "likely", "engineering", "EMEA"),
+            job("c", "unclear", "data"), job("d", "eligible", "data")]  # fmt: skip
+    seen = {"a": "2026-10-09T08:00:00+00:00", "b": "2026-10-09T09:00:00+00:00",
+            "c": "2026-10-09T09:00:00+00:00", "d": "2026-10-07T08:00:00+00:00"}  # fmt: skip
+    since = "2026-10-08T00:00:00.000Z"
+    assert [j["id"] for j in pick(jobs, seen, since, "")] == [
+        "a",
+        "b",
+    ]  # eligible first, no unclear, d is old
+    assert [j["id"] for j in pick(jobs, seen, since, "data")] == ["a"]
+    tok = unsubscribe_token("me@x.com", "s3cret")
+    assert (
+        tok == unsubscribe_token("me@x.com", "s3cret") != unsubscribe_token("you@x.com", "s3cret")
+    )
+    subject, body, text = render(
+        {"lang": "fr", "country": "MA", "family": "data"}, jobs[:1], "https://u"
+    )
+    assert subject == "1 nouvelle offre en télétravail ouverte au Maroc" and "https://u" in text

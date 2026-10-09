@@ -25,3 +25,4 @@ testpaths = ["tests"]
 
 [tool.ruff.lint.per-file-ignores]
 "pipeline/classify/prompt.py" = ["E501"] # prompt prose
+"pipeline/alerts.py" = ["E501"] # email copy and inline HTML

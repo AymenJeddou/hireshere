@@ -18,6 +18,8 @@ env:
   GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
   CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
   CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+  RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+  UNSUBSCRIBE_SECRET: ${{ secrets.UNSUBSCRIBE_SECRET }}
 
 jobs:
   fetch:
@@ -78,6 +80,10 @@ jobs:
           npm ci --no-audit --no-fund
           npx astro build
           npx wrangler pages deploy --branch main --commit-dirty=true
+
+      - name: Email alerts
+        if: env.RESEND_API_KEY != ''
+        run: uv run python -m pipeline.run alerts
 
       - name: Upload database
         run: |

@@ -186,6 +186,8 @@ def main(argv=None) -> None:
     c.add_argument("--batch", action="store_true", help="submit through the Batch API (half price)")
     c.add_argument("--yes", action="store_true", help="run even if the estimate is over the cap")
     sub.add_parser("classify-collect", help="store results of finished batches")
+    a = sub.add_parser("alerts", help="email new-job digests to subscribers")
+    a.add_argument("--dry-run", action="store_true", help="render the first digest, send nothing")
     x = sub.add_parser("export", help="write per-country JSON for the site")
     x.add_argument("--out", default="site/src/data")
     args = p.parse_args(argv)
@@ -200,6 +202,10 @@ def main(argv=None) -> None:
 
         lines = asyncio.run(runner.collect(conn)) or ["No open batches."]
         report = "\n".join(f"- {x}" for x in lines)
+    elif args.cmd == "alerts":
+        from pipeline.alerts import run as send_alerts
+
+        report = send_alerts(conn, args.dry_run)
     elif args.cmd == "export":
         from pipeline.export import export
 

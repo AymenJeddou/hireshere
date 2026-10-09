@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS subscribers (
   family TEXT NOT NULL DEFAULT '',
   lang TEXT NOT NULL DEFAULT 'en',
   created_at TEXT NOT NULL,
+  last_sent_at TEXT,
   PRIMARY KEY (email, country, family)
 );
 CREATE TABLE IF NOT EXISTS reports (

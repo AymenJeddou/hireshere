@@ -15,3 +15,4 @@ site/.astro/
 site/src/data/*.json
 .impeccable/review/
 .impeccable/questions/
+alerts-preview.html
