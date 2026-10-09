@@ -36,7 +36,7 @@ Country-first eligibility, not another generic remote board. Every job carries a
 - Email alert signup per country and role family; "Report an error" per job. Both post to Cloudflare Pages Functions (Phase 4).
 - English first, French second. French uses "vous".
 - Free tiers only. No trackers beyond privacy-friendly analytics. No payments.
-- Product name and domain come from config: HiresHere, hireshere.app (domain not yet registered).
+- Product name and domain come from config: HiresHere, hireshere.app (registered at Name.com, DNS on Cloudflare).
 
 ## Brand Commitments
 

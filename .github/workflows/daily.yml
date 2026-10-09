@@ -60,7 +60,10 @@ jobs:
 
       # Rebuild and publish the site from today's data.
       - name: Export
-        run: uv run python -m pipeline.run export
+        run: |
+          uv run python -m pipeline.run export
+          # Fail loudly (GitHub emails the owner) rather than deploy an empty site.
+          uv run python -c "import json; m = json.load(open('site/src/data/meta.json')); n = sum(sum(c['counts'].values()) for c in m['countries'].values()); assert n > 0, 'export has no jobs'; print(n, 'jobs exported')"
 
       - uses: actions/setup-node@v7.1.0
         with:
