@@ -1,7 +1,7 @@
 ---
 import "../styles/board.css";
-import { countries, countryName, jobsFor, openCount, totalBoards } from "../data";
-import { href, labels, type Lang, tr } from "../i18n";
+import { countries, countryName, jobsFor, openCount, site, totalBoards } from "../data";
+import { formatDate, href, labels, type Lang, tr } from "../i18n";
 import JobRow from "./JobRow.astro";
 import Lamp from "./Lamp.astro";
 
@@ -27,6 +27,19 @@ const sample = (["eligible", "likely", "unclear"] as const)
     return job;
   })
   .filter((j): j is NonNullable<typeof j> => Boolean(j));
+// One more real eligible job for the hero, distinct from the samples below.
+const hero = pool.find(
+  (j) =>
+    j.verdict === "eligible" &&
+    !used.has(j.company) &&
+    /worldwide|global|anywhere|^remote$/i.test(j.location) &&
+    j.quote.length <= 160,
+);
+const fresh = tr(lang, "home_fresh", {
+  jobs: site.open_jobs.toLocaleString(lang === "fr" ? "fr-FR" : "en-GB"),
+  companies: totalBoards(),
+  date: formatDate(site.updated, lang),
+});
 const steps = [
   ["home_how_1_t", "home_how_1"],
   ["home_how_2_t", "home_how_2"],
@@ -39,8 +52,31 @@ const steps = [
     <div class="wrap hero-grid">
       <div class="hero-copy">
         <h1>{tr(lang, "home_title")}</h1>
-        <p class="lede">{tr(lang, "home_lede", { boards: totalBoards() })}</p>
+        <p class="lede">{tr(lang, "home_lede")}</p>
+        <p class="fresh"><span class="pulse" aria-hidden="true"></span>{fresh}</p>
       </div>
+      {
+        hero && (
+          <figure class={`proof v-${hero.verdict}`}>
+            <div class="proof-head">
+              <div>
+                <p class="proof-title">{hero.title}</p>
+                <p class="proof-meta">
+                  {hero.company} · {hero.scope}
+                </p>
+              </div>
+              <span class="verdict-tag">
+                <Lamp verdict={hero.verdict} />
+                {labels.verdict[hero.verdict][lang]}
+              </span>
+            </div>
+            <blockquote lang="und">
+              <p>{hero.quote}</p>
+            </blockquote>
+            <figcaption>{tr(lang, "home_proof", { country: countryName(sampleCountry, lang) })}</figcaption>
+          </figure>
+        )
+      }
       <nav class="chooser" aria-labelledby="pick">
         <h2 id="pick">{tr(lang, "home_pick")}</h2>
         <ul>
@@ -118,15 +154,93 @@ const steps = [
   .hero-grid {
     display: grid;
     grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
-    gap: var(--space-7);
-    align-items: center;
+    grid-template-areas: "copy chooser" "proof chooser";
+    gap: var(--space-5) var(--space-7);
+    align-items: start;
+  }
+  .hero-copy {
+    grid-area: copy;
+  }
+  .chooser {
+    grid-area: chooser;
+    align-self: center;
+  }
+  .fresh {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    margin-top: var(--space-4);
+    color: var(--navy-200);
+    font-size: var(--step--1);
+    font-variant-numeric: tabular-nums;
+  }
+  .pulse {
+    flex: none;
+    margin-top: 0.45em;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #3fbf7f;
+    box-shadow: 0 0 0 0 rgb(63 191 127 / 0.6);
+    animation: pulse 2.4s var(--ease-out) infinite;
+  }
+  @keyframes pulse {
+    70% {
+      box-shadow: 0 0 0 8px rgb(63 191 127 / 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgb(63 191 127 / 0);
+    }
+  }
+  .proof {
+    grid-area: proof;
+    margin: 0;
+    padding: var(--space-4) var(--space-5);
+    background: var(--navy-900);
+    border: 1px solid var(--navy-700);
+    border-radius: var(--radius);
+    display: grid;
+    gap: var(--space-3);
+    max-width: 560px;
+  }
+  .proof-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--space-3);
+  }
+  .proof-title {
+    font-weight: 650;
+    color: #fff;
+  }
+  .proof-meta {
+    color: var(--navy-200);
+    font-size: var(--step--1);
+  }
+  .proof blockquote {
+    margin: 0;
+    padding-inline-start: var(--space-3);
+    border-inline-start: 1px solid var(--navy-200);
+    color: #fff;
+    font-size: var(--step-0);
+    line-height: 1.5;
+  }
+  .proof blockquote p::before {
+    content: "“";
+  }
+  .proof blockquote p::after {
+    content: "”";
+  }
+  .proof figcaption {
+    color: var(--navy-200);
+    font-size: var(--step--1);
   }
   h1 {
     font-size: var(--step-4);
     font-weight: 750;
     letter-spacing: -0.03em;
     line-height: 1.05;
-    max-width: 14ch;
+    max-width: 18ch;
   }
   .lede {
     margin-top: var(--space-5);
@@ -258,6 +372,7 @@ const steps = [
   @media (max-width: 900px) {
     .hero-grid {
       grid-template-columns: minmax(0, 1fr);
+      grid-template-areas: "copy" "chooser" "proof";
       gap: var(--space-6);
     }
     .hero {
@@ -266,6 +381,16 @@ const steps = [
     .steps {
       grid-template-columns: minmax(0, 1fr);
       gap: var(--space-5);
+    }
+  }
+  @media (max-width: 520px) {
+    .chooser a {
+      grid-template-columns: 1fr auto;
+      grid-template-areas: "name arrow" "counts arrow";
+      padding: var(--space-3) var(--space-4);
+    }
+    .c-sum {
+      display: none;
     }
   }
 </style>

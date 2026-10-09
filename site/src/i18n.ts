@@ -96,9 +96,11 @@ const en = {
   footer_data: "Jobs come straight from company hiring pages and refresh daily.",
   updated: "Updated",
 
-  home_title: "Remote jobs you can actually get",
+  home_title: "Remote jobs you can actually get from North Africa",
   home_lede:
-    "Most “remote” jobs are only open to the US or Europe. HiresHere reads every posting from {boards} companies’ own hiring pages each day and shows you the roles open to your country, with the sentence from the posting that proves it.",
+    "Most “remote” jobs only hire in the US or Europe. We check every posting and show you the ones open to your country, with the sentence that proves it.",
+  home_fresh: "{jobs} jobs checked at {companies} companies · updated {date}",
+  home_proof: "A real verdict from today’s board for {country}",
   home_pick: "Choose your country",
   home_open: "{n} jobs open or likely open",
   eligible_n: "eligible",
@@ -186,9 +188,11 @@ const fr: typeof en = {
   footer_data: "Les offres viennent directement des pages carrières des entreprises et sont mises à jour chaque jour.",
   updated: "Mis à jour",
 
-  home_title: "Des offres en télétravail auxquelles vous pouvez vraiment postuler",
+  home_title: "Des offres en télétravail vraiment ouvertes depuis l’Afrique du Nord",
   home_lede:
-    "La plupart des offres « remote » ne sont ouvertes qu’aux États-Unis ou à l’Europe. Chaque jour, HiresHere lit les annonces publiées sur les pages carrières de {boards} entreprises et vous montre celles ouvertes à votre pays, avec la phrase de l’annonce qui le prouve.",
+    "La plupart des offres « remote » ne recrutent qu’aux États-Unis ou en Europe. Nous vérifions chaque annonce et vous montrons celles ouvertes à votre pays, avec la phrase qui le prouve.",
+  home_fresh: "{jobs} offres vérifiées dans {companies} entreprises · mis à jour le {date}",
+  home_proof: "Un vrai verdict du tableau du jour pour {country}",
   home_pick: "Choisissez votre pays",
   home_open: "{n} offres ouvertes ou probablement ouvertes",
   eligible_n: "éligibles",
