@@ -169,6 +169,7 @@ def run(conn: sqlite3.Connection, dry_run: bool = False) -> str:
                 headers={"Authorization": f"Bearer {key}"},
                 json={
                     "from": FROM,
+                    "reply_to": config.CONTACT_EMAIL,
                     "to": [sub["email"]],
                     "subject": subject,
                     "html": body,

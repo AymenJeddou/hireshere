@@ -94,6 +94,7 @@ def export(conn: sqlite3.Connection, out_dir: str | Path) -> str:
         "updated": datetime.now(UTC).replace(microsecond=0).isoformat(),
         "product": config.PRODUCT_NAME,
         "domain": config.DOMAIN,
+        "contact": config.CONTACT_EMAIL,
         "open_jobs": conn.execute("SELECT COUNT(*) FROM jobs WHERE expired_at IS NULL").fetchone()[
             0
         ],

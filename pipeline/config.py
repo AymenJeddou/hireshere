@@ -4,6 +4,7 @@ import os
 
 PRODUCT_NAME = "HiresHere"
 DOMAIN = "hireshere.app"
+CONTACT_EMAIL = f"contact@{DOMAIN}"  # Cloudflare Email Routing forwards it to the owner
 
 USER_AGENT = f"{PRODUCT_NAME}-bot/0.1 (+https://{DOMAIN}; job eligibility index)"
 MAX_CONCURRENCY = 5
