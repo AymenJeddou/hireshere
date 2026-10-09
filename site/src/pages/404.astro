@@ -1,0 +1,16 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { countries, countryName } from "../data";
+import { href } from "../i18n";
+---
+
+<Layout lang="en" page="home" title="Page not found | HiresHere" description="This page does not exist.">
+  <div class="wrap page-head">
+    <h1>Page not found</h1>
+    <p class="sub">This address does not exist. Pick a country to see remote jobs open to it.</p>
+    <p class="sub" lang="fr">Cette page n’existe pas. Choisissez un pays pour voir les offres ouvertes.</p>
+    <p class="sub">
+      {countries.map((c, i) => <>{i > 0 && " · "}<a href={href("en", "country", c.code)}>{countryName(c, "en")}</a></>)}
+    </p>
+  </div>
+</Layout>
