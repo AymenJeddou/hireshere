@@ -164,6 +164,11 @@ const sub = tr(lang, "country_sub", {
           </label>
           <a class="my-jobs-link" href={href(lang, "saved")}>★ {tr(lang, "my_jobs")}</a>
         </div>
+        <p class="profile-banner" data-profile-banner hidden>
+          {tr(lang, "profile_active")}
+          <a href={href(lang, "saved")}>{tr(lang, "profile_edit")}</a>
+          <button type="button" class="link-button" data-profile-off>{tr(lang, "profile_show_all")}</button>
+        </p>
         <div class="filter-status">
           <p class="count" aria-live="polite">
             <span data-status>{tr(lang, "results_count", { shown: jobs.length, total: jobs.length })}</span>

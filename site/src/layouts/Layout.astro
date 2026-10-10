@@ -93,6 +93,7 @@ const alternate = (l: Lang) => new URL(href(l, page, country), Astro.site).toStr
           <a href={href(lang, "how")}>{tr(lang, "nav_how")}</a>
           <a href={href(lang, "companies")}>{tr(lang, "nav_companies")}</a>
           <a href={href(lang, "sources")}>{tr(lang, "nav_sources")}</a>
+          <a href={href(lang, "employers")}>{tr(lang, "nav_employers")}</a>
           <a href={otherHref} hreflang={other} lang={other}>{tr(lang, "switch_lang")}</a>
           <a href={`mailto:${site.contact}`}>{site.contact}</a>
         </nav>

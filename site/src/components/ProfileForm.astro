@@ -1,0 +1,146 @@
+---
+import { countries, countryName } from "../data";
+import { labels, languageName, type Lang, tr } from "../i18n";
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const LANGS = ["en", "fr", "ar", "de", "es", "it", "pt", "nl"];
+---
+
+<section class="panel profile" aria-labelledby="profile-title">
+  <h2 id="profile-title">{tr(lang, "profile_title")}</h2>
+  <p>{tr(lang, "profile_intro")}</p>
+  <form class="profile-form" data-profile-form data-saved-msg={tr(lang, "profile_saved")}>
+    <label class="field">
+      <span>{tr(lang, "profile_country")}</span>
+      <select name="country">
+        {countries.map((c) => <option value={c.code}>{countryName(c, lang)}</option>)}
+      </select>
+    </label>
+    <label class="field">
+      <span>{tr(lang, "profile_field")}</span>
+      <select name="f">
+        <option value="">{tr(lang, "filter_any")}</option>
+        {Object.entries(labels.family).map(([k, l]) => <option value={k}>{l[lang]}</option>)}
+      </select>
+    </label>
+    <label class="field">
+      <span>{tr(lang, "profile_level")}</span>
+      <select name="s">
+        <option value="">{tr(lang, "filter_any")}</option>
+        {
+          Object.entries(labels.seniority)
+            .filter(([k]) => k !== "unclear")
+            .map(([k, l]) => <option value={k}>{l[lang]}</option>)
+        }
+      </select>
+    </label>
+    <label class="field">
+      <span>{tr(lang, "profile_contract")}</span>
+      <select name="e">
+        <option value="">{tr(lang, "any_contract")}</option>
+        <option value="employee">{labels.engagement.employee[lang]}</option>
+        <option value="contractor">{labels.engagement.contractor[lang]}</option>
+      </select>
+    </label>
+    <fieldset class="langs">
+      <legend class="legend-label">{tr(lang, "profile_langs")}</legend>
+      {
+        LANGS.map((l) => (
+          <label class="check-label">
+            <input type="checkbox" name="langs" value={l} />
+            {languageName(l, lang)}
+          </label>
+        ))
+      }
+    </fieldset>
+    <div class="profile-actions">
+      <button class="btn btn-primary" type="submit">{tr(lang, "profile_save")}</button>
+      <button class="link-button" type="button" data-profile-clear>{tr(lang, "profile_clear")}</button>
+      <p class="form-msg ok" role="status" aria-live="polite"></p>
+    </div>
+  </form>
+</section>
+
+<script>
+  import { clearProfile, loadProfile, saveProfile } from "../scripts/profile";
+
+  const form = document.querySelector<HTMLFormElement>("[data-profile-form]")!;
+  const msg = form.querySelector<HTMLElement>(".form-msg")!;
+  const p = loadProfile();
+  if (p) {
+    for (const k of ["country", "f", "s", "e"] as const) {
+      (form.elements.namedItem(k) as HTMLSelectElement).value = p[k] ?? "";
+    }
+    form.querySelectorAll<HTMLInputElement>('input[name="langs"]').forEach((i) => {
+      i.checked = p.langs.includes(i.value);
+    });
+  }
+  form.addEventListener("submit", (ev) => {
+    ev.preventDefault();
+    const fd = new FormData(form);
+    saveProfile({
+      country: String(fd.get("country")),
+      f: String(fd.get("f") ?? ""),
+      s: String(fd.get("s") ?? ""),
+      e: String(fd.get("e") ?? ""),
+      langs: fd.getAll("langs").map(String),
+    });
+    msg.textContent = form.dataset.savedMsg ?? "";
+  });
+  form.querySelector("[data-profile-clear]")!.addEventListener("click", () => {
+    clearProfile();
+    form.reset();
+    msg.textContent = "";
+  });
+</script>
+
+<style>
+  .profile {
+    max-width: 860px;
+    margin-bottom: var(--space-6);
+  }
+  .profile-form {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--space-3);
+  }
+  .langs {
+    grid-column: 1 / -1;
+    border: 0;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-4);
+  }
+  .langs legend {
+    margin-bottom: var(--space-2);
+  }
+  .check-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: var(--step-0);
+  }
+  .check-label input {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    accent-color: var(--navy-800);
+  }
+  .profile-actions {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-4);
+  }
+  @media (max-width: 760px) {
+    .profile-form {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+</style>

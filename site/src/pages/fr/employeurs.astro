@@ -1,0 +1,14 @@
+---
+import Employers from "../../components/Employers.astro";
+import Layout from "../../layouts/Layout.astro";
+import { site } from "../../data";
+---
+
+<Layout
+  lang="fr"
+  page="employers"
+  title={`Vous recrutez à distance en Afrique du Nord ? | ${site.product}`}
+  description="Vous recrutez à distance en Afrique du Nord ?"
+>
+  <Employers lang="fr" />
+</Layout>

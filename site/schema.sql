@@ -17,3 +17,12 @@ CREATE TABLE IF NOT EXISTS reports (
   note TEXT,
   created_at TEXT NOT NULL
 );
+CREATE TABLE IF NOT EXISTS employer_leads (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  company TEXT NOT NULL,
+  careers_url TEXT NOT NULL,
+  countries TEXT,
+  email TEXT NOT NULL,
+  note TEXT,
+  created_at TEXT NOT NULL
+);

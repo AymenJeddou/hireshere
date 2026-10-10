@@ -2,7 +2,7 @@
 export type Lang = "en" | "fr";
 export const LANGS: Lang[] = ["en", "fr"];
 
-export type Page = "home" | "country" | "how" | "sources" | "job" | "saved" | "company" | "companies" | "field";
+export type Page = "home" | "country" | "how" | "sources" | "job" | "saved" | "company" | "companies" | "field" | "employers";
 
 const SLUGS: Record<Page, Record<Lang, string>> = {
   home: { en: "/", fr: "/fr" },
@@ -14,6 +14,7 @@ const SLUGS: Record<Page, Record<Lang, string>> = {
   company: { en: "/companies/", fr: "/fr/entreprises/" },
   companies: { en: "/companies", fr: "/fr/entreprises" },
   field: { en: "/", fr: "/fr/" },
+  employers: { en: "/employers", fr: "/fr/employeurs" },
 };
 
 export function href(lang: Lang, page: Page, country?: string): string {
@@ -243,6 +244,21 @@ const en = {
   contracts: "Contracts",
   jobs_at: "Jobs at {company}",
   nav_companies: "Companies",
+  nav_employers: "For employers",
+  profile_title: "My profile",
+  profile_intro: "Set this once and every board opens filtered for you. Saved on this device only.",
+  profile_country: "I live in",
+  profile_field: "My field",
+  profile_level: "My level",
+  profile_contract: "Contract I accept",
+  profile_langs: "Languages I can work in",
+  profile_save: "Save profile",
+  profile_saved: "Profile saved. Boards now open filtered for you.",
+  profile_clear: "Clear profile",
+  profile_active: "Showing jobs that match your profile.",
+  profile_edit: "Edit profile",
+  profile_show_all: "Show all jobs",
+  any_contract: "Any contract",
 };
 
 const fr: typeof en = {
@@ -396,6 +412,21 @@ const fr: typeof en = {
   contracts: "Contrats",
   jobs_at: "Offres chez {company}",
   nav_companies: "Entreprises",
+  nav_employers: "Employeurs",
+  profile_title: "Mon profil",
+  profile_intro: "Réglez-le une fois et chaque tableau s’ouvre filtré pour vous. Enregistré sur cet appareil uniquement.",
+  profile_country: "J’habite en",
+  profile_field: "Mon métier",
+  profile_level: "Mon niveau",
+  profile_contract: "Contrat accepté",
+  profile_langs: "Langues de travail",
+  profile_save: "Enregistrer le profil",
+  profile_saved: "Profil enregistré. Les tableaux s’ouvrent désormais filtrés pour vous.",
+  profile_clear: "Effacer le profil",
+  profile_active: "Offres correspondant à votre profil.",
+  profile_edit: "Modifier le profil",
+  profile_show_all: "Voir toutes les offres",
+  any_contract: "Tout contrat",
 };
 
 export const strings = { en, fr };

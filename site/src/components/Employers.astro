@@ -1,0 +1,165 @@
+---
+import { countries, countryName } from "../data";
+import type { Lang } from "../i18n";
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const fr = lang === "fr";
+const t = fr
+  ? {
+      title: "Vous recrutez à distance en Afrique du Nord ?",
+      lede: "HiresHere montre aux candidats de Tunisie, du Maroc, d’Algérie et d’Égypte les offres auxquelles ils peuvent vraiment postuler. Si vous recrutez dans ces pays, dites-le-nous : nous ajouterons votre page carrières et vos offres apparaîtront automatiquement, avec le bon verdict.",
+      how: "Comment ça marche",
+      steps: [
+        "Nous lisons chaque jour les offres de votre système de recrutement (Greenhouse, Lever, Ashby, SmartRecruiters…).",
+        "Chaque annonce reçoit un verdict par pays, avec la phrase qui le justifie.",
+        "C’est gratuit. Pour de meilleurs verdicts, indiquez clairement dans vos annonces les pays où vous recrutez.",
+      ],
+      company: "Nom de l’entreprise",
+      careers: "Lien de votre page carrières",
+      where: "Pays où vous recrutez",
+      email: "E-mail professionnel",
+      note: "Un message ? (facultatif)",
+      send: "Envoyer",
+      ok: "Merci ! Nous vérifions votre page carrières et revenons vers vous par e-mail.",
+      err: "Envoi impossible. Écrivez-nous à contact@hireshere.app.",
+    }
+  : {
+      title: "Hiring remotely in North Africa?",
+      lede: "HiresHere shows candidates in Tunisia, Morocco, Algeria and Egypt the jobs they can actually apply for. If you hire in these countries, tell us: we will add your careers page and your jobs will appear automatically, with the right verdict.",
+      how: "How it works",
+      steps: [
+        "Every day we read the jobs in your hiring system (Greenhouse, Lever, Ashby, SmartRecruiters and more).",
+        "Each posting gets a verdict per country, with the sentence it rests on.",
+        "It is free. For the best verdicts, state clearly in your postings which countries you hire in.",
+      ],
+      company: "Company name",
+      careers: "Link to your careers page",
+      where: "Countries you hire in",
+      email: "Work email",
+      note: "Anything else? (optional)",
+      send: "Send",
+      ok: "Thank you! We will check your careers page and reply by email.",
+      err: "Could not send. Email us at contact@hireshere.app.",
+    };
+---
+
+<div class="wrap employers">
+  <header class="page-head">
+    <h1>{t.title}</h1>
+    <p class="sub">{t.lede}</p>
+  </header>
+  <div class="emp-grid">
+    <section class="panel">
+      <h2>{t.how}</h2>
+      <ol class="emp-steps">{t.steps.map((s) => <li>{s}</li>)}</ol>
+    </section>
+    <form class="panel emp-form" method="post" action="/api/employer" data-ok={t.ok} data-err={t.err}>
+      <div class="hp" aria-hidden="true">
+        <label>Website <input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
+      </div>
+      <label class="field"><span>{t.company}</span><input name="company" required maxlength="120" /></label>
+      <label class="field">
+        <span>{t.careers}</span>
+        <input name="careers" type="url" required maxlength="300" placeholder="https://" />
+      </label>
+      <fieldset class="emp-countries">
+        <legend class="legend-label">{t.where}</legend>
+        {
+          countries.map((c) => (
+            <label class="check-label">
+              <input type="checkbox" name="countries" value={c.code} />
+              {countryName(c, lang)}
+            </label>
+          ))
+        }
+      </fieldset>
+      <label class="field"><span>{t.email}</span><input name="email" type="email" required maxlength="200" /></label>
+      <label class="field"><span>{t.note}</span><textarea name="note" maxlength="1000" rows="3"></textarea></label>
+      <button class="btn btn-primary" type="submit">{t.send}</button>
+      <p class="form-msg" role="status" aria-live="polite"></p>
+    </form>
+  </div>
+</div>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>(".emp-form")!;
+  const msg = form.querySelector<HTMLElement>(".form-msg")!;
+  form.addEventListener("submit", async (ev) => {
+    ev.preventDefault();
+    if (!form.reportValidity()) return;
+    const btn = form.querySelector<HTMLButtonElement>("button")!;
+    btn.disabled = true;
+    try {
+      const res = await fetch(form.action, { method: "POST", body: new FormData(form) });
+      if (!res.ok) throw new Error(String(res.status));
+      msg.className = "form-msg ok";
+      msg.textContent = form.dataset.ok ?? "";
+      form.reset();
+    } catch {
+      msg.className = "form-msg err";
+      msg.textContent = form.dataset.err ?? "";
+    } finally {
+      btn.disabled = false;
+    }
+  });
+</script>
+
+<style>
+  .emp-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+    gap: var(--space-6);
+    align-items: start;
+  }
+  .emp-steps {
+    margin: 0;
+    padding-inline-start: 1.2rem;
+    display: grid;
+    gap: var(--space-3);
+    color: var(--ink-2);
+  }
+  .emp-form {
+    display: grid;
+    gap: var(--space-3);
+  }
+  .emp-countries {
+    border: 0;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-4);
+  }
+  .emp-countries legend {
+    margin-bottom: var(--space-2);
+  }
+  .check-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .check-label input {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    accent-color: var(--navy-800);
+  }
+  .hp {
+    position: absolute;
+    left: -9999px;
+  }
+  .form-msg.ok {
+    color: var(--go);
+  }
+  .form-msg.err {
+    color: var(--danger);
+  }
+  @media (max-width: 860px) {
+    .emp-grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

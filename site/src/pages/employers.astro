@@ -1,0 +1,14 @@
+---
+import Employers from "../components/Employers.astro";
+import Layout from "../layouts/Layout.astro";
+import { site } from "../data";
+---
+
+<Layout
+  lang="en"
+  page="employers"
+  title={`Hiring remotely in North Africa? | ${site.product}`}
+  description="Hiring remotely in North Africa?"
+>
+  <Employers lang="en" />
+</Layout>

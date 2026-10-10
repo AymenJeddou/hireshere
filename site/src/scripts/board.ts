@@ -1,3 +1,4 @@
+import { languagesFit, loadProfile } from "./profile";
 import { initSaveButtons } from "./saved";
 // Country board: filtering, URL state, pagination, report and alert forms. No framework.
 const PAGE = 40;
@@ -61,6 +62,24 @@ export function initBoard(): void {
   const salBox = form.elements.namedItem("sal") as HTMLInputElement | null;
   if (salBox) salBox.checked = params.get("sal") === "1";
 
+  // Light profile: default filters when the URL carries none, for the visitor's own country.
+  const profile = loadProfile();
+  const banner = root.querySelector<HTMLElement>("[data-profile-banner]")!;
+  let useProfile =
+    !!profile && !location.search && (!profile.country || profile.country === root.dataset.country);
+  if (useProfile && profile) {
+    for (const k of ["f", "s", "e"] as const) {
+      const el = form.elements.namedItem(k) as HTMLSelectElement;
+      if (profile[k] && [...el.options].some((o) => o.value === profile[k])) el.value = profile[k];
+    }
+  }
+  banner.hidden = !useProfile;
+  root.querySelector("[data-profile-off]")?.addEventListener("click", () => {
+    useProfile = false;
+    banner.hidden = true;
+    form.reset();
+  });
+
   function state() {
     const fd = new FormData(form);
     return {
@@ -89,7 +108,8 @@ export function initBoard(): void {
         (!st.e || d.e === st.e) &&
         (!st.l || (d.l ?? "").split(" ").includes(st.l)) &&
         words.every((w) => (d.q ?? "").includes(w)) &&
-        (!st.sal || d.sal === "1");
+        (!st.sal || d.sal === "1") &&
+        (!useProfile || !profile || languagesFit((d.l ?? "").split(" ").filter(Boolean), profile.langs));
       if (ok) perVerdict[d.v!]++;
       if (ok && st.v.includes(d.v!)) matches.push(row);
     }

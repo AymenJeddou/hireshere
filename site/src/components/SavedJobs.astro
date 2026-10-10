@@ -1,5 +1,6 @@
 ---
 import { href, type Lang, tr } from "../i18n";
+import ProfileForm from "./ProfileForm.astro";
 
 interface Props {
   lang: Lang;
@@ -20,6 +21,8 @@ const t = {
     <h1>{tr(lang, "my_jobs_title")}</h1>
     <p class="note">{tr(lang, "my_jobs_note")}</p>
   </header>
+  <ProfileForm lang={lang} />
+  <h2 class="saved-h2">{tr(lang, "my_jobs_title")}</h2>
   <p class="empty-saved" data-empty hidden>{tr(lang, "my_jobs_empty")}</p>
   <ol class="saved-list" data-list data-t={JSON.stringify(t)}></ol>
 </div>
@@ -113,6 +116,10 @@ const t = {
   }
   :global(.saved-actions select) {
     width: auto;
+  }
+  .saved-h2 {
+    font-size: var(--step-2);
+    margin-bottom: var(--space-3);
   }
   .empty-saved {
     color: var(--ink-2);
