@@ -238,6 +238,15 @@ def export(
     for lang in LANGS:
         _dump(public_dir / f"search-{lang}.json", [search_record(j, lang) for j in jobs])
     write_shards(jobs, public_dir / "j")
+    companies: dict[str, dict] = {}
+    for j in jobs:
+        c = companies.setdefault(j["company_key"], {"name": j["company"], "website": "", "n": 0})
+        c["n"] += 1
+        c["website"] = c["website"] or j["website"]
+        c.setdefault("named", set()).update(x for x in j["named"] if x in config.WORLD)
+    for c in companies.values():
+        c["named"] = sorted(c["named"])
+    _dump(out_dir / "companies.json", companies)  # build-time only: company pages
     boards = conn.execute(
         "SELECT ats, COUNT(*) FROM boards WHERE active = 1 GROUP BY ats ORDER BY 2 DESC"
     ).fetchall()
