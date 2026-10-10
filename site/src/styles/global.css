@@ -249,6 +249,13 @@ time {
   .header-links a.text {
     padding-inline: 0.4rem;
   }
+  .header-links .my-jobs-text {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
   .country-nav {
     order: 3;
     width: 100%;
@@ -498,4 +505,28 @@ textarea:focus-visible {
     transition-duration: 0.01ms !important;
     animation-duration: 0.01ms !important;
   }
+}
+
+/* ---------- Shared bits for job pages and rows ---------- */
+.new-badge {
+  display: inline-block;
+  padding: 0.05rem 0.45rem;
+  border-radius: 999px;
+  background: #e8efff;
+  color: var(--link);
+  font-size: var(--step--1);
+  font-weight: 700;
+}
+.save-btn[aria-pressed="true"] {
+  color: #9a5800;
+  border-color: #e6b866;
+  background: #fff8ea;
+}
+.save-btn svg {
+  color: inherit;
+}
+.save-btn[aria-pressed="false"] svg path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.3;
 }

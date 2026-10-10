@@ -60,6 +60,9 @@ const alternate = (l: Lang) => new URL(href(l, page, country), Astro.site).toStr
           }
         </nav>
         <div class="header-links">
+          <a class="text" href={href(lang, "saved")} aria-current={page === "saved" ? "page" : undefined}
+            >★ <span class="my-jobs-text">{tr(lang, "my_jobs")}</span></a
+          >
           <a class="text" href={href(lang, "how")} aria-current={page === "how" ? "page" : undefined}
             >{tr(lang, "nav_how")}</a
           >

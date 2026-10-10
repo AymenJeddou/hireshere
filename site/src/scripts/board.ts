@@ -1,6 +1,7 @@
+import { initSaveButtons } from "./saved";
 // Country board: filtering, URL state, pagination, report and alert forms. No framework.
 const PAGE = 40;
-const KEYS = ["q", "f", "s", "l", "e"] as const;
+const KEYS = ["q", "f", "s", "l", "e", "sort"] as const;
 const DEFAULT_VERDICTS = ["eligible", "likely"];
 
 type Strings = Record<string, string>;
@@ -32,6 +33,10 @@ export function initBoard(): void {
     [...root.querySelectorAll<HTMLElement>("[data-count]")].map((el) => [el.dataset.count!, el]),
   );
   let limit = PAGE;
+  let currentSort = "";
+  const newestFirst = (a: HTMLElement, b: HTMLElement) =>
+    (b.dataset.seen ?? "").localeCompare(a.dataset.seen ?? "");
+  initSaveButtons(root);
   root.classList.add("enhanced");
   const toggle = root.querySelector<HTMLButtonElement>("[data-filter-toggle]")!;
   const filterRow = root.querySelector<HTMLElement>(".filter-row")!;
@@ -53,6 +58,8 @@ export function initBoard(): void {
     const el = form.elements.namedItem(k) as HTMLInputElement | HTMLSelectElement | null;
     if (el && params.has(k)) el.value = params.get(k)!;
   }
+  const salBox = form.elements.namedItem("sal") as HTMLInputElement | null;
+  if (salBox) salBox.checked = params.get("sal") === "1";
 
   function state() {
     const fd = new FormData(form);
@@ -63,6 +70,8 @@ export function initBoard(): void {
       s: String(fd.get("s") ?? ""),
       l: String(fd.get("l") ?? ""),
       e: String(fd.get("e") ?? ""),
+      sort: String(fd.get("sort") ?? ""),
+      sal: fd.has("sal"),
     };
   }
 
@@ -79,10 +88,21 @@ export function initBoard(): void {
         (!st.s || d.s === st.s) &&
         (!st.e || d.e === st.e) &&
         (!st.l || (d.l ?? "").split(" ").includes(st.l)) &&
-        words.every((w) => (d.q ?? "").includes(w));
+        words.every((w) => (d.q ?? "").includes(w)) &&
+        (!st.sal || d.sal === "1");
       if (ok) perVerdict[d.v!]++;
       if (ok && st.v.includes(d.v!)) matches.push(row);
     }
+    // "Newest first" reorders the list itself, so pagination and focus follow the visible order.
+    if (st.sort !== currentSort) {
+      currentSort = st.sort;
+      const ordered = st.sort === "new" ? [...rows].sort(newestFirst) : rows;
+      const list = rows[0]?.parentElement;
+      const prompt = list?.querySelector(".alert-prompt");
+      for (const r of ordered) list?.append(r);
+      if (prompt && ordered[7]) ordered[7].after(prompt);
+    }
+    if (st.sort === "new") matches.sort(newestFirst);
     const visible = new Set(matches.slice(0, limit));
     for (const row of rows) row.hidden = !visible.has(row);
     for (const [v, el] of counts) el.textContent = String(perVerdict[v] ?? 0);
@@ -109,6 +129,7 @@ export function initBoard(): void {
     const vDefault = st.v.length === DEFAULT_VERDICTS.length && DEFAULT_VERDICTS.every((v) => st.v.includes(v));
     if (!vDefault) p.set("v", st.v.join(","));
     for (const k of KEYS) if (st[k]) p.set(k, st[k]);
+    if (st.sal) p.set("sal", "1");
     const qs = p.toString();
     history.replaceState(null, "", qs ? `?${qs}` : location.pathname);
   }

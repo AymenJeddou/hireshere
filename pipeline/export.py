@@ -1,6 +1,9 @@
 """Write compact per-country JSON for the site. Never exports descriptions (spec 5c)."""
 
+import csv
+import hashlib
 import json
+import re
 import sqlite3
 from collections import Counter
 from datetime import UTC, datetime
@@ -33,9 +36,23 @@ def _slogan(q: str) -> bool:
     return bool(COMPANY_LEVEL_QUOTE.search(q)) and not ROLE_LEVEL_QUOTE.search(q)
 
 
+def slugify(text: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "-", text.lower()).strip("-")[:60].strip("-")
+
+
+def job_slug(jid: str, company: str, title: str) -> str:
+    return f"{slugify(f'{company} {title}')}-{hashlib.sha1(jid.encode()).hexdigest()[:6]}"
+
+
+def websites() -> dict[tuple[str, str], str]:
+    with open(config.BOARDS_CSV, encoding="utf-8") as f:
+        return {(r["ats"], r["slug"]): r["website"] for r in csv.DictReader(f) if r["website"]}
+
+
 def rows(conn: sqlite3.Connection):
     q = """SELECT j.id, j.title, j.company_name, j.location_raw, j.apply_url, j.first_seen_at,
-                  j.source, e.data
+                  j.source, e.data, j.board_slug, j.salary_min, j.salary_max, j.salary_currency,
+                  j.department, j.employment_type_raw, j.remote_flag_raw
            FROM jobs j JOIN extractions e ON e.content_hash = j.content_hash
            WHERE j.expired_at IS NULL"""
     for r in conn.execute(q):
@@ -46,7 +63,10 @@ def rows(conn: sqlite3.Connection):
 
 def build(conn: sqlite3.Connection) -> dict[str, list[dict]]:
     out: dict[str, list[dict]] = {c: [] for c in config.COUNTRIES}
-    for (jid, title, company, location, url, seen, source, _), e, verified in rows(conn):
+    sites = websites()
+    for r, e, verified in rows(conn):
+        jid, title, company, location, url, seen, source, _, board = r[:9]
+        smin, smax, scur, dept, emp, flag = r[9:]
         base = None
         for code, country in config.COUNTRIES.items():
             v, reason_en = verdict(e, code, country, "en", location or "", title)
@@ -61,6 +81,18 @@ def build(conn: sqlite3.Connection) -> dict[str, list[dict]]:
                     "location": location or "",
                     "url": url,
                     "seen": seen[:10],
+                    "seen_at": seen,
+                    "slug": job_slug(jid, company, title),
+                    "company_key": slugify(company),
+                    "website": sites.get((source, board), ""),
+                    "salary": [smin, smax, scur] if smin or smax else None,
+                    "tz": [e.timezone_utc_min, e.timezone_utc_max, e.timezone_requirement]
+                    if e.timezone_utc_min is not None or e.timezone_requirement
+                    else None,
+                    "department": dept or "",
+                    "contract": emp or "",
+                    "workplace": e.remote_type,
+                    "named": e.allowed_countries,
                     "source": source,
                     "scope": scope_label(e),
                     "family": e.role_family,
@@ -105,11 +137,23 @@ def export(conn: sqlite3.Connection, out_dir: str | Path) -> str:
                 "name_fr": c["name_fr"],
                 "fr_le": c["fr_le"],
                 "fr_en": c["fr_en"],
+                "utc_offset": c["utc_offset"],
                 "counts": dict(Counter(j["verdict"] for j in data[code])),
             }
             for code, c in config.COUNTRIES.items()
         },
     }
+    # One record per job with every country's verdict, for job, company and search pages.
+    jobs: dict[str, dict] = {}
+    for code, rows_ in data.items():
+        for j in rows_:
+            rec = jobs.setdefault(
+                j["id"], {k: v for k, v in j.items() if k not in ("verdict", "reason")}
+            )
+            rec.setdefault("verdicts", {})[code] = {"v": j["verdict"], "reason": j["reason"]}
+    (out_dir / "jobs.json").write_text(
+        json.dumps(list(jobs.values()), ensure_ascii=False, separators=(",", ":")), "utf-8"
+    )
     (out_dir / "meta.json").write_text(json.dumps(meta, ensure_ascii=False, indent=1), "utf-8")
     lines = [f"## {config.PRODUCT_NAME} export", ""]
     for code, m in meta["countries"].items():

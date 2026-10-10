@@ -1,0 +1,19 @@
+---
+import JobPage from "../../components/JobPage.astro";
+import Layout from "../../layouts/Layout.astro";
+import { allJobs, type JobRecord, site } from "../../data";
+import { labels } from "../../i18n";
+
+export function getStaticPaths() {
+  return allJobs.map((job) => ({ params: { slug: job.slug }, props: { job } }));
+}
+const { job } = Astro.props as { job: JobRecord };
+const lang = "en";
+const open = Object.entries(job.verdicts)
+  .map(([c, x]) => `${c} ${labels.verdict[x.v][lang]}`)
+  .join(" · ");
+---
+
+<Layout lang={lang} page="job" country={job.slug} title={`${job.title}, ${job.company} | ${site.product}`} description={`${job.company}: ${job.title}. ${open}`}>
+  <JobPage job={job} lang={lang} />
+</Layout>

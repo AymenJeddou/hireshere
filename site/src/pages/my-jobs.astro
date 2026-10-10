@@ -1,0 +1,10 @@
+---
+import SavedJobs from "../components/SavedJobs.astro";
+import Layout from "../layouts/Layout.astro";
+import { site } from "../data";
+import { tr } from "../i18n";
+---
+
+<Layout lang="en" page="saved" title={`${tr("en", "my_jobs_title")} | ${site.product}`} description={tr("en", "my_jobs_note")}>
+  <SavedJobs lang="en" />
+</Layout>

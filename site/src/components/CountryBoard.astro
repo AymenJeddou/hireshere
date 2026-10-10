@@ -150,6 +150,20 @@ const sub = tr(lang, "country_sub", {
             </select>
           </label>
         </div>
+        <div class="filter-extra">
+          <label class="field">
+            <span>{tr(lang, "sort")}</span>
+            <select name="sort">
+              <option value="">{tr(lang, "sort_best")}</option>
+              <option value="new">{tr(lang, "sort_new")}</option>
+            </select>
+          </label>
+          <label class="check-label">
+            <input type="checkbox" name="sal" value="1" />
+            {tr(lang, "only_salary")}
+          </label>
+          <a class="my-jobs-link" href={href(lang, "saved")}>★ {tr(lang, "my_jobs")}</a>
+        </div>
         <div class="filter-status">
           <p class="count" aria-live="polite">
             <span data-status>{tr(lang, "results_count", { shown: jobs.length, total: jobs.length })}</span>

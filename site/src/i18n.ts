@@ -2,17 +2,20 @@
 export type Lang = "en" | "fr";
 export const LANGS: Lang[] = ["en", "fr"];
 
-export type Page = "home" | "country" | "how" | "sources";
+export type Page = "home" | "country" | "how" | "sources" | "job" | "saved";
 
 const SLUGS: Record<Page, Record<Lang, string>> = {
   home: { en: "/", fr: "/fr" },
   country: { en: "/", fr: "/fr/" },
   how: { en: "/how-it-works", fr: "/fr/comment-ca-marche" },
   sources: { en: "/sources", fr: "/fr/sources" },
+  job: { en: "/jobs/", fr: "/fr/jobs/" },
+  saved: { en: "/my-jobs", fr: "/fr/mes-offres" },
 };
 
 export function href(lang: Lang, page: Page, country?: string): string {
   if (page === "country") return SLUGS.country[lang] + (country ?? "").toLowerCase();
+  if (page === "job") return SLUGS.job[lang] + (country ?? "");
   return SLUGS[page][lang];
 }
 
@@ -174,6 +177,52 @@ const en = {
 
   how_title: "How it works",
   sources_title: "Sources",
+
+  new_badge: "New",
+  details: "Details",
+  who_can_apply: "Who can apply",
+  evidence: "Evidence from the posting",
+  d_location: "Location in the posting",
+  d_workplace: "Workplace",
+  d_contract: "Contract",
+  d_level: "Level",
+  d_field: "Field",
+  d_languages: "Languages required",
+  d_salary: "Salary",
+  d_timezone: "Time zone",
+  d_department: "Department",
+  d_source: "Source",
+  d_first_seen: "First seen",
+  tz_fits: "fits {country} (UTC{offset})",
+  tz_misses: "outside {country} hours (UTC{offset})",
+  workplace_fully_remote: "Fully remote",
+  workplace_hybrid: "Hybrid",
+  workplace_onsite: "On-site",
+  workplace_unclear: "Not stated",
+  more_at: "More jobs at {company}",
+  similar: "Similar jobs",
+  back_to_jobs: "All jobs for {country}",
+  hires_here: "This company names {countries} in its postings",
+  not_shown: "Not open to {country}",
+  save: "Save",
+  saved: "Saved",
+  my_jobs: "My jobs",
+  my_jobs_title: "My saved jobs",
+  my_jobs_empty: "No saved jobs yet. Tap “Save” on any job to keep it here.",
+  my_jobs_note: "Saved on this device only. Nothing is sent to our servers.",
+  status: "Status",
+  st_saved: "Saved",
+  st_applied: "Applied",
+  st_interview: "Interview",
+  st_offer: "Offer",
+  st_rejected: "Not selected",
+  remove: "Remove",
+  expired: "No longer listed",
+  sort: "Sort",
+  sort_best: "Best match",
+  sort_new: "Newest first",
+  only_salary: "Shows salary",
+  view_details: "Details",
 };
 
 const fr: typeof en = {
@@ -266,6 +315,52 @@ const fr: typeof en = {
 
   how_title: "Comment ça marche",
   sources_title: "Sources",
+
+  new_badge: "Nouveau",
+  details: "Détails",
+  who_can_apply: "Qui peut postuler",
+  evidence: "Preuve tirée de l’annonce",
+  d_location: "Localisation dans l’annonce",
+  d_workplace: "Lieu de travail",
+  d_contract: "Contrat",
+  d_level: "Niveau",
+  d_field: "Métier",
+  d_languages: "Langues exigées",
+  d_salary: "Salaire",
+  d_timezone: "Fuseau horaire",
+  d_department: "Département",
+  d_source: "Source",
+  d_first_seen: "Vue pour la première fois",
+  tz_fits: "compatible avec {country} (UTC{offset})",
+  tz_misses: "hors des horaires de {country} (UTC{offset})",
+  workplace_fully_remote: "100 % télétravail",
+  workplace_hybrid: "Hybride",
+  workplace_onsite: "Sur site",
+  workplace_unclear: "Non précisé",
+  more_at: "Autres offres chez {company}",
+  similar: "Offres similaires",
+  back_to_jobs: "Toutes les offres pour {country}",
+  hires_here: "Cette entreprise cite {countries} dans ses annonces",
+  not_shown: "Non ouvert {country}",
+  save: "Enregistrer",
+  saved: "Enregistrée",
+  my_jobs: "Mes offres",
+  my_jobs_title: "Mes offres enregistrées",
+  my_jobs_empty: "Aucune offre enregistrée. Appuyez sur « Enregistrer » sur une offre pour la garder ici.",
+  my_jobs_note: "Enregistré sur cet appareil uniquement. Rien n’est envoyé à nos serveurs.",
+  status: "Statut",
+  st_saved: "Enregistrée",
+  st_applied: "Candidature envoyée",
+  st_interview: "Entretien",
+  st_offer: "Offre reçue",
+  st_rejected: "Non retenue",
+  remove: "Retirer",
+  expired: "N’est plus publiée",
+  sort: "Trier",
+  sort_best: "Pertinence",
+  sort_new: "Plus récentes",
+  only_salary: "Salaire indiqué",
+  view_details: "Détails",
 };
 
 export const strings = { en, fr };

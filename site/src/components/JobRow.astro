@@ -1,6 +1,7 @@
 ---
-import type { Job } from "../data";
-import { formatDate, labels, languageName, type Lang, tr } from "../i18n";
+import { isNew, type Job, salaryText } from "../data";
+import { formatDate, href, labels, languageName, type Lang, tr } from "../i18n";
+import Avatar from "./Avatar.astro";
 import Lamp from "./Lamp.astro";
 
 interface Props {
@@ -10,8 +11,11 @@ interface Props {
   compact?: boolean;
 }
 const { job, lang, compact = false } = Astro.props;
+const salary = salaryText(job.salary, lang);
+const fresh = isNew(job.seen_at);
 const meta = [
   job.scope,
+  salary,
   job.seniority !== "unclear" ? labels.seniority[job.seniority as keyof typeof labels.seniority]?.[lang] : "",
   job.engagement !== "unclear"
     ? labels.engagement[job.engagement as keyof typeof labels.engagement]?.[lang]
@@ -33,11 +37,17 @@ const titleId = `t-${job.id.replace(/[^a-zA-Z0-9]/g, "-")}`;
   data-e={job.engagement}
   data-l={job.languages.join(" ")}
   data-q={`${job.title} ${job.company}`.toLowerCase()}
+  data-seen={job.seen_at}
+  data-sal={job.salary ? "1" : ""}
 >
   <article aria-labelledby={titleId}>
     <div class="job-head">
+      <Avatar name={job.company} companyKey={job.company_key} size={40} />
       <div class="job-id">
-        <h3 class="job-title" id={titleId}>{job.title}</h3>
+        <h3 class="job-title" id={titleId}>
+          <a href={href(lang, "job", job.slug)}>{job.title}</a>
+          {fresh && <span class="new-badge">{tr(lang, "new_badge")}</span>}
+        </h3>
         <p class="job-meta">
           <span class="company">{job.company}</span>
           {meta.map((m) => <span>{m}</span>)}
@@ -72,6 +82,12 @@ const titleId = `t-${job.id.replace(/[^a-zA-Z0-9]/g, "-")}`;
     </div>
 
     <div class="job-foot">
+      <button type="button" class="btn btn-secondary btn-compact save-btn" data-save={job.id} aria-pressed="false">
+        <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true">
+          <path d="M8 1.8l1.9 3.9 4.3.6-3.1 3 .7 4.3L8 11.6l-3.8 2 .7-4.3-3.1-3 4.3-.6z" fill="currentColor"></path>
+        </svg>
+        <span data-save-label data-on={tr(lang, "saved")} data-off={tr(lang, "save")}>{tr(lang, "save")}</span>
+      </button>
       {
         !compact && (
           <details class="report">

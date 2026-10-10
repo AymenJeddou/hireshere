@@ -1,0 +1,121 @@
+---
+import { href, type Lang, tr } from "../i18n";
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = {
+  jobBase: href(lang, "job", ""),
+  statuses: (["saved", "applied", "interview", "offer", "rejected"] as const).map((s) => [s, tr(lang, `st_${s}`)]),
+  status: tr(lang, "status"),
+  remove: tr(lang, "remove"),
+  expired: tr(lang, "expired"),
+  apply: tr(lang, "apply"),
+};
+---
+
+<div class="wrap">
+  <header class="page-head">
+    <h1>{tr(lang, "my_jobs_title")}</h1>
+    <p class="note">{tr(lang, "my_jobs_note")}</p>
+  </header>
+  <p class="empty-saved" data-empty hidden>{tr(lang, "my_jobs_empty")}</p>
+  <ol class="saved-list" data-list data-t={JSON.stringify(t)}></ol>
+</div>
+
+<script>
+  import { load, save, type Status } from "../scripts/saved";
+
+  const list = document.querySelector<HTMLOListElement>("[data-list]")!;
+  const empty = document.querySelector<HTMLElement>("[data-empty]")!;
+  const t = JSON.parse(list.dataset.t!);
+
+  async function render() {
+    const store = load();
+    const ids = Object.keys(store).sort((a, b) => store[b].t - store[a].t);
+    empty.hidden = ids.length > 0;
+    if (!ids.length) return void list.replaceChildren();
+    const index: Record<string, [string, string, string, string]> = await fetch("/saved-index.json")
+      .then((r) => r.json())
+      .catch(() => ({}));
+    list.replaceChildren(
+      ...ids.map((id) => {
+        const li = document.createElement("li");
+        li.className = "saved-item";
+        const info = index[id];
+        const title = document.createElement(info ? "a" : "span");
+        title.className = "saved-title";
+        title.textContent = info ? info[1] : t.expired;
+        if (info) (title as HTMLAnchorElement).href = t.jobBase + info[0];
+        const company = document.createElement("span");
+        company.className = "saved-company";
+        company.textContent = info ? info[2] : id;
+        const select = document.createElement("select");
+        select.setAttribute("aria-label", t.status);
+        for (const [v, label] of t.statuses) select.add(new Option(label, v, false, store[id].status === v));
+        select.addEventListener("change", () => {
+          const s = load();
+          if (s[id]) s[id].status = select.value as Status;
+          save(s);
+        });
+        const remove = document.createElement("button");
+        remove.type = "button";
+        remove.className = "link-button";
+        remove.textContent = t.remove;
+        remove.addEventListener("click", () => {
+          const s = load();
+          delete s[id];
+          save(s);
+          render();
+        });
+        const head = document.createElement("div");
+        head.append(title, company);
+        const actions = document.createElement("div");
+        actions.className = "saved-actions";
+        actions.append(select, remove);
+        li.append(head, actions);
+        return li;
+      }),
+    );
+  }
+  render();
+</script>
+
+<style>
+  .saved-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    max-width: 860px;
+  }
+  :global(.saved-item) {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-4) 0;
+    border-bottom: 1px solid var(--line);
+  }
+  :global(.saved-title) {
+    font-weight: 650;
+    display: block;
+  }
+  :global(.saved-company) {
+    color: var(--ink-2);
+    font-size: var(--step-0);
+  }
+  :global(.saved-actions) {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+  }
+  :global(.saved-actions select) {
+    width: auto;
+  }
+  .empty-saved {
+    color: var(--ink-2);
+    padding-block: var(--space-5);
+  }
+</style>

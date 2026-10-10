@@ -1,0 +1,58 @@
+---
+// Company mark: the real logo when we have one (public/logos/<key>.png), else initials.
+import { existsSync } from "node:fs";
+
+interface Props {
+  name: string;
+  companyKey: string;
+  size?: number;
+}
+const { name, companyKey, size = 40 } = Astro.props;
+const logo = `/logos/${companyKey}.png`;
+const hasLogo = existsSync(new URL(`../../public${logo}`, import.meta.url));
+const initials = name
+  .replace(/[^A-Za-z0-9 ]/g, " ")
+  .split(/\s+/)
+  .filter(Boolean)
+  .slice(0, 2)
+  .map((w) => w[0].toUpperCase())
+  .join("");
+// Stable, muted hue per company so the initials tile is recognisable but calm.
+const hue = [...companyKey].reduce((h, c) => (h * 31 + c.charCodeAt(0)) % 360, 7);
+---
+
+{
+  hasLogo ? (
+    <img class="avatar" src={logo} alt="" width={size} height={size} loading="lazy" decoding="async" />
+  ) : (
+    <span
+      class="avatar avatar-initials"
+      aria-hidden="true"
+      style={`--size:${size}px;--hue:${hue}`}
+    >
+      {initials}
+    </span>
+  )
+}
+
+<style>
+  .avatar {
+    flex: none;
+    width: var(--size, 40px);
+    height: var(--size, 40px);
+    border-radius: 8px;
+    object-fit: contain;
+    background: #fff;
+    border: 1px solid var(--line);
+  }
+  .avatar-initials {
+    display: inline-grid;
+    place-items: center;
+    background: hsl(var(--hue) 35% 93%);
+    color: hsl(var(--hue) 45% 28%);
+    border-color: hsl(var(--hue) 30% 85%);
+    font-weight: 700;
+    font-size: calc(var(--size) * 0.38);
+    letter-spacing: 0.02em;
+  }
+</style>
