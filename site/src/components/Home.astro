@@ -1,47 +1,22 @@
 ---
-import "../styles/board.css";
-import { countries, countryName, jobsFor, openCount, site, totalBoards } from "../data";
-import { formatDate, href, labels, type Lang, LOCALE, tr } from "../i18n";
-import JobRow from "./JobRow.astro";
-import Lamp from "./Lamp.astro";
-import { Image } from "astro:assets";
-import homeOffice from "../assets/photos/home-office.jpg";
+import { allJobs, site, totalBoards } from "../data";
+import { href, type Lang, LOCALE, tr } from "../i18n";
+import JobCard from "./JobCard.astro";
+import SearchBand from "./SearchBand.astro";
 
 interface Props {
   lang: Lang;
 }
 const { lang } = Astro.props;
-const sampleCountry = countries[0];
-// Proof, not a claim: one real job per verdict, each with a verbatim quote, from different companies.
-// The sample must agree with its own location field, so a reader never sees a doubtful example.
-const pool = jobsFor(sampleCountry.code).filter((j) => j.quote && j.confidence === "high");
-const used = new Set<string>();
-const sample = (["eligible", "likely", "unclear"] as const)
-  .map((v) => {
-    const job = pool.find(
-      (j) =>
-        j.verdict === v &&
-        !used.has(j.company) &&
-        (v !== "eligible" || /worldwide|global|anywhere|^remote$/i.test(j.location)) &&
-        (v !== "unclear" || /remote/i.test(j.quote)),
-    );
-    if (job) used.add(job.company);
-    return job;
-  })
-  .filter((j): j is NonNullable<typeof j> => Boolean(j));
-// One more real eligible job for the hero, distinct from the samples below.
-const hero = pool.find(
-  (j) =>
-    j.verdict === "eligible" &&
-    !used.has(j.company) &&
-    /worldwide|global|anywhere|^remote$/i.test(j.location) &&
-    j.quote.length <= 160,
-);
-const fresh = tr(lang, "home_fresh", {
-  jobs: site.open_jobs.toLocaleString(LOCALE[lang]),
-  companies: totalBoards(),
-  date: formatDate(site.updated, lang),
-});
+const open = allJobs.filter((j) => Object.values(j.verdicts).some((x) => x.v !== "unclear"));
+// Latest open jobs with a verbatim quote, one per company, newest first.
+const seen = new Set<string>();
+const latest = [...open]
+  .filter((j) => j.quote && j.confidence === "high")
+  .sort((a, b) => b.seen_at.localeCompare(a.seen_at))
+  .filter((j) => !seen.has(j.company_key) && seen.add(j.company_key))
+  .slice(0, 4);
+const num = (n: number) => n.toLocaleString(LOCALE[lang]);
 const steps = [
   ["home_how_1_t", "home_how_1"],
   ["home_how_2_t", "home_how_2"],
@@ -49,379 +24,42 @@ const steps = [
 ] as const;
 ---
 
-<div class="home">
-  <section class="hero">
-    <div class="wrap hero-grid">
-      <div class="hero-copy">
-        <h1>{tr(lang, "home_title")}</h1>
-        <p class="lede">{tr(lang, "home_lede")}</p>
-        <p class="fresh"><span class="pulse" aria-hidden="true"></span>{fresh}</p>
-      </div>
-      {
-        hero && (
-          <figure class={`proof v-${hero.verdict}`}>
-            <div class="proof-head">
-              <div>
-                <p class="proof-title">{hero.title}</p>
-                <p class="proof-meta">
-                  {hero.company} · {hero.scope}
-                </p>
-              </div>
-              <span class="verdict-tag">
-                <Lamp verdict={hero.verdict} />
-                {labels.verdict[hero.verdict][lang]}
-              </span>
-            </div>
-            <blockquote lang="und">
-              <p>{hero.quote}</p>
-            </blockquote>
-            <figcaption>{tr(lang, "home_proof", { country: countryName(sampleCountry, lang) })}</figcaption>
-          </figure>
-        )
-      }
-      <nav class="chooser" aria-labelledby="pick">
-        <h2 id="pick">{tr(lang, "home_pick")}</h2>
-        <ul>
-          {
-            countries.map((c) => (
-              <li>
-                <a href={href(lang, "country", c.code)}>
-                  <span class="c-name">{countryName(c, lang)}</span>
-                  <span class="c-counts">
-                    <span class="v-eligible c-count">
-                      <Lamp verdict="eligible" />
-                      <span class="num">{c.counts.eligible ?? 0}</span>
-                      <span class="c-word">{tr(lang, "eligible_n")}</span>
-                    </span>
-                    <span class="v-likely c-count">
-                      <Lamp verdict="likely" />
-                      <span class="num">{c.counts.likely ?? 0}</span>
-                      <span class="c-word">{tr(lang, "likely_n")}</span>
-                    </span>
-                  </span>
-                  <span class="c-sum">{tr(lang, "home_open", { n: openCount(c) })}</span>
-                  <svg class="c-arrow" width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
-                    <path d="M4 9h10M10 4.5 14.5 9 10 13.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path>
-                  </svg>
-                </a>
-              </li>
-            ))
-          }
-        </ul>
-      </nav>
-    </div>
-  </section>
+<SearchBand lang={lang} title={tr(lang, "home_title")} sub={tr(lang, "home_lede")} popular />
 
-  <section class="wrap sample" aria-labelledby="sample-title">
-    <div class="section-head">
-      <h2 id="sample-title">{tr(lang, "home_sample")}</h2>
-      <p>{tr(lang, "home_sample_note", { country: countryName(sampleCountry, lang) })}</p>
-    </div>
-    <ol class="jobs">
-      {sample.map((job) => <JobRow job={job} lang={lang} compact />)}
+<div class="wrap home">
+  <div class="stats">
+    <div class="stat"><b>{num(open.length)}</b><span>{tr(lang, "stat_jobs")}</span></div>
+    <div class="stat"><b>{num(totalBoards())}</b><span>{tr(lang, "stat_companies")}</span></div>
+    <div class="stat"><b>{num(site.open_jobs)}</b><span>{tr(lang, "stat_postings")}</span></div>
+  </div>
+
+  <section class="sec" aria-labelledby="latest">
+    <h2 id="latest">{tr(lang, "latest_jobs")}</h2>
+    <ol class="cards">
+      {latest.map((job) => <JobCard job={job} lang={lang} />)}
     </ol>
-    <a class="btn btn-secondary see-all" href={href(lang, "country", sampleCountry.code)}>
-      {
-        tr(lang, "home_see_all", {
-          n: openCount(sampleCountry),
-          country: countryName(sampleCountry, lang),
-        })
-      }
-    </a>
+    <p class="more-link"><a class="btn btn-secondary" href={href(lang, "search")}>{tr(lang, "see_all_n", { n: num(open.length) })}</a></p>
   </section>
 
-  <section class="wrap how" aria-labelledby="how-title">
-    <h2 id="how-title">{tr(lang, "home_how_title")}</h2>
-    <Image
-      class="photo"
-      src={homeOffice}
-      alt=""
-      widths={[480, 960, 1440]}
-      sizes="(max-width: 1180px) 100vw, 1180px"
-      loading="lazy"
-    />
-    <ol class="steps">
+  <section class="sec" aria-labelledby="how">
+    <h2 id="how">{tr(lang, "home_how_title")}</h2>
+    <ol class="howgrid">
       {
         steps.map(([title, body]) => (
-          <li>
+          <li class="panel">
             <h3>{tr(lang, title)}</h3>
             <p>{tr(lang, body)}</p>
           </li>
         ))
       }
     </ol>
-    <a href={href(lang, "how")}>{tr(lang, "home_more")}</a>
+    <p class="more-link"><a href={href(lang, "how")}>{tr(lang, "home_more")}</a></p>
   </section>
 </div>
 
 <style>
-  .hero {
-    background: var(--navy-800);
-    color: #fff;
-    padding-block: var(--space-7) var(--space-8);
-    border-top: 1px solid var(--navy-700);
-  }
-  .hero-grid {
-    display: grid;
-    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
-    grid-template-areas: "copy chooser" "proof chooser";
-    gap: var(--space-5) var(--space-7);
-    align-items: start;
-  }
-  .hero-copy {
-    grid-area: copy;
-  }
-  .chooser {
-    grid-area: chooser;
-    align-self: center;
-  }
-  .fresh {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.5rem;
+  .more-link {
     margin-top: var(--space-4);
-    color: var(--navy-200);
-    font-size: var(--step--1);
-    font-variant-numeric: tabular-nums;
-  }
-  .pulse {
-    flex: none;
-    margin-top: 0.45em;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: #3fbf7f;
-    box-shadow: 0 0 0 0 rgb(63 191 127 / 0.6);
-    animation: pulse 2.4s var(--ease-out) infinite;
-  }
-  @keyframes pulse {
-    70% {
-      box-shadow: 0 0 0 8px rgb(63 191 127 / 0);
-    }
-    100% {
-      box-shadow: 0 0 0 0 rgb(63 191 127 / 0);
-    }
-  }
-  .proof {
-    grid-area: proof;
-    margin: 0;
-    padding: var(--space-4) var(--space-5);
-    background: var(--navy-900);
-    border: 1px solid var(--navy-700);
-    border-radius: var(--radius);
-    display: grid;
-    gap: var(--space-3);
-    max-width: 560px;
-  }
-  .proof-head {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: var(--space-3);
-  }
-  .proof-title {
-    font-weight: 650;
-    color: #fff;
-  }
-  .proof-meta {
-    color: var(--navy-200);
-    font-size: var(--step--1);
-  }
-  .proof blockquote {
-    margin: 0;
-    padding-inline-start: var(--space-3);
-    border-inline-start: 1px solid var(--navy-200);
-    color: #fff;
-    font-size: var(--step-0);
-    line-height: 1.5;
-  }
-  .proof blockquote p::before {
-    content: "“";
-  }
-  .proof blockquote p::after {
-    content: "”";
-  }
-  .proof figcaption {
-    color: var(--navy-200);
-    font-size: var(--step--1);
-  }
-  h1 {
-    font-size: var(--step-4);
-    font-weight: 750;
-    letter-spacing: -0.03em;
-    line-height: 1.05;
-    max-width: 18ch;
-  }
-  .lede {
-    margin-top: var(--space-5);
-    font-size: var(--step-1);
-    line-height: 1.6;
-    color: var(--navy-200);
-    max-width: 52ch;
-  }
-  .chooser h2 {
-    font-size: var(--step--1);
-    font-weight: 600;
-    color: var(--navy-200);
-    margin-bottom: var(--space-3);
-    letter-spacing: 0.01em;
-  }
-  .chooser ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: grid;
-    gap: var(--space-2);
-  }
-  .chooser a {
-    display: grid;
-    grid-template-columns: 1fr auto auto;
-    grid-template-areas: "name counts arrow" "sum sum arrow";
-    align-items: center;
-    gap: 0.15rem var(--space-4);
-    padding: var(--space-4) var(--space-5);
-    background: var(--surface);
-    color: var(--ink);
-    border-radius: var(--radius);
-    text-decoration: none;
-    box-shadow: var(--shadow);
-    transition: transform 0.25s var(--ease-out), box-shadow 0.25s var(--ease-out);
-  }
-  .chooser a:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 2px 4px rgb(14 42 71 / 0.08), 0 12px 28px rgb(4 18 36 / 0.28);
-  }
-  .chooser a:hover .c-arrow {
-    transform: translateX(3px);
-  }
-  :global([dir="rtl"]) .c-arrow {
-    transform: scaleX(-1);
-  }
-  :global([dir="rtl"]) .chooser a:hover .c-arrow {
-    transform: scaleX(-1) translateX(3px);
-  }
-  .c-name {
-    grid-area: name;
-    font-size: var(--step-2);
-    font-weight: 700;
-    letter-spacing: -0.015em;
-  }
-  .c-counts {
-    grid-area: counts;
-    display: flex;
-    gap: var(--space-3);
-  }
-  .c-count {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    color: var(--v);
-    font-weight: 700;
-    font-size: var(--step-0);
-  }
-  .c-word {
-    font-weight: 500;
-    color: var(--ink-2);
-    font-size: var(--step--1);
-  }
-  .c-sum {
-    grid-area: sum;
-    color: var(--ink-2);
-    font-size: var(--step--1);
-  }
-  .c-arrow {
-    grid-area: arrow;
-    color: var(--ink-3);
-    transition: transform 0.25s var(--ease-out);
-  }
-
-  .section-head {
-    display: grid;
-    gap: var(--space-2);
-    margin-bottom: var(--space-2);
-  }
-  .section-head h2,
-  .how h2 {
-    font-size: var(--step-3);
-    font-weight: 700;
-  }
-  .section-head p {
-    color: var(--ink-2);
-  }
-  .sample {
-    padding-top: var(--space-8);
-  }
-  .sample .jobs,
-  .section-head {
-    max-width: 860px;
-  }
-  .see-all {
-    margin-top: var(--space-5);
-  }
-  .how {
-    padding-top: var(--space-8);
-  }
-.photo {
-    display: block;
-    width: 100%;
-    height: auto;
-    aspect-ratio: 21 / 9;
-    object-fit: cover;
-    border-radius: var(--radius);
-    margin-block: var(--space-5);
-  }
-  @media (max-width: 700px) {
-    .photo {
-      aspect-ratio: 16 / 10;
-    }
-  }
-  .steps {
-    list-style: none;
-    margin: var(--space-5) 0 var(--space-5);
-    padding: 0;
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: var(--space-6);
-    counter-reset: step;
-  }
-  .steps li {
-    border-top: 2px solid var(--ink);
-    padding-top: var(--space-4);
-    display: grid;
-    gap: var(--space-2);
-    align-content: start;
-  }
-  .steps h3 {
-    font-size: var(--step-1);
-  }
-  .steps p {
-    color: var(--ink-2);
-    font-size: var(--step-0);
-  }
-
-  @media (max-width: 900px) {
-    .hero-grid {
-      grid-template-columns: minmax(0, 1fr);
-      grid-template-areas: "copy" "chooser" "proof";
-      gap: var(--space-6);
-    }
-    .hero {
-      padding-block: var(--space-6) var(--space-7);
-    }
-    .steps {
-      grid-template-columns: minmax(0, 1fr);
-      gap: var(--space-5);
-    }
-  }
-  @media (max-width: 520px) {
-    .chooser a {
-      grid-template-columns: 1fr auto;
-      grid-template-areas: "name arrow" "counts arrow";
-      padding: var(--space-3) var(--space-4);
-    }
-    .c-sum {
-      display: none;
-    }
   }
 </style>
 

@@ -268,7 +268,7 @@ def test_alert_pick_and_token():
     subject, body, _ = render(
         {"lang": "ar", "country": "EG", "family": "data"}, jobs[:2], "https://u"
     )
-    assert "مصر" in subject and 'dir="rtl"' in body and "hireshere.app/ar/eg" in body
+    assert "مصر" in subject and 'dir="rtl"' in body and "hireshere.app/ar/jobs?c=EG" in body
 
 
 def test_every_reason_has_arabic():

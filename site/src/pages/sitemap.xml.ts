@@ -1,23 +1,18 @@
 import type { APIRoute } from "astro";
-import { allJobs, countries, jobsFor, site as meta } from "../data";
-import { href, labels, LANGS, type Page } from "../i18n";
+import { allJobs, site as meta } from "../data";
+import { href, LANGS, type Page } from "../i18n";
 
 export const GET: APIRoute = ({ site }) => {
   const pages: [Page, string?][] = [
     ["home"],
     ["how"],
     ["sources"],
-    ...countries.map((c): [Page, string] => ["country", c.code]),
+    ["search"],
     ...allJobs.map((j): [Page, string] => ["job", j.slug]),
     ["companies"],
     ["guide"],
     ["employers"],
     ...[...new Set(allJobs.map((j) => j.company_key))].map((k): [Page, string] => ["company", k]),
-    ...countries.flatMap((c) =>
-      Object.keys(labels.family)
-        .filter((f) => f !== "other" && jobsFor(c.code).some((j) => j.family === f && j.verdict !== "unclear"))
-        .map((f): [Page, string] => ["field", `${c.code.toLowerCase()}/${f}`]),
-    ),
   ];
   const lastmod = meta.updated.slice(0, 10);
   const urls = pages.flatMap(([p, c]) =>

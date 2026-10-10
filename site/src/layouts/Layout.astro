@@ -1,7 +1,10 @@
 ---
-import "@fontsource-variable/public-sans";
+import "@fontsource/roboto/400.css";
+import "@fontsource/roboto/500.css";
+import "@fontsource/roboto/700.css";
 import "../styles/global.css";
-import { countries, countryName, site } from "../data";
+import "../styles/components.css";
+import { site } from "../data";
 import { href, type Lang, LANGS, NATIVE, type Page, tr } from "../i18n";
 
 interface Props {
@@ -24,7 +27,7 @@ const alternate = (l: Lang) => new URL(href(l, page, country), Astro.site).toStr
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
-    <meta name="theme-color" content="#0e2a47" />
+    <meta name="theme-color" content="#0b3a53" />
     <link rel="canonical" href={canonical} />
     <link rel="alternate" hreflang="en" href={alternate("en")} />
     <link rel="alternate" hreflang="fr" href={alternate("fr")} />
@@ -45,42 +48,30 @@ const alternate = (l: Lang) => new URL(href(l, page, country), Astro.site).toStr
     <a class="skip" href="#main">{tr(lang, "skip")}</a>
     <header class="site-header">
       <div class="wrap">
-        <a class="brand" href={href(lang, "home")}>
-          <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true">
-            <circle cx="11" cy="11" r="10" fill="none" stroke="#b9c7da" stroke-width="1.6"></circle>
-            <circle cx="11" cy="11" r="5.5" fill="#f2b705"></circle>
-          </svg>
-          {site.product}
-        </a>
-        <nav class="country-nav" aria-label={tr(lang, "nav_countries")}>
+        <a class="brand" href={href(lang, "home")}><span class="brand-mark" aria-hidden="true"></span>{site.product}</a>
+        <nav class="main-nav" aria-label={tr(lang, "nav_main")}>
           {
-            countries.map((c) => (
-              <a
-                href={href(lang, "country", c.code)}
-                aria-current={country === c.code ? "page" : undefined}
-                lang={lang}
-              >
-                <span class="name">{countryName(c, lang)}</span>
-                <span class="code" aria-hidden="true">{c.code}</span>
+            ([["search", "nav_find"], ["companies", "nav_companies"], ["guide", "nav_guide"], ["how", "nav_how"]] as const).map(([p, k]) => (
+              <a href={href(lang, p)} aria-current={page === p || (p === "search" && page === "job") ? "page" : undefined}>
+                {tr(lang, k)}
               </a>
             ))
           }
         </nav>
         <div class="header-links">
-          <a class="text" href={href(lang, "saved")} aria-current={page === "saved" ? "page" : undefined}
-            >★ <span class="my-jobs-text">{tr(lang, "my_jobs")}</span></a
-          >
-          <a class="text" href={href(lang, "how")} aria-current={page === "how" ? "page" : undefined}
-            >{tr(lang, "nav_how")}</a
-          >
-          {
-            others.map((l) => (
-              <a class="lang-switch" href={href(l, page, country)} hreflang={l} lang={l} aria-label={NATIVE[l].name}>
-                <span class="long" aria-hidden="true">{NATIVE[l].name}</span>
-                <span class="short" aria-hidden="true">{NATIVE[l].short}</span>
-              </a>
-            ))
-          }
+          <a class="saved-link" href={href(lang, "saved")} aria-current={page === "saved" ? "page" : undefined}>
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9 6.8 19.6l1-5.8L3.5 9.7l5.9-.9z" /></svg>
+            <span class="label">{tr(lang, "my_jobs")}</span>
+          </a>
+          <span class="lang-switch">
+            {
+              others.map((l) => (
+                <a href={href(l, page, country)} hreflang={l} lang={l} aria-label={NATIVE[l].name}>
+                  {NATIVE[l].short}
+                </a>
+              ))
+            }
+          </span>
         </div>
       </div>
     </header>

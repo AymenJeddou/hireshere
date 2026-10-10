@@ -17,3 +17,4 @@ site/src/data/*.json
 .impeccable/questions/
 alerts-preview.html
 data/candidates2.csv
+.impeccable/directions/

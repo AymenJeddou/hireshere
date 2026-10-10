@@ -1,9 +1,8 @@
 ---
-import "../styles/board.css";
 import { companyJobs, countries, countryName, type JobRecord } from "../data";
-import { href, labels, type Lang, tr } from "../i18n";
+import { labels, type Lang, tr } from "../i18n";
 import Avatar from "./Avatar.astro";
-import Lamp from "./Lamp.astro";
+import JobCard from "./JobCard.astro";
 
 interface Props {
   companyKey: string;
@@ -21,10 +20,6 @@ const named = [...new Set(jobs.flatMap((j) => j.named))].filter((c) =>
   countries.some((x) => x.code === c),
 );
 const contracts = [...new Set(jobs.map((j) => j.engagement).filter((e) => e !== "unclear"))];
-const best = (j: JobRecord) =>
-  (["eligible", "likely", "unclear"] as const).find((v) =>
-    Object.values(j.verdicts).some((x) => x.v === v),
-  )!;
 ---
 
 <div class="wrap company-page">
@@ -80,23 +75,9 @@ const best = (j: JobRecord) =>
   }
 
   <h2 class="cp-h2">{tr(lang, "jobs_at", { company: name })}</h2>
-  <ul class="cp-jobs">
-    {
-      jobs.map((j) => {
-        const v = best(j);
-        return (
-          <li class={`v-${v}`}>
-            <a href={href(lang, "job", j.slug)}>{j.title}</a>
-            <span class="verdict-tag">
-              <Lamp verdict={v} />
-              {labels.verdict[v][lang]}
-            </span>
-            <span class="cp-scope">{j.scope}</span>
-          </li>
-        );
-      })
-    }
-  </ul>
+  <ol class="cards">
+    {jobs.map((j) => <JobCard job={j} lang={lang} />)}
+  </ol>
 </div>
 
 <style>
@@ -185,3 +166,8 @@ const best = (j: JobRecord) =>
     }
   }
 </style>
+
+<script>
+  import { initSaveButtons } from "../scripts/saved";
+  initSaveButtons();
+</script>

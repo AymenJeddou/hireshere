@@ -5,7 +5,7 @@
 | 0 | Repo, docs, CI | done |
 | 1 | Ingestion: seed list, 4 ATS connectors, SQLite diff, CLI, daily workflow | done (2026-10-08) |
 | 2 | Classification (Gemini), verdict function, 200-job eval set | done; eval labels are AI drafts awaiting human review |
-| 3 | Astro site, country pages, filters, alerts signup | done, live at https://hireshere.app |
+| 3 | Astro site, job search with filters, alerts signup | done, live at https://hireshere.app (redesigned 2026-10-10) |
 | 4 | Cloudflare Pages, custom domain, end to end automation, monitoring | live on hireshere.app with daily deploy; analytics and monitoring pending |
 | 5 | Job, company and field pages, saved jobs and applied tracker, profile, employer page, getting-paid guide, AR (RTL) UI, Workable/Recruitee/Teamtailor/Remote OK | done (2026-10-10) |
 

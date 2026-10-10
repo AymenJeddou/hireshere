@@ -95,7 +95,7 @@ def render(sub: dict, jobs: list[dict], unsub_url: str) -> tuple[str, str, str]:
     v = {"n": len(jobs), "country": name, "country_en": c.get("fr_en", name)}
     v["field"] = t["field"].format(field=field) if field else ""
     subject = t["subject1" if len(jobs) == 1 else "subject"].format(**v)
-    page = f"https://{config.DOMAIN}{'' if lang == 'en' else '/' + lang}/{sub['country'].lower()}"
+    page = f"https://{config.DOMAIN}{'' if lang == 'en' else '/' + lang}/jobs?c={sub['country']}"
     shown = jobs[:MAX_JOBS]
     e = html.escape
 

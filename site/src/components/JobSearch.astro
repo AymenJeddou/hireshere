@@ -1,0 +1,180 @@
+---
+import { allJobs, countries, countryName } from "../data";
+import { href, labels, languageName, type Lang, tr, VERDICTS } from "../i18n";
+import JobCard from "./JobCard.astro";
+import Lamp from "./Lamp.astro";
+import SearchBand from "./SearchBand.astro";
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+// Best verdict anywhere first, then newest: the order before any filter is applied.
+const rank = (j: (typeof allJobs)[number]) =>
+  Math.min(...Object.values(j.verdicts).map((x) => VERDICTS.indexOf(x.v as (typeof VERDICTS)[number])));
+const jobs = [...allJobs].sort((a, b) => rank(a) - rank(b) || b.seen_at.localeCompare(a.seen_at));
+
+const values = (key: "family" | "seniority" | "engagement") => {
+  const order = Object.keys(labels[key]);
+  return [...new Set(jobs.map((j) => j[key]))].sort((a, b) => order.indexOf(a) - order.indexOf(b));
+};
+const languages = [...new Set(jobs.flatMap((j) => j.languages))].sort(
+  (a, b) => jobs.filter((j) => j.languages.includes(b)).length - jobs.filter((j) => j.languages.includes(a)).length,
+);
+const groupsList = [
+  { key: "f", title: tr(lang, "filter_family"), items: values("family").map((v) => [v, labels.family[v as keyof typeof labels.family]?.[lang] ?? v]) },
+  { key: "s", title: tr(lang, "filter_seniority"), items: values("seniority").map((v) => [v, labels.seniority[v as keyof typeof labels.seniority]?.[lang] ?? v]) },
+  { key: "e", title: tr(lang, "filter_engagement"), items: values("engagement").map((v) => [v, labels.engagement[v as keyof typeof labels.engagement]?.[lang] ?? v]) },
+  { key: "l", title: tr(lang, "filter_language"), items: languages.map((v) => [v, languageName(v, lang)]) },
+];
+const i18n = {
+  jobsN: tr(lang, "jobs_n"),
+  jobsN1: tr(lang, "jobs_n1"),
+  openTo: tr(lang, "jobs_open_to"),
+  openAny: tr(lang, "jobs_open_any"),
+  region: tr(lang, "region_name"),
+  inPlaces: tr(lang, "verdict_in"),
+  inAll: tr(lang, "verdict_all"),
+  label: Object.fromEntries(VERDICTS.map((v) => [v, labels.verdict[v][lang]])),
+  names: Object.fromEntries(countries.map((c) => [c.code, countryName(c, lang)])),
+  filters: tr(lang, "filters_title"),
+  noneQ: tr(lang, "results_none_q"),
+  noneTitle: tr(lang, "results_none_title"),
+  prev: tr(lang, "prev"),
+  next: tr(lang, "next"),
+  sending: tr(lang, "sending"),
+  alertsOk: tr(lang, "alerts_ok"),
+  alertsFailed: tr(lang, "alerts_failed"),
+  alertsInvalid: tr(lang, "alerts_invalid"),
+  remove: tr(lang, "remove"),
+};
+---
+
+<div class="search-page" data-search data-i18n={JSON.stringify(i18n)}>
+  <SearchBand lang={lang} title={tr(lang, "search_title")} />
+
+  <div class="wrap results">
+    <aside class="filters" id="filters" aria-label={tr(lang, "filters_title")}>
+      <form data-filters onsubmit="return false">
+        <div class="filters-head">
+          <h2>{tr(lang, "filters_title")}</h2>
+          <button type="button" class="link-button" data-clear>{tr(lang, "clear_all")}</button>
+        </div>
+        <fieldset class="facet">
+          <legend>{tr(lang, "facet_country")}</legend>
+          {
+            countries.map((c) => (
+              <label>
+                <input type="checkbox" name="c" value={c.code} />
+                {countryName(c, lang)}
+                <span class="n" data-n={`c:${c.code}`} />
+              </label>
+            ))
+          }
+        </fieldset>
+        <fieldset class="facet">
+          <legend>{tr(lang, "facet_verdict")}</legend>
+          {
+            VERDICTS.map((v) => (
+              <label class={`v-${v}`}>
+                <input type="checkbox" name="v" value={v} checked={v !== "unclear"} />
+                <Lamp verdict={v} />
+                <span class="vname">{labels.verdict[v][lang]}</span>
+                <span class="n" data-n={`v:${v}`} />
+              </label>
+            ))
+          }
+        </fieldset>
+        {
+          groupsList.map((g) => (
+            <fieldset class="facet">
+              <legend>{g.title}</legend>
+              {g.items.map(([v, name]) => (
+                <label>
+                  <input type="checkbox" name={g.key} value={v} />
+                  {name}
+                  <span class="n" data-n={`${g.key}:${v}`} />
+                </label>
+              ))}
+            </fieldset>
+          ))
+        }
+        <fieldset class="facet">
+          <legend>{tr(lang, "facet_found")}</legend>
+          <label><input type="radio" name="d" value="1" />{tr(lang, "found_24h")}<span class="n" data-n="d:1" /></label>
+          <label><input type="radio" name="d" value="7" />{tr(lang, "found_7d")}<span class="n" data-n="d:7" /></label>
+          <label><input type="radio" name="d" value="" checked />{tr(lang, "found_any")}<span class="n" data-n="d:" /></label>
+        </fieldset>
+        <fieldset class="facet">
+          <legend>{tr(lang, "facet_salary")}</legend>
+          <label><input type="checkbox" name="sal" value="1" />{tr(lang, "only_salary")}<span class="n" data-n="sal:1" /></label>
+        </fieldset>
+      </form>
+
+      <section class="panel alerts" aria-labelledby="alerts-title">
+        <h2 id="alerts-title">{tr(lang, "alerts_title")}</h2>
+        <p>{tr(lang, "alerts_privacy")}</p>
+        <form class="alerts-form" method="post" action="/api/subscribe" novalidate>
+          <input type="hidden" name="lang" value={lang} />
+          <div class="hp" aria-hidden="true">
+            <label>Website <input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
+          </div>
+          <label class="field">
+            <span>{tr(lang, "alerts_email")}</span>
+            <input type="email" name="email" required autocomplete="email" inputmode="email" />
+          </label>
+          <label class="field">
+            <span>{tr(lang, "alerts_country")}</span>
+            <select name="country" data-alert-country>
+              {countries.map((c) => <option value={c.code}>{countryName(c, lang)}</option>)}
+            </select>
+          </label>
+          <label class="field">
+            <span>{tr(lang, "alerts_family")}</span>
+            <select name="family">
+              <option value="">{tr(lang, "alerts_all")}</option>
+              {Object.entries(labels.family).map(([k, l]) => <option value={k}>{l[lang]}</option>)}
+            </select>
+          </label>
+          <button class="btn btn-primary" type="submit">{tr(lang, "alerts_submit")}</button>
+          <p class="form-msg" role="status" aria-live="polite"></p>
+        </form>
+      </section>
+    </aside>
+
+    <section class="list" aria-labelledby="count">
+      <div class="list-head">
+        <h2 id="count" aria-live="polite"><span data-count>{tr(lang, "jobs_n", { n: jobs.length })}</span> <span class="sub" data-sub>{tr(lang, "jobs_open_any")}</span></h2>
+        <label class="sort">
+          <span>{tr(lang, "sort")}</span>
+          <select name="sort" data-sort>
+            <option value="">{tr(lang, "sort_best")}</option>
+            <option value="new">{tr(lang, "sort_new")}</option>
+          </select>
+        </label>
+      </div>
+      <div class="chips" data-chips>
+        <a class="chip chip-filters" href="#filters" data-open-filters>{tr(lang, "filters_title")}</a>
+      </div>
+      <p class="profile-banner" data-profile-banner hidden>
+        {tr(lang, "profile_active")}
+        <a href={href(lang, "saved")}>{tr(lang, "profile_edit")}</a>
+        <button type="button" class="link-button" data-profile-off>{tr(lang, "profile_show_all")}</button>
+      </p>
+      <ol class="cards" data-cards>
+        {jobs.map((job) => <JobCard job={job} lang={lang} />)}
+      </ol>
+      <div class="empty" data-empty hidden>
+        <h3 data-empty-title>{tr(lang, "results_none_title")}</h3>
+        <p>{tr(lang, "results_none")}</p>
+        <button type="button" class="btn btn-secondary" data-clear>{tr(lang, "clear_all")}</button>
+      </div>
+      <nav class="pager" aria-label="Pagination" data-pager></nav>
+    </section>
+  </div>
+</div>
+
+<script>
+  import { initSearch } from "../scripts/search";
+  initSearch();
+</script>

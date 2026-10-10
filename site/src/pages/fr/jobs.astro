@@ -1,0 +1,11 @@
+---
+import JobSearch from "../../components/JobSearch.astro";
+import Layout from "../../layouts/Layout.astro";
+import { site } from "../../data";
+import { tr } from "../../i18n";
+const lang = "fr";
+---
+
+<Layout lang={lang} page="search" title={`${tr(lang, "search_title")} | ${site.product}`} description={tr(lang, "home_lede")}>
+  <JobSearch lang={lang} />
+</Layout>

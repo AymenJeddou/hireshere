@@ -2,8 +2,6 @@
 import { allJobs } from "../data";
 import { href, type Lang, tr } from "../i18n";
 import Avatar from "./Avatar.astro";
-import { Image } from "astro:assets";
-import cafe from "../assets/photos/cafe.jpg";
 
 interface Props {
   lang: Lang;
@@ -24,7 +22,6 @@ const companies = [...byKey.entries()].sort((a, b) => b[1].n - a[1].n);
     <h1>{tr(lang, "companies_title")}</h1>
     <p class="sub">{tr(lang, "companies_intro")}</p>
   </header>
-  <Image class="photo" src={cafe} alt="" widths={[480, 960, 1440]} sizes="(max-width: 1180px) 100vw, 1180px" />
   <ul class="co-grid">
     {
       companies.map(([key, c]) => (

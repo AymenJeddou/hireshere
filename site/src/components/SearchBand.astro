@@ -1,0 +1,48 @@
+---
+import { countries, countryName } from "../data";
+import { href, labels, type Lang, tr } from "../i18n";
+
+interface Props {
+  lang: Lang;
+  title: string;
+  sub?: string;
+  /** Show quick links to popular fields (home page). */
+  popular?: boolean;
+}
+const { lang, title, sub, popular = false } = Astro.props;
+const fields = ["engineering", "support", "data", "design", "sales", "marketing"] as const;
+---
+
+<section class="band">
+  <div class="wrap">
+    <h1>{title}</h1>
+    {sub && <p class="band-sub">{sub}</p>}
+    <form class="searchbar" role="search" method="get" action={href(lang, "search")} data-searchbar>
+      <label class="sb-field">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="M20 20l-4-4" /></svg>
+        <span class="sr-only">{tr(lang, "search_ph")}</span>
+        <input type="search" name="q" placeholder={tr(lang, "search_ph")} autocomplete="off" />
+      </label>
+      <label class="sb-field">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18" /></svg>
+        <span class="sr-only">{tr(lang, "facet_country")}</span>
+        <select name="c">
+          <option value="">{tr(lang, "all_countries")}</option>
+          {countries.map((c) => <option value={c.code}>{countryName(c, lang)}</option>)}
+          <option value="multi" hidden disabled>{tr(lang, "several_countries")}</option>
+        </select>
+      </label>
+      <button class="btn btn-accent sb-go" type="submit">{tr(lang, "search_btn")}</button>
+    </form>
+    {
+      popular && (
+        <p class="quick">
+          <span>{tr(lang, "popular")}</span>
+          {fields.map((f) => (
+            <a href={`${href(lang, "search")}?f=${f}`}>{labels.family[f][lang]}</a>
+          ))}
+        </p>
+      )
+    }
+  </div>
+</section>
