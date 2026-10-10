@@ -1,6 +1,8 @@
 """Single source of truth for names, endpoints etiquette and launch countries."""
 
+import json
 import os
+from pathlib import Path
 
 PRODUCT_NAME = "HiresHere"
 DOMAIN = "hireshere.app"
@@ -15,7 +17,7 @@ MAX_CONSECUTIVE_FAILURES = 5
 DB_PATH = os.environ.get("JOBS_DB", "jobs.db")
 BOARDS_CSV = "data/boards.csv"
 
-# Countries are configuration, not code. Add a row to support a new country.
+# Featured countries (Telegram channels, getting-paid guide). Configuration, not code.
 # utc_offset is the standard offset used to match time zone windows.
 # regions are the region names (pipeline/classify/schema.py REGIONS) that include it.
 _NORTH_AFRICA = ["Africa", "North Africa", "MENA", "EMEA"]
@@ -24,9 +26,6 @@ COUNTRIES = {
         "name": "Tunisia",
         "name_fr": "Tunisie",
         "name_ar": "تونس",
-        "fr_le": "la Tunisie",
-        "fr_en": "en Tunisie",
-        "fr_hors": "hors de Tunisie",
         "utc_offset": 1,
         "regions": _NORTH_AFRICA,
     },
@@ -34,9 +33,6 @@ COUNTRIES = {
         "name": "Morocco",
         "name_fr": "Maroc",
         "name_ar": "المغرب",
-        "fr_le": "le Maroc",
-        "fr_en": "au Maroc",
-        "fr_hors": "hors du Maroc",
         "utc_offset": 1,
         "regions": _NORTH_AFRICA,
     },
@@ -44,9 +40,6 @@ COUNTRIES = {
         "name": "Algeria",
         "name_fr": "Algérie",
         "name_ar": "الجزائر",
-        "fr_le": "l'Algérie",
-        "fr_en": "en Algérie",
-        "fr_hors": "hors d'Algérie",
         "utc_offset": 1,
         "regions": _NORTH_AFRICA,
     },
@@ -54,12 +47,19 @@ COUNTRIES = {
         "name": "Egypt",
         "name_fr": "Égypte",
         "name_ar": "مصر",
-        "fr_le": "l'Égypte",
-        "fr_en": "en Égypte",
-        "fr_hors": "hors d'Égypte",
         "utc_offset": 2,
         "regions": [*_NORTH_AFRICA, "Middle East"],
     },
+}
+
+# Every country a visitor can pick (data/countries.json): names, regions and the UTC offset
+# range [min, max] from the IANA tz database. Featured countries keep their own entries above
+# (single utc_offset, regions), so their verdicts do not change.
+WORLD = {
+    code: c | COUNTRIES.get(code, {})
+    for code, c in json.loads(
+        (Path(__file__).parent.parent / "data/countries.json").read_text("utf-8")
+    ).items()
 }
 
 # Phase 2 classifier. Prices are USD per million tokens for standard (non-batch) calls,

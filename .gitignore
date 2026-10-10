@@ -13,6 +13,7 @@ site/node_modules/
 site/dist/
 site/.astro/
 site/src/data/*.json
+site/public/data/
 .impeccable/review/
 .impeccable/questions/
 alerts-preview.html

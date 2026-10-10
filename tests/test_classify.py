@@ -187,9 +187,9 @@ def test_worldwide_needs_role_level_evidence():
 def test_reasons_in_french():
     e = ex(geo_scope="timezone_only", timezone_utc_min=-1, timezone_utc_max=3)
     v, reason = verdict(e, "TN", TN, lang="fr")
-    assert v == "likely" and reason == "La plage horaire UTC-1 à UTC+3 inclut la Tunisie"
+    assert v == "likely" and reason == "La plage horaire UTC-1 à UTC+3 inclut Tunisie"
     v, reason = verdict(ex(geo_scope="regions", allowed_regions=["EMEA"]), "EG", EG, lang="fr")
-    assert reason == "Ouvert à la région EMEA, qui inclut l'Égypte"
+    assert reason == "Ouvert à la région EMEA, qui inclut Égypte"
 
 
 def test_export_shows_open_verdicts_only_and_never_descriptions(tmp_path):
@@ -214,14 +214,55 @@ def test_export_shows_open_verdicts_only_and_never_descriptions(tmp_path):
                allowed_countries=["US"] if scope == "countries" else [])  # fmt: skip
         runner.save(conn, dict(conn.execute("SELECT * FROM jobs WHERE id=?", (j.id,)).fetchone()),
                     e, 1, 1)  # fmt: skip
-    export(conn, tmp_path)
-    tn = json.loads((tmp_path / "tn.json").read_text(encoding="utf-8"))
-    assert [j["title"] for j in tn] == ["Job 0"]
-    assert tn[0]["verdict"] == "eligible" and tn[0]["quote"] == "Work from anywhere."
-    assert tn[0]["reason"]["fr"] == "Ouvert aux candidats du monde entier"
-    assert "SECRET" not in (tmp_path / "tn.json").read_text(encoding="utf-8")
+    export(conn, tmp_path, tmp_path / "pub")
+    fr = json.loads((tmp_path / "pub/search-fr.json").read_text(encoding="utf-8"))
+    fr.sort(key=lambda j: j["title"], reverse=True)
+    assert [j["title"] for j in fr] == ["Job 1", "Job 0"]
+    assert fr[0]["groups"] == [{"v": "eligible", "r": "{c} figure parmi les pays acceptés",
+                                "c": ["US"]}]  # fmt: skip
+    assert fr[1]["groups"] == [{"v": "eligible", "r": "Ouvert aux candidats du monde entier",
+                                "c": "*"}]  # fmt: skip
+    assert fr[1]["quote"] == "Work from anywhere."
+    shards = list((tmp_path / "pub/j").glob("*.json"))
+    text = "".join(p.read_text(encoding="utf-8") for p in [*shards, *tmp_path.glob("pub/*.json")])
+    assert "SECRET" not in text
+    detail = json.loads(shards[0].read_text(encoding="utf-8"))
+    rec = next(iter(detail.values()))
+    assert rec["company_n"] == 2 and len(rec["more"]) == 1 and rec["url"].startswith("https://x/")
     meta = json.loads((tmp_path / "meta.json").read_text(encoding="utf-8"))
-    assert meta["countries"]["TN"]["counts"] == {"eligible": 1}
+    assert meta["countries"]["TN"]["counts"] == {"eligible": 1} and meta["jobs"] == 2
+    assert meta["world"]["BR"]["name_fr"] == "Brésil"
+
+
+def test_groups_encoding_and_lookup():
+    from pipeline.export import country_view, for_country, groups
+
+    # Open worldwide except one country: "*" is the common outcome, the exclusion is listed.
+    gs = groups(ex(geo_scope="worldwide", excluded_countries=["RU"]), "Remote - Worldwide")
+    assert [(g["v"], g["c"]) for g in gs] == [("eligible", "*"), ("not_eligible", ["RU"])]
+    assert gs[1]["r"]["en"] == "{c} is explicitly excluded"
+    assert for_country(gs, "BR")["v"] == "eligible" and for_country(gs, "RU")["v"] == "not_eligible"
+    # Mostly closed: no "*", exclusions are left out, shown countries are listed.
+    gs = groups(ex(geo_scope="countries", allowed_countries=["US", "CA"]))
+    assert [(g["v"], g["c"]) for g in gs] == [("eligible", ["CA", "US"])]
+    assert for_country(gs, "TN") is None
+    # Hybrid with no country named: office days elsewhere for everyone, nothing to show.
+    assert groups(ex(remote_type="hybrid")) == []
+    # Regions differ per country, so they split into groups; names are filled in per country.
+    gs = groups(ex(geo_scope="regions", allowed_regions=["Middle East", "Africa"]))
+    view = country_view([{"id": "x", "groups": gs}], "EG")
+    assert view[0]["verdict"] == "likely" and "Egypt" in view[0]["reason"]["en"]
+    assert "{c}" not in view[0]["reason"]["ar"] and country_view([{"groups": gs}], "FR") == []
+
+
+def test_timezone_range_overlaps():
+    us = config.WORLD["US"]  # UTC-10 to UTC-4
+    e = ex(geo_scope="timezone_only", timezone_utc_min=-5, timezone_utc_max=-3)
+    assert verdict(e, "US", us)[0] == "likely"
+    assert verdict(e, "IN", config.WORLD["IN"])[0] == "not_eligible"
+    # A featured country's single utc_offset still decides.
+    assert verdict(ex(geo_scope="timezone_only", timezone_utc_min=2, timezone_utc_max=3), "TN",
+                   config.WORLD["TN"])[0] == "not_eligible"  # fmt: skip
 
 
 def test_listed_region_beats_anywhere_text():
@@ -264,7 +305,9 @@ def test_alert_pick_and_token():
     subject, body, text = render(
         {"lang": "fr", "country": "MA", "family": "data"}, jobs[:1], "https://u"
     )
-    assert subject == "1 nouvelle offre en télétravail ouverte au Maroc" and "https://u" in text
+    assert subject == "Maroc : 1 nouvelle offre en télétravail ouverte" and "https://u" in text
+    subject, _, _ = render({"lang": "en", "country": "BR", "family": ""}, jobs[:2], "https://u")
+    assert subject == "2 new remote jobs open to Brazil"
     subject, body, _ = render(
         {"lang": "ar", "country": "EG", "family": "data"}, jobs[:2], "https://u"
     )

@@ -1,4 +1,4 @@
-"""Post new eligible/likely jobs to one Telegram channel per country.
+"""Post new eligible/likely jobs to one Telegram channel per featured country (config.COUNTRIES).
 
 Config (env): TELEGRAM_BOT_TOKEN, and TELEGRAM_CHANNELS such as
 "TN=@hireshere_tn:fr,EG=@hireshere_eg:ar" (country=channel[:lang], lang defaults to en).
@@ -16,7 +16,7 @@ import httpx
 
 from pipeline import config
 from pipeline.alerts import T
-from pipeline.export import build
+from pipeline.export import build, country_view
 
 PER_RUN = 15  # ponytail: fixed cap per channel per run; Telegram allows ~20 posts/min per channel
 FIRST_RUN = 5
@@ -56,7 +56,7 @@ def run(conn: sqlite3.Connection) -> str:
         "CREATE TABLE IF NOT EXISTS telegram_posts (job_id TEXT, channel TEXT, posted_at TEXT,"
         " PRIMARY KEY (job_id, channel))"
     )
-    per_country = build(conn)
+    jobs = build(conn)
     first_seen = dict(conn.execute("SELECT id, first_seen_at FROM jobs WHERE expired_at IS NULL"))
     report = []
     with httpx.Client(timeout=30) as client:
@@ -67,7 +67,7 @@ def run(conn: sqlite3.Connection) -> str:
             }
             new = [
                 j
-                for j in per_country.get(code, [])
+                for j in country_view(jobs, code)
                 if j["verdict"] in ("eligible", "likely") and j["id"] not in done
             ]
             # Oldest first, so the newest job ends up at the bottom of the channel.

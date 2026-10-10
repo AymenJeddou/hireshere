@@ -12,15 +12,17 @@ from pipeline.classify.schema import Extraction
 Verdict = Literal["eligible", "likely", "unclear", "not_eligible"]
 LANGS = ("en", "fr", "ar")
 
+# French templates never put an article or preposition before a country name, so they work
+# for every country: "{name_fr} figure parmi les pays acceptés".
 REASONS = {
-    "excluded": ("{name} is explicitly excluded", "Ce poste exclut explicitement {fr_le}"),
+    "excluded": ("{name} is explicitly excluded", "Pays exclu explicitement : {name_fr}"),
     "office_here": (
         "Requires {where} in {name}",
-        "Demande {where_fr} {fr_en}",
+        "Demande {where_fr} sur place ({name_fr})",
     ),
     "office_elsewhere": (
         "Requires {where} outside {name}",
-        "Demande {where_fr} {fr_hors}",
+        "Demande {where_fr} hors de ce pays ({name_fr})",
     ),
     "auth": (
         "Requires existing work authorization in {places}",
@@ -28,12 +30,12 @@ REASONS = {
     ),
     "listed": (
         "{name} is listed as an allowed country",
-        "L'annonce cite {fr_le} parmi les pays acceptés",
+        "{name_fr} figure parmi les pays acceptés",
     ),
     "countries_only": ("Limited to {places}", "Limité à {places}"),
     "worldwide_tz": (
         "Open worldwide but time zone {tz} excludes {name}",
-        "Ouvert partout, mais le fuseau {tz} exclut {fr_le}",
+        "Ouvert partout, mais le fuseau {tz} exclut {name_fr}",
     ),
     "worldwide": ("Open to candidates worldwide", "Ouvert aux candidats du monde entier"),
     "conflict": (
@@ -46,11 +48,11 @@ REASONS = {
     ),
     "region": (
         "Open to the {region} region, which includes {name}",
-        "Ouvert à la région {region}, qui inclut {fr_le}",
+        "Ouvert à la région {region}, qui inclut {name_fr}",
     ),
     "regions_only": ("Limited to {places}", "Limité à {places}"),
-    "tz_ok": ("Time zone window {tz} includes {name}", "La plage horaire {tz} inclut {fr_le}"),
-    "tz_no": ("Time zone window {tz} excludes {name}", "La plage horaire {tz} exclut {fr_le}"),
+    "tz_ok": ("Time zone window {tz} includes {name}", "La plage horaire {tz} inclut {name_fr}"),
+    "tz_no": ("Time zone window {tz} excludes {name}", "La plage horaire {tz} exclut {name_fr}"),
     "remote_unclear": (
         "Remote, but the posting does not say where candidates may live",
         "Télétravail, mais l'annonce ne précise pas d'où les candidats peuvent travailler",
@@ -114,10 +116,13 @@ def verdict(
     `location` is the posting's raw location field; it decides whether a "worldwide"
     extraction rests on role-level evidence or on a company slogan.
     """
-    v, key, params = _decide(e, code, country, location, title)
-    fields = {"name": country["name"]} | {
-        k: country.get(k, country["name"]) for k in ("fr_le", "fr_en", "fr_hors", "name_ar")
-    }
+    v, key, params = decide(e, code, country, location, title)
+    return v, reason(key, params, country, lang)
+
+
+def reason(key: str, params: dict, country: dict, lang: str) -> str:
+    """Render a decided reason. Country names come from name, name_fr and name_ar."""
+    fields = {k: country.get(k, country["name"]) for k in ("name", "name_fr", "name_ar")}
     fields |= params
     if lang == "fr" and "tz" in fields:
         fields["tz"] = fields["tz"].replace(" to ", " à ")
@@ -127,10 +132,11 @@ def verdict(
         fields["where"], fields["where_fr"] = WHERE[params["where"]]
         fields["where_ar"] = WHERE_AR[params["where"]]
     template = REASONS_AR[key] if lang == "ar" else REASONS[key][LANGS.index(lang)]
-    return v, template.format(**fields)
+    return template.format(**fields)
 
 
-def _decide(e: Extraction, code: str, country: dict, location: str, title: str = ""):
+def decide(e: Extraction, code: str, country: dict, location: str = "", title: str = ""):
+    """(verdict, reason key, reason params) for one country. Params never name the country."""
     regions = set(country["regions"])
 
     if code in e.excluded_countries:
@@ -199,9 +205,12 @@ def _cap(e: Extraction, v: Verdict) -> Verdict:
 
 
 def _tz_ok(e: Extraction, country: dict) -> bool:
+    """The window fits when it overlaps the country's offset range (or its one utc_offset)."""
     lo = e.timezone_utc_min if e.timezone_utc_min is not None else -12
     hi = e.timezone_utc_max if e.timezone_utc_max is not None else 14
-    return lo <= country["utc_offset"] <= hi
+    off = country.get("utc_offset")
+    cmin, cmax = (off, off) if off is not None else country["tz"]
+    return cmin <= hi and lo <= cmax
 
 
 def _tz(e: Extraction) -> str:

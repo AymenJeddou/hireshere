@@ -1,4 +1,4 @@
-"""Daily email digest: new eligible/likely jobs per subscriber's country and field.
+"""Daily email digest: new eligible/likely jobs per subscriber's country (any country) and field.
 
 Subscribers live in Cloudflare D1 (written by site/functions/api/subscribe.js) and are read
 through the D1 REST API. Mail goes out through Resend. Each subscriber gets the jobs first
@@ -17,7 +17,7 @@ from urllib.parse import quote
 import httpx
 
 from pipeline import config
-from pipeline.export import build
+from pipeline.export import build, country_view
 
 # ponytail: Resend free tier caps at 100 emails/day; leftovers go out next run. Paid tier lifts it.
 DAILY_CAP = 95
@@ -37,9 +37,9 @@ T = {
         "unsub": "Unsubscribe",
     },
     "fr": {
-        "subject": "{n} nouvelles offres en télétravail ouvertes {country_en}",
-        "subject1": "1 nouvelle offre en télétravail ouverte {country_en}",
-        "intro": "Nouvelles offres ouvertes ou probablement ouvertes aux candidats {country_en}{field}, depuis votre dernier e-mail.",
+        "subject": "{country} : {n} nouvelles offres en télétravail ouvertes",
+        "subject1": "{country} : 1 nouvelle offre en télétravail ouverte",
+        "intro": "Nouvelles offres{field} ouvertes ou probablement ouvertes aux candidats de ce pays : {country}. Trouvées depuis votre dernier e-mail.",
         "field": " en {field}",
         "eligible": "Éligible",
         "likely": "Probable",
@@ -89,10 +89,10 @@ def pick(jobs: list[dict], first_seen: dict[str, str], since: str, family: str) 
 
 def render(sub: dict, jobs: list[dict], unsub_url: str) -> tuple[str, str, str]:
     lang = sub["lang"] if sub["lang"] in T else "en"
-    t, c = T[lang], config.COUNTRIES[sub["country"]]
+    t, c = T[lang], config.WORLD[sub["country"]]
     name = {"en": c["name"], "fr": c["name_fr"], "ar": c["name_ar"]}[lang]
     field = FIELDS.get(sub["family"], ("", "", ""))[list(T).index(lang)]
-    v = {"n": len(jobs), "country": name, "country_en": c.get("fr_en", name)}
+    v = {"n": len(jobs), "country": name}
     v["field"] = t["field"].format(field=field) if field else ""
     subject = t["subject1" if len(jobs) == 1 else "subject"].format(**v)
     page = f"https://{config.DOMAIN}{'' if lang == 'en' else '/' + lang}/jobs?c={sub['country']}"
@@ -150,7 +150,8 @@ def run(conn: sqlite3.Connection, dry_run: bool = False) -> str:
     key = os.environ.get("RESEND_API_KEY")
     if not secret or (not key and not dry_run):
         return "Alerts skipped: RESEND_API_KEY or UNSUBSCRIBE_SECRET not set."
-    per_country = build(conn)
+    jobs_all = build(conn)
+    per_country: dict[str, list[dict]] = {}
     first_seen = dict(conn.execute("SELECT id, first_seen_at FROM jobs WHERE expired_at IS NULL"))
     sent = skipped = 0
     with httpx.Client(timeout=30) as client:
@@ -160,9 +161,12 @@ def run(conn: sqlite3.Connection, dry_run: bool = False) -> str:
             "FROM subscribers ORDER BY since",
         )
         for sub in subs:
-            jobs = pick(
-                per_country.get(sub["country"], []), first_seen, sub["since"], sub["family"]
-            )
+            code = sub["country"]
+            if code not in config.WORLD:
+                continue
+            if code not in per_country:
+                per_country[code] = country_view(jobs_all, code)
+            jobs = pick(per_country[code], first_seen, sub["since"], sub["family"])
             if not jobs:
                 continue
             if sent >= DAILY_CAP:
