@@ -10,7 +10,7 @@ Read `docs/SPEC.md` (the brief), `docs/ROADMAP.md` (status) and `docs/DECISIONS.
 - Tests for anything that parses or decides. No network in tests.
 - Small commits. No em-dashes in any text written for the owner.
 - Product name and domain only come from `pipeline/config.py` (`PRODUCT_NAME`, `DOMAIN`).
-- Countries are configuration (`config.COUNTRIES`), never code branches.
+- Countries are configuration (`config.WORLD` from `data/countries.json`, featured `config.COUNTRIES`), never code branches.
 - Never scrape sites that forbid it. Never republish full descriptions on the site.
 - Do not start a phase until the owner says so.
 
@@ -25,7 +25,7 @@ uv run python -m pipeline.run stats
 uv run python -m pipeline.run classify [--limit N] [--batch] [--yes]   # needs GEMINI_API_KEY
 uv run python -m pipeline.run classify-collect                         # store finished batches
 uv run python -m pipeline.classify.evalset sample|score [--country TN]
-uv run python -m pipeline.run export            # writes site/src/data/*.json
+uv run python -m pipeline.run export            # site/src/data/{meta,companies}.json, site/public/data/
 cd site && npm install && npx astro build       # static site in site/dist
 uv run python -m pipeline.seed build --rit <remote-jobs clone> --ats <ats-scrapers clone> [--extra N]
 uv run python -m pipeline.seed validate

@@ -5,7 +5,7 @@ HiresHere is a job board first: a job seeker should know where everything is bef
 ## Signature
 
 - **Verdict lamps.** Eligible = filled circle, Likely = half-filled circle, Unclear = solid ring (`site/src/components/Lamp.astro`). The shape carries the state; colour only reinforces it, so verdicts survive grayscale and colour blindness. Any element with `.v-eligible`, `.v-likely` or `.v-unclear` colours the lamps inside it.
-- **Verdict line on every card.** "Eligible in Tunisia" (or "in all 4 countries" when no country is picked), the reason, then the verbatim quote from the posting. The line follows the selected countries and verdicts (`site/src/verdictline.ts`, shared by the build and the browser).
+- **Verdict line on every card.** "Eligible in Brazil" plus the reason for the selected country, or a summary when "All countries" is selected ("Likely in Angola, Burkina Faso +41 more", "Eligible anywhere except Russia"), then the verbatim quote from the posting.
 
 ## Palette: Ocean (`site/src/styles/global.css`)
 
@@ -30,10 +30,10 @@ Roboto 400/500/700, self-hosted through `@fontsource/roboto`. Arabic falls back 
 
 ## Layout and components (`site/src/styles/components.css`)
 
-- One search page (`/jobs`, `/fr/jobs`, `/ar/jobs`). Country is a filter (search band select + checkboxes), never a tab. Filters: country, can I apply, field, level, contract, language, found, salary, each with live counts that add up to the result total. State lives in the URL (`?c=TN,EG&f=engineering&v=eligible`). 20 jobs per page.
+- One search page (`/jobs`, `/fr/jobs`, `/ar/jobs`). Country is one select in the search band: every country (localized names, sorted) plus "All countries". It defaults to the visitor's country (`/api/geo`); `?c=` overrides it and a choice is remembered (localStorage and cookie `hh_country`). Filters: can I apply, field, level, contract, language, found, salary, each with live counts for the selected country that add up to the result total. State lives in the URL (`?c=BR&f=engineering&v=eligible`). 20 jobs per page.
 - Old addresses `/tn`, `/tn/engineering` (and FR/AR) 301 to the search with those filters (`site/public/_redirects`).
-- Job card (`JobCard.astro`) is the only job component: search, home, company pages. Icon line (`JobInfo.astro`): place, contract, level, salary.
-- Job page: panels (header with Apply and Save, who can apply table, what the posting says, details, report an error) and a side column (company, more at the company, similar jobs, getting-paid guide).
+- Job cards are rendered in the browser from the search index by one renderer (`site/src/scripts/cards.ts`): search, home (latest jobs for the visitor's country), company pages. Each page keeps a plain list of links for visitors without JavaScript. Icon line: place, contract, level, salary.
+- Job page: rendered per request by a Pages Function (`site/functions/_job.js` with `site/src/scripts/jobpage.ts`) into a static shell (`/shell/<lang>`). Panels (header with Apply and Save, who can apply: the visitor's country first, then every group of countries, "Anywhere else" for the rest; what the posting says, details, report an error) and a side column (company, more at the company, similar jobs, getting-paid guide for the four featured countries). Page styles live in `components.css` because the markup is not built by Astro.
 - Buttons: primary brand, accent only for Search, secondary white with hairline border. 44px minimum touch target.
 - No stock photos on the search, home or companies pages.
 

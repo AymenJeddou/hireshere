@@ -8,11 +8,11 @@ web
 
 ## Stack
 
-Astro static site in `/site`, reading JSON exported by the Python pipeline (`python -m pipeline.run export`). No client framework; filtering is vanilla JS. Hosted on Cloudflare Pages (Phase 4). Signups and error reports go to Cloudflare Pages Functions backed by a free D1 database (confirmed by the owner 2026-10-08; goes live with the Phase 4 deploy).
+Astro static site in `/site`, reading JSON exported by the Python pipeline (`python -m pipeline.run export`). No client framework; search, cards and filtering are vanilla JS over a per-language search index. Job pages are rendered by a Pages Function from detail shards (the free plan allows 20,000 files per deployment). Hosted on Cloudflare Pages (Phase 4). Signups and error reports go to Cloudflare Pages Functions backed by a free D1 database (confirmed by the owner 2026-10-08; goes live with the Phase 4 deploy).
 
 ## Users
 
-Job seekers in Tunisia, Morocco, Algeria and Egypt looking for remote work with foreign companies. Mostly engineers, designers, data, product, marketing, sales and support professionals. Many browse on phones, some on slow or metered connections. Their recurring frustration: "remote" jobs that turn out to be US-only or EU-only after they have already spent time applying.
+Job seekers anywhere in the world looking for remote work with foreign companies. The site started with Tunisia, Morocco, Algeria and Egypt, which stay featured (Telegram channels, getting-paid guide). Mostly engineers, designers, data, product, marketing, sales and support professionals. Many browse on phones, some on slow or metered connections. Their recurring frustration: "remote" jobs that turn out to be US-only or EU-only after they have already spent time applying.
 
 ## Product Purpose
 
@@ -31,7 +31,7 @@ Country-first eligibility, not another generic remote board. Every job carries a
 
 ## Capabilities and Constraints
 
-- Launch countries: TN, MA, DZ, EG. Countries are configuration; more will be added.
+- Every country (243, `data/countries.json`) gets a verdict on every remote, hybrid or unclear job. Office-only jobs are not listed. Featured countries: TN, MA, DZ, EG (`config.COUNTRIES`).
 - Filters: role family, seniority, language, engagement, verdict.
 - Email alert signup per country and role family; "Report an error" per job. Both post to Cloudflare Pages Functions (Phase 4).
 - English first, French second. French uses "vous".
