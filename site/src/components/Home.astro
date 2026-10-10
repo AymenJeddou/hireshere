@@ -1,7 +1,7 @@
 ---
 import "../styles/board.css";
 import { countries, countryName, jobsFor, openCount, site, totalBoards } from "../data";
-import { formatDate, href, labels, type Lang, tr } from "../i18n";
+import { formatDate, href, labels, type Lang, LOCALE, tr } from "../i18n";
 import JobRow from "./JobRow.astro";
 import Lamp from "./Lamp.astro";
 import { Image } from "astro:assets";
@@ -38,7 +38,7 @@ const hero = pool.find(
     j.quote.length <= 160,
 );
 const fresh = tr(lang, "home_fresh", {
-  jobs: site.open_jobs.toLocaleString(lang === "fr" ? "fr-FR" : "en-GB"),
+  jobs: site.open_jobs.toLocaleString(LOCALE[lang]),
   companies: totalBoards(),
   date: formatDate(site.updated, lang),
 });
@@ -293,6 +293,12 @@ const steps = [
   }
   .chooser a:hover .c-arrow {
     transform: translateX(3px);
+  }
+  :global([dir="rtl"]) .c-arrow {
+    transform: scaleX(-1);
+  }
+  :global([dir="rtl"]) .chooser a:hover .c-arrow {
+    transform: scaleX(-1) translateX(3px);
   }
   .c-name {
     grid-area: name;

@@ -47,12 +47,24 @@ T = {
         "foot": "Les verdicts sont des estimations automatiques. Confirmez toujours auprès de l’employeur.",
         "unsub": "Se désinscrire",
     },
+    "ar": {
+        "subject": "{n} وظيفة جديدة عن بُعد مفتوحة لـ{country}",
+        "subject1": "وظيفة جديدة عن بُعد مفتوحة لـ{country}",
+        "intro": "وظائف جديدة عن بُعد مفتوحة أو مفتوحة على الأرجح للمرشحين في {country}{field}، منذ رسالتك الأخيرة.",
+        "field": " في مجال {field}",
+        "eligible": "مؤهَّل",
+        "likely": "مرجَّح",
+        "more": "عرض كل الوظائف لـ{country}",
+        "foot": "الأحكام تقديرات آلية. تأكّد دائمًا مع صاحب العمل.",
+        "unsub": "إلغاء الاشتراك",
+    },
 }
 FIELDS = {
-    "engineering": ("engineering", "ingénierie"), "data": ("data", "données"),
-    "design": ("design", "design"), "product": ("product", "produit"),
-    "marketing": ("marketing", "marketing"), "sales": ("sales", "vente"),
-    "support": ("support", "support"), "ops": ("operations", "opérations"), "other": ("other", "autre"),
+    "engineering": ("engineering", "ingénierie", "الهندسة والتطوير"), "data": ("data", "données", "البيانات"),
+    "design": ("design", "design", "التصميم"), "product": ("product", "produit", "إدارة المنتج"),
+    "marketing": ("marketing", "marketing", "التسويق"), "sales": ("sales", "vente", "المبيعات"),
+    "support": ("support", "support", "الدعم"), "ops": ("operations", "opérations", "العمليات"),
+    "other": ("other", "autre", "أخرى"),
 }  # fmt: skip
 
 
@@ -78,12 +90,12 @@ def pick(jobs: list[dict], first_seen: dict[str, str], since: str, family: str) 
 def render(sub: dict, jobs: list[dict], unsub_url: str) -> tuple[str, str, str]:
     lang = sub["lang"] if sub["lang"] in T else "en"
     t, c = T[lang], config.COUNTRIES[sub["country"]]
-    name = c["name"] if lang == "en" else c["name_fr"]
-    field = FIELDS.get(sub["family"], ("", ""))[lang == "fr"]
+    name = {"en": c["name"], "fr": c["name_fr"], "ar": c["name_ar"]}[lang]
+    field = FIELDS.get(sub["family"], ("", "", ""))[list(T).index(lang)]
     v = {"n": len(jobs), "country": name, "country_en": c.get("fr_en", name)}
     v["field"] = t["field"].format(field=field) if field else ""
     subject = t["subject1" if len(jobs) == 1 else "subject"].format(**v)
-    page = f"https://{config.DOMAIN}{'/fr' if lang == 'fr' else ''}/{sub['country'].lower()}"
+    page = f"https://{config.DOMAIN}{'' if lang == 'en' else '/' + lang}/{sub['country'].lower()}"
     shown = jobs[:MAX_JOBS]
     e = html.escape
 
@@ -97,7 +109,7 @@ def render(sub: dict, jobs: list[dict], unsub_url: str) -> tuple[str, str, str]:
         for j in shown
     )
     body = (
-        f'<div style="font-family:Arial,sans-serif;max-width:600px;margin:auto;color:#14223a">'
+        f'<div dir="{"rtl" if lang == "ar" else "ltr"}" style="font-family:Arial,sans-serif;max-width:600px;margin:auto;color:#14223a">'
         f'<p style="font-size:18px;font-weight:700;margin:0 0 12px">{config.PRODUCT_NAME}</p>'
         f'<p style="font-size:15px">{e(t["intro"].format(**v))}</p>'
         f'<table style="width:100%;border-collapse:collapse">{rows}</table>'

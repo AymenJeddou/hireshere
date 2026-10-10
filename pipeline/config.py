@@ -23,6 +23,7 @@ COUNTRIES = {
     "TN": {
         "name": "Tunisia",
         "name_fr": "Tunisie",
+        "name_ar": "تونس",
         "fr_le": "la Tunisie",
         "fr_en": "en Tunisie",
         "fr_hors": "hors de Tunisie",
@@ -32,6 +33,7 @@ COUNTRIES = {
     "MA": {
         "name": "Morocco",
         "name_fr": "Maroc",
+        "name_ar": "المغرب",
         "fr_le": "le Maroc",
         "fr_en": "au Maroc",
         "fr_hors": "hors du Maroc",
@@ -41,6 +43,7 @@ COUNTRIES = {
     "DZ": {
         "name": "Algeria",
         "name_fr": "Algérie",
+        "name_ar": "الجزائر",
         "fr_le": "l'Algérie",
         "fr_en": "en Algérie",
         "fr_hors": "hors d'Algérie",
@@ -50,6 +53,7 @@ COUNTRIES = {
     "EG": {
         "name": "Egypt",
         "name_fr": "Égypte",
+        "name_ar": "مصر",
         "fr_le": "l'Égypte",
         "fr_en": "en Égypte",
         "fr_hors": "hors d'Égypte",

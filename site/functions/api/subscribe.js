@@ -9,7 +9,7 @@ export async function onRequestPost({ request, env }) {
   const email = get("email").toLowerCase();
   const country = get("country");
   const family = get("family");
-  const lang = get("lang") === "fr" ? "fr" : "en";
+  const lang = ["fr", "ar"].includes(get("lang")) ? get("lang") : "en";
   if (!EMAIL.test(email) || !COUNTRIES.includes(country) || !FAMILIES.includes(family)) {
     return json({ error: "invalid" }, 422);
   }

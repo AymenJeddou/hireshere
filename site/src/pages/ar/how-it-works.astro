@@ -1,0 +1,10 @@
+---
+import HowItWorks from "../../components/HowItWorks.astro";
+import Layout from "../../layouts/Layout.astro";
+import { site } from "../../data";
+import { tr } from "../../i18n";
+---
+
+<Layout lang="ar" page="how" title={`${tr("ar", "how_title")} | ${site.product}`} description={tr("ar", "footer_disclaimer")}>
+  <HowItWorks lang="ar" />
+</Layout>

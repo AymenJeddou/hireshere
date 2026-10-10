@@ -135,7 +135,7 @@ time {
 
 .skip {
   position: absolute;
-  left: 1rem;
+  inset-inline-start: 1rem;
   top: -3rem;
   background: var(--signal);
   color: var(--navy-900);
@@ -529,4 +529,17 @@ textarea:focus-visible {
   fill: none;
   stroke: currentColor;
   stroke-width: 1.3;
+}
+
+/* Right-to-left (Arabic): arrows follow the reading direction. */
+[dir="rtl"] .flip {
+  display: inline-block;
+  transform: scaleX(-1);
+}
+/* Quotes from postings keep their own direction inside Arabic pages. */
+blockquote[lang="und"] p {
+  unicode-bidi: plaintext;
+}
+[dir="rtl"] select {
+  background-position: left 0.8rem center;
 }

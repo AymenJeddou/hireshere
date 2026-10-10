@@ -73,6 +73,7 @@ def build(conn: sqlite3.Connection) -> dict[str, list[dict]]:
             if v not in SHOWN:
                 continue
             _, reason_fr = verdict(e, code, country, "fr", location or "", title)
+            _, reason_ar = verdict(e, code, country, "ar", location or "", title)
             if base is None:
                 base = {
                     "id": jid,
@@ -104,7 +105,9 @@ def build(conn: sqlite3.Connection) -> dict[str, list[dict]]:
                     # slogan: then the location field is the evidence.
                     "quote": e.evidence_quote if verified and not _slogan(e.evidence_quote) else "",
                 }
-            out[code].append(base | {"verdict": v, "reason": {"en": reason_en, "fr": reason_fr}})
+            out[code].append(
+                base | {"verdict": v, "reason": {"en": reason_en, "fr": reason_fr, "ar": reason_ar}}
+            )
     for jobs in out.values():
         jobs.sort(key=lambda j: j["seen"], reverse=True)  # newest first...
         jobs.sort(key=lambda j: RANK[j["verdict"]])  # ...within each verdict (stable sort)
@@ -135,6 +138,7 @@ def export(conn: sqlite3.Connection, out_dir: str | Path) -> str:
             code: {
                 "name": c["name"],
                 "name_fr": c["name_fr"],
+                "name_ar": c["name_ar"],
                 "fr_le": c["fr_le"],
                 "fr_en": c["fr_en"],
                 "utc_offset": c["utc_offset"],

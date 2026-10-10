@@ -13,7 +13,7 @@ const t = fr
       lede: "HiresHere montre aux candidats de Tunisie, du Maroc, d’Algérie et d’Égypte les offres auxquelles ils peuvent vraiment postuler. Si vous recrutez dans ces pays, dites-le-nous : nous ajouterons votre page carrières et vos offres apparaîtront automatiquement, avec le bon verdict.",
       how: "Comment ça marche",
       steps: [
-        "Nous lisons chaque jour les offres de votre système de recrutement (Greenhouse, Lever, Ashby, SmartRecruiters…).",
+        "Nous lisons chaque jour les offres de votre système de recrutement (Greenhouse, Lever, Ashby, Workable, Recruitee…).",
         "Chaque annonce reçoit un verdict par pays, avec la phrase qui le justifie.",
         "C’est gratuit. Pour de meilleurs verdicts, indiquez clairement dans vos annonces les pays où vous recrutez.",
       ],
@@ -31,7 +31,7 @@ const t = fr
       lede: "HiresHere shows candidates in Tunisia, Morocco, Algeria and Egypt the jobs they can actually apply for. If you hire in these countries, tell us: we will add your careers page and your jobs will appear automatically, with the right verdict.",
       how: "How it works",
       steps: [
-        "Every day we read the jobs in your hiring system (Greenhouse, Lever, Ashby, SmartRecruiters and more).",
+        "Every day we read the jobs in your hiring system (Greenhouse, Lever, Ashby, Workable, Recruitee and more).",
         "Each posting gets a verdict per country, with the sentence it rests on.",
         "It is free. For the best verdicts, state clearly in your postings which countries you hire in.",
       ],
@@ -46,7 +46,7 @@ const t = fr
     };
 ---
 
-<div class="wrap employers">
+<div class="wrap employers" lang={lang === "ar" ? "en" : undefined} dir={lang === "ar" ? "ltr" : undefined}>
   <header class="page-head">
     <h1>{t.title}</h1>
     <p class="sub">{t.lede}</p>
@@ -149,7 +149,10 @@ const t = fr
   }
   .hp {
     position: absolute;
-    left: -9999px;
+    clip-path: inset(50%);
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
   }
   .form-msg.ok {
     color: var(--go);

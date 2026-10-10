@@ -1,21 +1,29 @@
-// All interface copy, English first, French second ("vous").
-export type Lang = "en" | "fr";
-export const LANGS: Lang[] = ["en", "fr"];
+// All interface copy: English, French ("vous"), Arabic in i18n-ar.ts.
+import { ar } from "./i18n-ar";
+
+export type Lang = "en" | "fr" | "ar";
+export const LANGS: Lang[] = ["en", "fr", "ar"];
+export const NATIVE: Record<Lang, { name: string; short: string }> = {
+  en: { name: "English", short: "EN" },
+  fr: { name: "Français", short: "FR" },
+  ar: { name: "العربية", short: "ع" },
+};
+export const LOCALE: Record<Lang, string> = { en: "en-GB", fr: "fr-FR", ar: "ar-u-nu-latn" };
 
 export type Page = "home" | "country" | "how" | "sources" | "job" | "saved" | "company" | "companies" | "field" | "employers" | "guide";
 
 const SLUGS: Record<Page, Record<Lang, string>> = {
-  home: { en: "/", fr: "/fr" },
-  country: { en: "/", fr: "/fr/" },
-  how: { en: "/how-it-works", fr: "/fr/comment-ca-marche" },
-  sources: { en: "/sources", fr: "/fr/sources" },
-  job: { en: "/jobs/", fr: "/fr/jobs/" },
-  saved: { en: "/my-jobs", fr: "/fr/mes-offres" },
-  company: { en: "/companies/", fr: "/fr/entreprises/" },
-  companies: { en: "/companies", fr: "/fr/entreprises" },
-  field: { en: "/", fr: "/fr/" },
-  employers: { en: "/employers", fr: "/fr/employeurs" },
-  guide: { en: "/guides/getting-paid", fr: "/fr/guides/etre-paye" },
+  home: { en: "/", fr: "/fr", ar: "/ar" },
+  country: { en: "/", fr: "/fr/", ar: "/ar/" },
+  how: { en: "/how-it-works", fr: "/fr/comment-ca-marche", ar: "/ar/how-it-works" },
+  sources: { en: "/sources", fr: "/fr/sources", ar: "/ar/sources" },
+  job: { en: "/jobs/", fr: "/fr/jobs/", ar: "/ar/jobs/" },
+  saved: { en: "/my-jobs", fr: "/fr/mes-offres", ar: "/ar/my-jobs" },
+  company: { en: "/companies/", fr: "/fr/entreprises/", ar: "/ar/companies/" },
+  companies: { en: "/companies", fr: "/fr/entreprises", ar: "/ar/companies" },
+  field: { en: "/", fr: "/fr/", ar: "/ar/" },
+  employers: { en: "/employers", fr: "/fr/employeurs", ar: "/ar/employers" },
+  guide: { en: "/guides/getting-paid", fr: "/fr/guides/etre-paye", ar: "/ar/guides/getting-paid" },
 };
 
 export function href(lang: Lang, page: Page, country?: string): string {
@@ -31,48 +39,51 @@ export type Verdict = (typeof VERDICTS)[number];
 
 export const labels = {
   verdict: {
-    eligible: { en: "Eligible", fr: "Éligible" },
-    likely: { en: "Likely", fr: "Probable" },
-    unclear: { en: "Unclear", fr: "Incertain" },
+    eligible: { en: "Eligible", fr: "Éligible", ar: "مؤهَّل" },
+    likely: { en: "Likely", fr: "Probable", ar: "مرجَّح" },
+    unclear: { en: "Unclear", fr: "Incertain", ar: "غير واضح" },
   },
   verdictHelp: {
     eligible: {
       en: "The posting says this role is open to your country or to anyone, anywhere.",
       fr: "L'annonce indique que ce poste est ouvert à votre pays ou à tout le monde.",
+      ar: "يذكر الإعلان أن الوظيفة مفتوحة لبلدك أو للجميع في أي مكان.",
     },
     likely: {
       en: "Open to a region or time zone that includes your country. Worth applying; confirm with the employer.",
       fr: "Ouvert à une région ou un fuseau horaire qui inclut votre pays. À tenter ; confirmez auprès de l'employeur.",
+      ar: "مفتوحة لمنطقة أو منطقة زمنية تشمل بلدك. تستحق التقديم، مع التأكد من صاحب العمل.",
     },
     unclear: {
       en: "Remote, but the posting does not say where candidates may live. Ask before you invest time.",
       fr: "Télétravail, mais l'annonce ne dit pas d'où les candidats peuvent travailler. Renseignez-vous avant d'investir du temps.",
+      ar: "عن بُعد، لكن الإعلان لا يذكر أين يمكن للمرشحين الإقامة. اسأل قبل أن تستثمر وقتك.",
     },
   },
   family: {
-    engineering: { en: "Engineering", fr: "Ingénierie" },
-    data: { en: "Data", fr: "Données" },
-    design: { en: "Design", fr: "Design" },
-    product: { en: "Product", fr: "Produit" },
-    marketing: { en: "Marketing", fr: "Marketing" },
-    sales: { en: "Sales", fr: "Vente" },
-    support: { en: "Support", fr: "Support" },
-    ops: { en: "Operations", fr: "Opérations" },
-    other: { en: "Other", fr: "Autre" },
+    engineering: { en: "Engineering", fr: "Ingénierie", ar: "الهندسة والتطوير" },
+    data: { en: "Data", fr: "Données", ar: "البيانات" },
+    design: { en: "Design", fr: "Design", ar: "التصميم" },
+    product: { en: "Product", fr: "Produit", ar: "إدارة المنتج" },
+    marketing: { en: "Marketing", fr: "Marketing", ar: "التسويق" },
+    sales: { en: "Sales", fr: "Vente", ar: "المبيعات" },
+    support: { en: "Support", fr: "Support", ar: "الدعم" },
+    ops: { en: "Operations", fr: "Opérations", ar: "العمليات" },
+    other: { en: "Other", fr: "Autre", ar: "أخرى" },
   },
   seniority: {
-    intern: { en: "Intern", fr: "Stage" },
-    junior: { en: "Junior", fr: "Junior" },
-    mid: { en: "Mid-level", fr: "Confirmé" },
-    senior: { en: "Senior", fr: "Senior" },
-    lead: { en: "Lead", fr: "Lead" },
-    unclear: { en: "Level not stated", fr: "Niveau non précisé" },
+    intern: { en: "Intern", fr: "Stage", ar: "متدرّب" },
+    junior: { en: "Junior", fr: "Junior", ar: "مبتدئ" },
+    mid: { en: "Mid-level", fr: "Confirmé", ar: "متوسط الخبرة" },
+    senior: { en: "Senior", fr: "Senior", ar: "خبير" },
+    lead: { en: "Lead", fr: "Lead", ar: "قائد فريق" },
+    unclear: { en: "Level not stated", fr: "Niveau non précisé", ar: "المستوى غير محدد" },
   },
   engagement: {
-    employee: { en: "Employee", fr: "Salarié" },
-    contractor: { en: "Contractor", fr: "Freelance" },
-    either: { en: "Employee or contractor", fr: "Salarié ou freelance" },
-    unclear: { en: "Contract not stated", fr: "Contrat non précisé" },
+    employee: { en: "Employee", fr: "Salarié", ar: "موظف" },
+    contractor: { en: "Contractor", fr: "Freelance", ar: "مستقل" },
+    either: { en: "Employee or contractor", fr: "Salarié ou freelance", ar: "موظف أو مستقل" },
+    unclear: { en: "Contract not stated", fr: "Contrat non précisé", ar: "العقد غير محدد" },
   },
 } as const;
 
@@ -86,7 +97,7 @@ export function languageName(code: string, lang: Lang): string {
 }
 
 export function formatDate(iso: string, lang: Lang, withYear = false): string {
-  return new Intl.DateTimeFormat(lang === "fr" ? "fr-FR" : "en-GB", {
+  return new Intl.DateTimeFormat(LOCALE[lang], {
     day: "numeric",
     month: "short",
     ...(withYear ? { year: "numeric" } : {}),
@@ -99,8 +110,6 @@ const en = {
   nav_how: "How it works",
   nav_sources: "Sources",
   nav_countries: "Countries",
-  switch_lang: "Français",
-  switch_lang_short: "FR",
   footer_disclaimer:
     "Verdicts are automated estimates made by reading each posting. Always confirm eligibility with the employer before you apply.",
   footer_data: "Jobs come straight from company hiring pages and refresh daily.",
@@ -245,6 +254,7 @@ const en = {
   contracts: "Contracts",
   jobs_at: "Jobs at {company}",
   nav_companies: "Companies",
+  nav_jobs: "Jobs",
   nav_employers: "For employers",
   nav_guide: "Getting paid",
   guide_cta: "How to get paid from {country}",
@@ -269,8 +279,6 @@ const fr: typeof en = {
   nav_how: "Comment ça marche",
   nav_sources: "Sources",
   nav_countries: "Pays",
-  switch_lang: "English",
-  switch_lang_short: "EN",
   footer_disclaimer:
     "Les verdicts sont des estimations automatiques fondées sur la lecture de chaque annonce. Vérifiez toujours votre éligibilité auprès de l’employeur avant de postuler.",
   footer_data: "Les offres viennent directement des pages carrières des entreprises et sont mises à jour chaque jour.",
@@ -380,7 +388,7 @@ const fr: typeof en = {
   similar: "Offres similaires",
   back_to_jobs: "Toutes les offres pour {country}",
   hires_here: "Cette entreprise cite {countries} dans ses annonces",
-  not_shown: "Non ouvert {country}",
+  not_shown: "Non ouvert {country_en}",
   save: "Enregistrer",
   saved: "Enregistrée",
   my_jobs: "Mes offres",
@@ -415,6 +423,7 @@ const fr: typeof en = {
   contracts: "Contrats",
   jobs_at: "Offres chez {company}",
   nav_companies: "Entreprises",
+  nav_jobs: "Offres",
   nav_employers: "Employeurs",
   nav_guide: "Être payé",
   guide_cta: "Comment être payé {country_en}",
@@ -434,7 +443,7 @@ const fr: typeof en = {
   any_contract: "Tout contrat",
 };
 
-export const strings = { en, fr };
+export const strings: Record<Lang, typeof en> = { en, fr, ar };
 export type Key = keyof typeof en;
 
 export function tr(lang: Lang, key: Key, vars: Record<string, string | number> = {}): string {

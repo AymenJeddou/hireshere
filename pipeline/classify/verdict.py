@@ -1,7 +1,7 @@
 """Turn an Extraction into a per-country verdict. Pure Python, no AI.
 
 A wrong "eligible" is worse than an honest "unclear", so every branch errs cautious.
-Reasons are rendered in English or French from the same templates.
+Reasons are rendered in English, French or Arabic.
 """
 
 import re
@@ -10,7 +10,7 @@ from typing import Literal
 from pipeline.classify.schema import Extraction
 
 Verdict = Literal["eligible", "likely", "unclear", "not_eligible"]
-LANGS = ("en", "fr")
+LANGS = ("en", "fr", "ar")
 
 REASONS = {
     "excluded": ("{name} is explicitly excluded", "Ce poste exclut explicitement {fr_le}"),
@@ -65,6 +65,27 @@ WHERE = {
     "hybrid": ("hybrid office days", "des jours au bureau (hybride)"),
 }
 
+# Arabic templates (draft, needs a native review). Country names come from config "name_ar".
+REASONS_AR = {
+    "excluded": "يستثني هذا الإعلان {name_ar} صراحةً",
+    "office_here": "يتطلب {where_ar} في {name_ar}",
+    "office_elsewhere": "يتطلب {where_ar} خارج {name_ar}",
+    "auth": "يتطلب تصريح عمل ساريًا في {places}",
+    "listed": "يذكر الإعلان {name_ar} ضمن الدول المقبولة",
+    "countries_only": "مقصور على {places}",
+    "worldwide_tz": "مفتوح عالميًا، لكن المنطقة الزمنية {tz} تستثني {name_ar}",
+    "worldwide": "مفتوح للمرشحين من كل أنحاء العالم",
+    "conflict": "يقول النص «من أي مكان»، لكن الإعلان منشور لـ{places}",
+    "company_remote": "شركة تعمل عن بُعد، لكن الإعلان لا يذكر أن هذه الوظيفة مفتوحة عالميًا",
+    "region": "مفتوح لمنطقة {region} التي تشمل {name_ar}",
+    "regions_only": "مقصور على {places}",
+    "tz_ok": "النطاق الزمني {tz} يشمل {name_ar}",
+    "tz_no": "النطاق الزمني {tz} يستثني {name_ar}",
+    "remote_unclear": "عن بُعد، لكن الإعلان لا يذكر أين يمكن للمرشحين الإقامة",
+    "unclear": "لا يذكر الإعلان من أين يمكن للمرشحين العمل",
+}
+WHERE_AR = {"onsite": "الحضور إلى المكتب", "hybrid": "أيام حضور إلى المكتب (عمل هجين)"}
+
 # A "worldwide" extraction needs evidence about this role, not a company slogan.
 ROLE_WORLDWIDE_LOCATION = re.compile(r"worldwide|global|anywhere|any country|all countries", re.I)
 ROLE_LEVEL_QUOTE = re.compile(
@@ -94,16 +115,19 @@ def verdict(
     extraction rests on role-level evidence or on a company slogan.
     """
     v, key, params = _decide(e, code, country, location, title)
-    i = LANGS.index(lang)
     fields = {"name": country["name"]} | {
-        k: country.get(k, country["name"]) for k in ("fr_le", "fr_en", "fr_hors")
+        k: country.get(k, country["name"]) for k in ("fr_le", "fr_en", "fr_hors", "name_ar")
     }
     fields |= params
     if lang == "fr" and "tz" in fields:
         fields["tz"] = fields["tz"].replace(" to ", " à ")
+    if lang == "ar" and "tz" in fields:
+        fields["tz"] = fields["tz"].replace(" to ", " إلى ")
     if "where" in params:
         fields["where"], fields["where_fr"] = WHERE[params["where"]]
-    return v, REASONS[key][i].format(**fields)
+        fields["where_ar"] = WHERE_AR[params["where"]]
+    template = REASONS_AR[key] if lang == "ar" else REASONS[key][LANGS.index(lang)]
+    return v, template.format(**fields)
 
 
 def _decide(e: Extraction, code: str, country: dict, location: str, title: str = ""):

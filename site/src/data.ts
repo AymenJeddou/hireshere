@@ -1,7 +1,7 @@
 // Build-time access to the JSON written by `python -m pipeline.run export`.
 import jobsIndex from "./data/jobs.json";
 import meta from "./data/meta.json";
-import type { Lang, Verdict } from "./i18n";
+import { type Lang, LOCALE, type Verdict } from "./i18n";
 
 export interface Job {
   id: string;
@@ -41,6 +41,7 @@ export interface Country {
   code: string;
   name: string;
   name_fr: string;
+  name_ar: string;
   fr_le: string;
   fr_en: string;
   utc_offset: number;
@@ -50,6 +51,18 @@ export interface Country {
 const files = import.meta.glob<{ default: Job[] }>("./data/[a-z][a-z].json", { eager: true });
 
 export const site = meta;
+
+// Where jobs come from. Remote OK's API terms: name them and link back to their job page.
+export const SOURCES: Record<string, { name: string; url: string }> = {
+  greenhouse: { name: "Greenhouse", url: "https://www.greenhouse.com" },
+  lever: { name: "Lever", url: "https://www.lever.co" },
+  ashby: { name: "Ashby", url: "https://www.ashbyhq.com" },
+  smartrecruiters: { name: "SmartRecruiters", url: "https://www.smartrecruiters.com" },
+  workable: { name: "Workable", url: "https://www.workable.com" },
+  recruitee: { name: "Recruitee", url: "https://recruitee.com" },
+  teamtailor: { name: "Teamtailor", url: "https://www.teamtailor.com" },
+  remoteok: { name: "Remote OK", url: "https://remoteok.com" },
+};
 
 export const countries: Country[] = Object.entries(meta.countries).map(([code, c]) => ({
   code,
@@ -75,7 +88,7 @@ export function salaryText(s: Job["salary"], lang: Lang): string {
   if (!s) return "";
   const [lo, hi, cur] = s;
   const fmt = (n: number) =>
-    new Intl.NumberFormat(lang === "fr" ? "fr-FR" : "en-US", {
+    new Intl.NumberFormat(lang === "en" ? "en-US" : LOCALE[lang], {
       style: cur ? "currency" : "decimal",
       currency: cur ?? undefined,
       maximumFractionDigits: 0,
@@ -93,7 +106,7 @@ export function tzFits(tz: Job["tz"], code: string): boolean | null {
 }
 
 export function countryName(c: Country, lang: Lang): string {
-  return lang === "fr" ? c.name_fr : c.name;
+  return { en: c.name, fr: c.name_fr, ar: c.name_ar }[lang];
 }
 
 export function openCount(c: Country): number {

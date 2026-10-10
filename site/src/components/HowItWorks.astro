@@ -9,8 +9,70 @@ interface Props {
   lang: Lang;
 }
 const { lang } = Astro.props;
-const fr = lang === "fr";
 const boards = totalBoards();
+const systems = "Greenhouse, Lever, Ashby, SmartRecruiters, Workable, Recruitee, Teamtailor";
+const COPY = {
+  en: {
+    lede: "HiresHere answers one question: can I apply for this remote job from my country? Here is how every verdict is made, and where it can go wrong.",
+    from_t: "Where the jobs come from",
+    from: `Every day we read the public job feeds of ${boards} companies’ hiring systems (${systems}) and the public Remote OK feed. These are the same postings you see on their careers pages. A job that disappears from the feed is removed the same day. We never scrape LinkedIn, Indeed or any site that forbids it.`,
+    read_t: "How a posting is read",
+    read: [
+      "An AI model reads each posting and records who may apply: allowed or excluded countries and regions, required time zones, work authorization, contract type and languages. It must quote the exact sentence it relies on. We check that the sentence really appears in the posting; if it does not, the verdict cannot be “Eligible”.",
+      "The verdict for your country is then computed by simple, fixed rules, not by the AI. The posting’s location field outranks company slogans such as “we hire globally”.",
+    ],
+    hidden: "Jobs limited to other countries, or that need office attendance elsewhere, are not shown.",
+    limits_t: "The limits",
+    limits: [
+      "Verdicts are automated estimates. Always confirm with the employer.",
+      "A posting can be vague, or a company may not hire everywhere despite what it writes. When in doubt we prefer “Unclear” over a wrong “Eligible”.",
+      "We do not republish full descriptions: only the title, company, verdict, a short quote and a link to the original posting.",
+      "Spotted a mistake? Use “Report an error” on the job. Every report helps us fix the rules.",
+    ],
+    data_t: "Your data",
+    data: "No advertising trackers. If you sign up for alerts we keep only your email, country and field. Saved jobs and your profile stay in your browser.",
+  },
+  fr: {
+    lede: "HiresHere répond à une seule question : puis-je postuler à ce poste en télétravail depuis mon pays ? Voici comment chaque verdict est établi, et ses limites.",
+    from_t: "D’où viennent les offres",
+    from: `Chaque jour, nous lisons les flux publics des systèmes de recrutement de ${boards} entreprises (${systems}) et le flux public de Remote OK. Ce sont les mêmes annonces que sur leurs pages carrières. Une offre qui disparaît du flux est retirée le jour même. Nous ne copions jamais LinkedIn, Indeed ou d’autres sites qui l’interdisent.`,
+    read_t: "Comment une annonce est lue",
+    read: [
+      "Un modèle d’IA lit chaque annonce et relève qui peut postuler : pays et régions acceptés ou exclus, fuseau horaire exigé, autorisation de travail requise, type de contrat et langues. Il doit citer la phrase exacte sur laquelle il s’appuie. Nous vérifions que cette phrase figure bien dans l’annonce ; sinon le verdict ne peut pas être « Éligible ».",
+      "Le verdict pour votre pays est ensuite calculé par des règles simples et publiques, pas par l’IA. Le champ de localisation de l’annonce l’emporte sur les slogans d’entreprise comme « nous recrutons partout ».",
+    ],
+    hidden: "Les offres réservées à d’autres pays, ou qui demandent une présence au bureau ailleurs, ne sont pas affichées.",
+    limits_t: "Les limites",
+    limits: [
+      "Les verdicts sont des estimations automatiques. Confirmez toujours auprès de l’employeur.",
+      "Une annonce peut être vague, ou une entreprise peut ne pas embaucher partout malgré ce qu’elle écrit. Dans le doute, nous préférons « Incertain » à un faux « Éligible ».",
+      "Nous n’affichons pas les descriptions complètes : seulement le titre, l’entreprise, le verdict, une courte citation et le lien vers l’annonce d’origine.",
+      "Une erreur ? Utilisez « Signaler une erreur » sur l’offre. Chaque signalement nous aide à corriger les règles.",
+    ],
+    data_t: "Vos données",
+    data: "Pas de traceurs publicitaires. Si vous vous inscrivez aux alertes, nous gardons seulement votre e-mail, votre pays et votre domaine. Les offres sauvegardées et votre profil restent dans votre navigateur.",
+  },
+  ar: {
+    lede: "يجيب HiresHere عن سؤال واحد: هل يمكنني التقديم على هذه الوظيفة عن بُعد من بلدي؟ إليك كيف يُصدَر كل حكم، وأين قد يخطئ.",
+    from_t: "من أين تأتي الوظائف",
+    from: `نقرأ يوميًا الخلاصات العامة لأنظمة التوظيف لدى ${boards} شركة (${systems}) والخلاصة العامة لموقع Remote OK. إنها الإعلانات نفسها التي تراها في صفحات التوظيف لديهم. الوظيفة التي تختفي من الخلاصة تُحذف في اليوم نفسه. لا ننسخ أبدًا من LinkedIn أو Indeed أو أي موقع يمنع ذلك.`,
+    read_t: "كيف يُقرأ الإعلان",
+    read: [
+      "يقرأ نموذج ذكاء اصطناعي كل إعلان ويسجّل من يحق له التقديم: الدول والمناطق المقبولة أو المستثناة، والمنطقة الزمنية المطلوبة، وتصريح العمل، ونوع العقد، واللغات. وعليه أن يقتبس الجملة الدقيقة التي يستند إليها. نتحقق من أن هذه الجملة موجودة فعلًا في الإعلان؛ وإلا فلا يمكن أن يكون الحكم «مؤهَّل».",
+      "ثم يُحسب الحكم لبلدك بقواعد بسيطة وثابتة، لا بالذكاء الاصطناعي. خانة الموقع في الإعلان تتقدّم على شعارات الشركة مثل «نوظّف من كل مكان».",
+    ],
+    hidden: "لا نعرض الوظائف المقصورة على دول أخرى أو التي تتطلب الحضور إلى مكتب في مكان آخر.",
+    limits_t: "الحدود",
+    limits: [
+      "الأحكام تقديرات آلية. تأكّد دائمًا مع صاحب العمل.",
+      "قد يكون الإعلان غامضًا، أو قد لا توظّف الشركة من كل مكان رغم ما تكتبه. عند الشك نفضّل «غير واضح» على «مؤهَّل» خاطئ.",
+      "لا نعيد نشر الأوصاف الكاملة: فقط العنوان والشركة والحكم واقتباس قصير ورابط إلى الإعلان الأصلي.",
+      "لاحظت خطأ؟ استخدم «الإبلاغ عن خطأ» على الوظيفة. كل بلاغ يساعدنا على تصحيح القواعد.",
+    ],
+    data_t: "بياناتك",
+    data: "لا متتبّعات إعلانية. إذا اشتركت في التنبيهات نحتفظ فقط ببريدك وبلدك ومجالك. الوظائف المحفوظة وملفك تبقى في متصفحك.",
+  },
+}[lang];
 ---
 
 <div class="wrap">
@@ -19,71 +81,11 @@ const boards = totalBoards();
   </header>
   <Image class="photo" src={office} alt="" widths={[480, 960, 1440]} sizes="(max-width: 1180px) 100vw, 1180px" />
   <article class="prose">
-    {
-      fr ? (
-        <p class="lede">
-          HiresHere répond à une seule question : puis-je postuler à ce poste en télétravail depuis
-          mon pays ? Voici comment chaque verdict est établi, et ses limites.
-        </p>
-      ) : (
-        <p class="lede">
-          HiresHere answers one question: can I apply for this remote job from my country? Here is
-          how every verdict is made, and where it can go wrong.
-        </p>
-      )
-    }
-
-    <h2>{fr ? "D’où viennent les offres" : "Where the jobs come from"}</h2>
-    {
-      fr ? (
-        <p>
-          Chaque jour, nous lisons les flux publics des systèmes de recrutement de {boards} entreprises
-          (Greenhouse, Lever, Ashby et SmartRecruiters). Ce sont les mêmes annonces que sur leurs pages
-          carrières. Une offre qui disparaît du flux est retirée le jour même. Nous ne copions jamais
-          LinkedIn, Indeed ou d’autres sites qui l’interdisent.
-        </p>
-      ) : (
-        <p>
-          Every day we read the public job feeds of {boards} companies’ hiring systems (Greenhouse,
-          Lever, Ashby and SmartRecruiters). These are the same postings you see on their careers
-          pages. A job that disappears from the feed is removed the same day. We never scrape
-          LinkedIn, Indeed or any site that forbids it.
-        </p>
-      )
-    }
-
-    <h2>{fr ? "Comment une annonce est lue" : "How a posting is read"}</h2>
-    {
-      fr ? (
-        <p>
-          Un modèle d’IA lit chaque annonce et relève qui peut postuler : pays et régions acceptés ou
-          exclus, fuseau horaire exigé, autorisation de travail requise, type de contrat et langues.
-          Il doit citer la phrase exacte sur laquelle il s’appuie. Nous vérifions que cette phrase
-          figure bien dans l’annonce ; sinon le verdict ne peut pas être « Éligible ».
-        </p>
-      ) : (
-        <p>
-          An AI model reads each posting and records who may apply: allowed or excluded countries and
-          regions, required time zones, work authorization, contract type and languages. It must quote
-          the exact sentence it relies on. We check that the sentence really appears in the posting;
-          if it does not, the verdict cannot be “Eligible”.
-        </p>
-      )
-    }
-    {
-      fr ? (
-        <p>
-          Le verdict pour votre pays est ensuite calculé par des règles simples et publiques, pas par
-          l’IA. Le champ de localisation de l’annonce l’emporte sur les slogans d’entreprise comme
-          « nous recrutons partout ».
-        </p>
-      ) : (
-        <p>
-          The verdict for your country is then computed by simple, fixed rules, not by the AI. The
-          posting’s location field outranks company slogans such as “we hire globally”.
-        </p>
-      )
-    }
+    <p class="lede">{COPY.lede}</p>
+    <h2>{COPY.from_t}</h2>
+    <p>{COPY.from}</p>
+    <h2>{COPY.read_t}</h2>
+    {COPY.read.map((p) => <p>{p}</p>)}
 
     <h2>{tr(lang, "legend_title")}</h2>
     <dl class="legend">
@@ -101,66 +103,13 @@ const boards = totalBoards();
         ))
       }
     </dl>
-    {
-      fr ? (
-        <p>
-          Les offres réservées à d’autres pays, ou qui demandent une présence au bureau ailleurs, ne
-          sont pas affichées.
-        </p>
-      ) : (
-        <p>Jobs limited to other countries, or that need office attendance elsewhere, are not shown.</p>
-      )
-    }
+    <p>{COPY.hidden}</p>
 
-    <h2>{fr ? "Les limites" : "The limits"}</h2>
-    {
-      fr ? (
-        <ul>
-          <li>Les verdicts sont des estimations automatiques. Confirmez toujours auprès de l’employeur.</li>
-          <li>
-            Une annonce peut être vague, ou une entreprise peut ne pas embaucher partout malgré ce qu’elle
-            écrit. Dans le doute, nous préférons « Incertain » à un faux « Éligible ».
-          </li>
-          <li>
-            Nous n’affichons pas les descriptions complètes : seulement le titre, l’entreprise, le verdict,
-            une courte citation et le lien vers l’annonce d’origine.
-          </li>
-          <li>
-            Une erreur ? Utilisez « Signaler une erreur » sur l’offre. Chaque signalement nous aide à
-            corriger les règles.
-          </li>
-        </ul>
-      ) : (
-        <ul>
-          <li>Verdicts are automated estimates. Always confirm with the employer.</li>
-          <li>
-            A posting can be vague, or a company may not hire everywhere despite what it writes. When in
-            doubt we prefer “Unclear” over a wrong “Eligible”.
-          </li>
-          <li>
-            We do not republish full descriptions: only the title, company, verdict, a short quote and a
-            link to the original posting.
-          </li>
-          <li>
-            Spotted a mistake? Use “Report an error” on the job. Every report helps us fix the rules.
-          </li>
-        </ul>
-      )
-    }
+    <h2>{COPY.limits_t}</h2>
+    <ul>{COPY.limits.map((p) => <li>{p}</li>)}</ul>
 
-    <h2>{fr ? "Vos données" : "Your data"}</h2>
-    {
-      fr ? (
-        <p>
-          Pas de traceurs publicitaires. Si vous vous inscrivez aux alertes, nous gardons seulement votre
-          e-mail, votre pays et votre domaine.
-        </p>
-      ) : (
-        <p>
-          No advertising trackers. If you sign up for alerts we keep only your email, country and field.
-        </p>
-      )
-    }
+    <h2>{COPY.data_t}</h2>
+    <p>{COPY.data}</p>
 
     <p class="fine">
       {`${tr(lang, "updated")} ${formatDate(site.updated, lang, true)}`} · <a href={href(lang, "sources")}>{tr(lang, "nav_sources")}</a>

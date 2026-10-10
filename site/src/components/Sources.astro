@@ -1,19 +1,68 @@
 ---
-import { site } from "../data";
+import { site, SOURCES } from "../data";
 import { type Lang, tr } from "../i18n";
 
 interface Props {
   lang: Lang;
 }
 const { lang } = Astro.props;
-const fr = lang === "fr";
-const systems = [
-  { key: "greenhouse", name: "Greenhouse", url: "https://www.greenhouse.com" },
-  { key: "lever", name: "Lever", url: "https://www.lever.co" },
-  { key: "ashby", name: "Ashby", url: "https://www.ashbyhq.com" },
-  { key: "smartrecruiters", name: "SmartRecruiters", url: "https://www.smartrecruiters.com" },
-];
 const boards = site.boards as Record<string, number>;
+const systems = Object.entries(SOURCES)
+  .filter(([key]) => key !== "remoteok")
+  .map(([key, s]) => ({ key, ...s }));
+const COPY = {
+  en: {
+    lede: "Every job links back to its original posting. Here is where the data comes from, and who we owe the company list to.",
+    systems_t: "Hiring systems",
+    systems: "We read the public job feeds these systems publish on behalf of each company.",
+    system: "System",
+    tracked: "Companies tracked",
+    boards_t: "Job boards",
+    remoteok: ": public job feed. Each of these jobs links back to its page on Remote OK.",
+    list_t: "Company list",
+    rit: ": a list of remote-friendly companies. ISC License, © 2024 Lene Saile.",
+    ats: ": the mapping from companies to their hiring systems. MIT License, © 2026 Kalil Bouzigues.",
+    photos_t: "Photos",
+    photos_a: "Photos by Vitaly Gariev on ",
+    photos_b: ", under the Unsplash License. They illustrate remote work and do not show our users.",
+    dont_t: "What we don’t do",
+    dont: "We don’t scrape LinkedIn, Indeed, Glassdoor or any site that forbids it, and we don’t republish full job descriptions.",
+  },
+  fr: {
+    lede: "Chaque offre renvoie vers son annonce d’origine. Voici d’où viennent les données et à qui nous devons la liste des entreprises.",
+    systems_t: "Systèmes de recrutement",
+    systems: "Nous lisons les flux d’offres publics que ces systèmes publient pour le compte des entreprises.",
+    system: "Système",
+    tracked: "Entreprises suivies",
+    boards_t: "Sites d’offres",
+    remoteok: " : flux d’offres public. Chacune de ces offres renvoie vers sa page sur Remote OK.",
+    list_t: "Liste des entreprises",
+    rit: " : liste d’entreprises ouvertes au télétravail. Licence ISC, © 2024 Lene Saile.",
+    ats: " : correspondance entre entreprises et systèmes de recrutement. Licence MIT, © 2026 Kalil Bouzigues.",
+    photos_t: "Photos",
+    photos_a: "Photos de Vitaly Gariev sur ",
+    photos_b: ", sous licence Unsplash. Elles illustrent le travail à distance et ne représentent pas nos utilisateurs.",
+    dont_t: "Ce que nous ne faisons pas",
+    dont: "Nous ne copions pas LinkedIn, Indeed, Glassdoor ni aucun site qui l’interdit, et nous ne republions pas les descriptions complètes des offres.",
+  },
+  ar: {
+    lede: "كل وظيفة تحيل إلى إعلانها الأصلي. إليك مصدر البيانات، ومن ندين له بقائمة الشركات.",
+    systems_t: "أنظمة التوظيف",
+    systems: "نقرأ خلاصات الوظائف العامة التي تنشرها هذه الأنظمة نيابةً عن كل شركة.",
+    system: "النظام",
+    tracked: "الشركات المتابَعة",
+    boards_t: "مواقع الوظائف",
+    remoteok: ": خلاصة وظائف عامة. كل وظيفة منها تحيل إلى صفحتها على Remote OK.",
+    list_t: "قائمة الشركات",
+    rit: ": قائمة بشركات تتيح العمل عن بُعد. رخصة ISC، © 2024 Lene Saile.",
+    ats: ": ربط الشركات بأنظمة التوظيف لديها. رخصة MIT، © 2026 Kalil Bouzigues.",
+    photos_t: "الصور",
+    photos_a: "صور Vitaly Gariev على ",
+    photos_b: "، برخصة Unsplash. توضّح العمل عن بُعد ولا تمثّل مستخدمينا.",
+    dont_t: "ما لا نفعله",
+    dont: "لا ننسخ من LinkedIn أو Indeed أو Glassdoor أو أي موقع يمنع ذلك، ولا نعيد نشر الأوصاف الكاملة للوظائف.",
+  },
+}[lang];
 ---
 
 <div class="wrap">
@@ -21,27 +70,15 @@ const boards = site.boards as Record<string, number>;
     <h1>{tr(lang, "sources_title")}</h1>
   </header>
   <article class="prose">
-    <p class="lede">
-      {
-        fr
-          ? "Chaque offre renvoie vers son annonce d’origine. Voici d’où viennent les données et à qui nous devons la liste des entreprises."
-          : "Every job links back to its original posting. Here is where the data comes from, and who we owe the company list to."
-      }
-    </p>
+    <p class="lede">{COPY.lede}</p>
 
-    <h2>{fr ? "Systèmes de recrutement" : "Hiring systems"}</h2>
-    <p>
-      {
-        fr
-          ? "Nous lisons les flux d’offres publics que ces systèmes publient pour le compte des entreprises."
-          : "We read the public job feeds these systems publish on behalf of each company."
-      }
-    </p>
+    <h2>{COPY.systems_t}</h2>
+    <p>{COPY.systems}</p>
     <table class="sources-table">
       <thead>
         <tr>
-          <th scope="col">{fr ? "Système" : "System"}</th>
-          <th scope="col" class="n">{fr ? "Entreprises suivies" : "Companies tracked"}</th>
+          <th scope="col">{COPY.system}</th>
+          <th scope="col" class="n">{COPY.tracked}</th>
         </tr>
       </thead>
       <tbody>
@@ -60,33 +97,26 @@ const boards = site.boards as Record<string, number>;
       </tbody>
     </table>
 
-    <h2>{fr ? "Liste des entreprises" : "Company list"}</h2>
+    <h2>{COPY.boards_t}</h2>
+    <p><a href={SOURCES.remoteok.url}>Remote OK</a>{COPY.remoteok}</p>
+
+    <h2>{COPY.list_t}</h2>
     <ul>
       <li>
-        <a href="https://github.com/remoteintech/remote-jobs" rel="noopener">remoteintech/remote-jobs</a>
-        {fr ? " : liste d’entreprises ouvertes au télétravail. Licence ISC, © 2024 Lene Saile." : ": a list of remote-friendly companies. ISC License, © 2024 Lene Saile."}
+        <a href="https://github.com/remoteintech/remote-jobs" rel="noopener">remoteintech/remote-jobs</a>{COPY.rit}
       </li>
       <li>
-        <a href="https://github.com/kalil0321/ats-scrapers" rel="noopener">kalil0321/ats-scrapers</a>
-        {fr ? " : correspondance entre entreprises et systèmes de recrutement. Licence MIT, © 2026 Kalil Bouzigues." : ": the mapping from companies to their hiring systems. MIT License, © 2026 Kalil Bouzigues."}
+        <a href="https://github.com/kalil0321/ats-scrapers" rel="noopener">kalil0321/ats-scrapers</a>{COPY.ats}
       </li>
     </ul>
 
-    <h2>{fr ? "Photos" : "Photos"}</h2>
+    <h2>{COPY.photos_t}</h2>
     <p>
-      {fr ? "Photos de Vitaly Gariev sur " : "Photos by Vitaly Gariev on "}
-      <a href="https://unsplash.com" rel="noopener">Unsplash</a>
-      {fr ? ", sous licence Unsplash. Elles illustrent le travail à distance et ne représentent pas nos utilisateurs." : ", under the Unsplash License. They illustrate remote work and do not show our users."}
+      {COPY.photos_a}<a href="https://unsplash.com" rel="noopener">Unsplash</a>{COPY.photos_b}
     </p>
 
-    <h2>{fr ? "Ce que nous ne faisons pas" : "What we don’t do"}</h2>
-    <p>
-      {
-        fr
-          ? "Nous ne copions pas LinkedIn, Indeed, Glassdoor ni aucun site qui l’interdit, et nous ne republions pas les descriptions complètes des offres."
-          : "We don’t scrape LinkedIn, Indeed, Glassdoor or any site that forbids it, and we don’t republish full job descriptions."
-      }
-    </p>
+    <h2>{COPY.dont_t}</h2>
+    <p>{COPY.dont}</p>
   </article>
 </div>
 

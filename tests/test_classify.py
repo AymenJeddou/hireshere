@@ -243,7 +243,7 @@ def test_alert_pick_and_token():
     from pipeline.alerts import pick, render, unsubscribe_token
 
     def job(id_, verdict, family, scope=""):
-        r = {"en": "r", "fr": "r"}
+        r = {"en": "r", "fr": "r", "ar": "r"}
         return {"id": id_, "verdict": verdict, "family": family, "title": id_.upper(),
                 "company": "X", "scope": scope, "url": f"https://x/{id_}", "reason": r}  # fmt: skip
 
@@ -265,3 +265,20 @@ def test_alert_pick_and_token():
         {"lang": "fr", "country": "MA", "family": "data"}, jobs[:1], "https://u"
     )
     assert subject == "1 nouvelle offre en télétravail ouverte au Maroc" and "https://u" in text
+    subject, body, _ = render(
+        {"lang": "ar", "country": "EG", "family": "data"}, jobs[:2], "https://u"
+    )
+    assert "مصر" in subject and 'dir="rtl"' in body and "hireshere.app/ar/eg" in body
+
+
+def test_every_reason_has_arabic():
+    from pipeline.classify.verdict import REASONS, REASONS_AR, WHERE, WHERE_AR
+
+    assert REASONS.keys() == REASONS_AR.keys() and WHERE.keys() == WHERE_AR.keys()
+
+
+def test_arabic_reason_names_country():
+    from pipeline.classify.verdict import verdict
+
+    v, reason = verdict(ex(geo_scope="regions", allowed_regions=["EMEA"]), "TN", TN, lang="ar")
+    assert v == "likely" and "تونس" in reason and "EMEA" in reason

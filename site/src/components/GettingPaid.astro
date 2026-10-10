@@ -6,10 +6,9 @@ interface Props {
   lang: Lang;
 }
 const { lang } = Astro.props;
-const fr = lang === "fr";
 const CHECKED = "2026-10-10";
 
-type Section = { en: string[]; fr: string[]; links: [string, string][] };
+type Section = Record<Lang, string[]> & { links: [string, string][] };
 const byCountry: Record<string, Section> = {
   TN: {
     en: [
@@ -23,6 +22,12 @@ const byCountry: Record<string, Section> = {
       "Payoneer est le moyen le plus courant pour recevoir des clients et des plateformes (Upwork, Fiverr) puis retirer vers une banque tunisienne en dinars. Wise a souvent de meilleurs taux, mais les retraits vers un compte en dinars peuvent être limités : beaucoup reçoivent sur Wise puis transfèrent par virement.",
       "La banque peut demander l’origine des fonds (contrat, factures) avant de créditer le compte. Gardez vos justificatifs.",
       "Un statut d’auto-entrepreneur existe pour les personnes travaillant seules sous un plafond de chiffre d’affaires. Une proposition de loi sur le statut des freelances travaillant pour l’étranger (dont l’accès à PayPal) a été déposée en 2026 et n’est pas encore adoptée.",
+    ],
+    ar: [
+      "الدينار التونسي غير قابل للتحويل بحرية، لذا تمرّ المداخيل من الخارج عبر القنوات الرسمية. تشجّع الدولة تصدير الخدمات: الحساب المهني بالعملة الصعبة والبطاقة التكنولوجية الدولية هما الطريقان المعتادان.",
+      "Payoneer هو الوسيلة الأكثر شيوعًا لاستلام المال من العملاء والمنصات (Upwork وFiverr) ثم سحبه إلى بنك تونسي بالدينار. غالبًا ما يقدّم Wise أسعار صرف أفضل، لكن السحب إلى حساب بالدينار قد يكون مقيّدًا: كثيرون يستلمون على Wise ثم يحوّلون بتحويل بنكي.",
+      "قد يطلب البنك إثبات مصدر الأموال (عقد، فواتير) قبل إيداعها. احتفظ بوثائقك جاهزة.",
+      "يوجد نظام المبادر الذاتي (auto-entrepreneur) للأفراد العاملين بمفردهم ضمن سقف لرقم المعاملات. وقد أُودع في البرلمان سنة 2026 مقترح قانون حول وضعية المستقلين العاملين لحساب عملاء أجانب (بما في ذلك النفاذ إلى PayPal)، ولم يُصادق عليه بعد."
     ],
     links: [
       ["Le Courrier de l’Atlas: statut du freelance", "https://www.lecourrierdelatlas.com/tunisie-statut-du-freelance-paypal-prelevements-5-choses-a-savoir-sur-la-nouvelle-proposition-de-loi/"],
@@ -43,6 +48,12 @@ const byCountry: Record<string, Section> = {
       "La réglementation des changes marocaine encadre la réception et la conversion des paiements étrangers. Indiquez la devise et le mode de paiement dans le contrat, et gardez contrats, factures et relevés.",
       "Le statut d’auto-entrepreneur peut convenir, mais son plafond est bas pour de gros contrats et un client unique peut entraîner une fiscalité différente. Renseignez-vous auprès d’un comptable.",
     ],
+    ar: [
+      "Payoneer واسع الاستعمال، خاصة للعمل عبر المنصات، مع السحب إلى بنك مغربي بالدرهم. توقّع بضعة في المئة كرسوم تحويل وسحب.",
+      "غالبًا ما يكون Wise أرخص وأوضح مع العملاء المباشرين، لكن تحقّق بتحويل تجريبي صغير من أن السحب بالدرهم (MAD) إلى بنكك يعمل قبل أن تعطي بياناتك للعملاء.",
+      "تؤطّر قوانين الصرف المغربية طريقة استلام المدفوعات الأجنبية وتحويلها. اذكر العملة وطريقة الدفع في العقد، واحتفظ بالعقود والفواتير وكشوف الحساب.",
+      "قد يناسبك نظام المقاول الذاتي، لكن سقفه منخفض للعقود الكبيرة، والدخل من عميل واحد قد يخضع لضريبة مختلفة. استشر محاسبًا."
+    ],
     links: [
       ["Grey: receiving freelance payments in Morocco", "https://grey.co/blog/how-to-receive-freelance-payments-in-morocco"],
       ["Weepo: contrats freelance au Maroc", "https://weepo.ma/en/blog/contrat-prestation-service-freelance-maroc"],
@@ -60,6 +71,12 @@ const byCountry: Record<string, Section> = {
       "Les sources ne s’accordent pas sur le bon fonctionnement des retraits Payoneer en Algérie. Vérifiez directement auprès de Payoneer les options de retrait et de devise.",
       "Beaucoup combinent un solde sur plateforme et un compte bancaire en devises. Demandez au service change de votre banque les justificatifs exigés pour les paiements d’export de services.",
       "Renseignez-vous sur le statut d’auto-entrepreneur et les règles de la Banque d’Algérie sur l’export de services auprès de votre banque ou de la DGI avant de commencer.",
+    ],
+    ar: [
+      "استلام المال من الخارج هو الجزء الأصعب في الجزائر: القيود البنكية صارمة، والعملة الأجنبية تُحوَّل إلى الدينار بالسعر الرسمي.",
+      "تختلف المصادر حول ما إذا كان السحب عبر Payoneer يعمل بالكامل في الجزائر. تحقّق مباشرة من Payoneer من خيارات السحب والعملة قبل الاعتماد عليه.",
+      "يجمع كثيرون بين رصيد على المنصة وحساب بنكي بالعملة الصعبة. اسأل مصلحة الصرف في بنكك عن الوثائق المطلوبة لمدفوعات تصدير الخدمات.",
+      "تحقّق من نظام المقاول الذاتي ومن قواعد بنك الجزائر حول تصدير الخدمات لدى بنكك أو المديرية العامة للضرائب قبل أن تبدأ."
     ],
     links: [
       ["Grey: withdrawing freelance earnings in Algeria", "https://grey.co/blog/how-to-withdraw-your-freelancing-money-in-algeria"],
@@ -79,14 +96,20 @@ const byCountry: Record<string, Section> = {
       "Pour les gros paiements ponctuels, le virement bancaire international reste l’alternative habituelle.",
       "Les résidents égyptiens sont en général imposés sur leurs revenus mondiaux, y compris le freelance pour l’étranger. Vérifiez les taux et l’inscription auprès de l’administration fiscale ou d’un comptable.",
     ],
+    ar: [
+      "Payoneer هو الخيار الأكثر رسوخًا: يعمل مع جلّ منصات العمل الحر ويسمح بالسحب إلى بنك مصري بالجنيه، لكن الرسوم تتراكم (استلام وسحب وتحويل).",
+      "يمكن لـWise استلام مدفوعات العملاء ثم سحبها إلى بنك مصري؛ بطاقة Wise غير متاحة للمقيمين في مصر، والدعم يعتمد على عملة العميل.",
+      "للمبالغ الكبيرة لمرة واحدة، يبقى التحويل البنكي الدولي المباشر هو البديل المعتاد.",
+      "يخضع المقيمون في مصر عمومًا للضريبة على دخلهم العالمي، بما في ذلك العمل الحر لحساب الخارج. تحقّق من النسب الحالية والتسجيل لدى مصلحة الضرائب المصرية أو محاسب."
+    ],
     links: [
       ["XPay: how freelancers get paid in Egypt", "https://xpay.app/blog/how-freelancers-get-paid-egypt"],
       ["Grey: receiving freelance payments in Egypt", "https://grey.co/blog/how-to-receive-freelance-payments-in-egypt"],
     ],
   },
 };
-const t = fr
-  ? {
+const t = {
+  fr: {
       title: "Être payé depuis l’Afrique du Nord",
       lede: "Décrocher un poste à distance n’est que la moitié du chemin : il faut aussi recevoir son salaire. Voici l’essentiel, pays par pays.",
       kinds: "Salarié, freelance ou portage (EOR) ?",
@@ -105,8 +128,8 @@ const t = fr
       sources: "Sources",
       checked: "Vérifié le",
       warn: "Les règles et les frais changent souvent. Ce guide résume des sources publiques et ne constitue pas un conseil juridique ou fiscal.",
-    }
-  : {
+    },
+  en: {
       title: "Getting paid from North Africa",
       lede: "Landing a remote job is half the work: you also need to receive your pay. Here is what matters, country by country.",
       kinds: "Employee, contractor or employer of record?",
@@ -125,7 +148,28 @@ const t = fr
       sources: "Sources",
       checked: "Last checked",
       warn: "Rules and fees change often. This guide summarises public sources and is not legal or tax advice.",
-    };
+  },
+  ar: {
+      title: "استلام الأجر من شمال أفريقيا",
+      lede: "الحصول على وظيفة عن بُعد نصف الطريق فقط: عليك أيضًا أن تستلم أجرك. إليك الأهم، بلدًا بلدًا.",
+      kinds: "موظف، مستقل، أم عبر صاحب عمل مسجَّل (EOR)؟",
+      kindsBody: [
+        "موظف عبر صاحب عمل مسجَّل (EOR): شركة مثل Deel أو Remote توظّفك محليًا لحساب الشركة. عقد عمل، اشتراكات اجتماعية، وكشف راتب.",
+        "مستقل (contractor): تصدر فواتير للشركة. هو الأكثر شيوعًا والأبسط لصاحب العمل، لكنك تتولّى وضعك القانوني وضرائبك واستلام المدفوعات.",
+        "غالبًا ما يذكر الإعلان نوع العقد: نعرضه في كل وظيفة عندما يكون معروفًا.",
+      ],
+      tips: "نصائح صالحة في كل مكان",
+      tipsBody: [
+        "قم بدفعة تجريبية صغيرة قبل أول دفعة حقيقية.",
+        "احتفظ بالعقود والفواتير وكشوف الحساب: قد تسأل البنوك عن مصدر الأموال.",
+        "قارن التكلفة الإجمالية (استلام + تحويل + سحب)، لا رسمًا واحدًا معلنًا.",
+        "في الوضع القانوني والضرائب، المحاسب المحلي أفضل من أي مقال، بما فيه هذا.",
+      ],
+      sources: "المصادر",
+      checked: "آخر تحقق",
+      warn: "تتغيّر القواعد والرسوم كثيرًا. يلخّص هذا الدليل مصادر عامة ولا يُعدّ استشارة قانونية أو ضريبية.",
+    },
+}[lang];
 ---
 
 <div class="wrap">
@@ -146,7 +190,7 @@ const t = fr
         return s ? (
           <section id={c.code.toLowerCase()}>
             <h2>{countryName(c, lang)}</h2>
-            <ul>{(fr ? s.fr : s.en).map((p) => <li>{p}</li>)}</ul>
+            <ul>{s[lang].map((p) => <li>{p}</li>)}</ul>
             <p class="guide-sources">
               {t.sources}:{" "}
               {s.links.map(([label, url], i) => (

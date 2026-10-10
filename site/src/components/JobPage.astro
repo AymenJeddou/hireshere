@@ -8,6 +8,7 @@ import {
   isNew,
   type JobRecord,
   salaryText,
+  SOURCES,
   tzFits,
 } from "../data";
 import { formatDate, href, labels, languageName, type Lang, tr, type Verdict } from "../i18n";
@@ -19,12 +20,6 @@ interface Props {
   lang: Lang;
 }
 const { job, lang } = Astro.props;
-const SOURCES: Record<string, string> = {
-  greenhouse: "Greenhouse",
-  lever: "Lever",
-  ashby: "Ashby",
-  smartrecruiters: "SmartRecruiters",
-};
 const open = (j: JobRecord) => Object.values(j.verdicts).some((x) => x.v !== "unclear");
 const firstCountry = countries.find((c) => job.verdicts[c.code]) ?? countries[0];
 const salary = salaryText(job.salary, lang);
@@ -65,7 +60,7 @@ const details: [string, string][] = [
   [tr(lang, "d_salary"), salary],
   [tr(lang, "d_timezone"), tzLine],
   [tr(lang, "d_department"), job.department],
-  [tr(lang, "d_source"), SOURCES[job.source] ?? job.source],
+  [tr(lang, "d_source"), SOURCES[job.source]?.name ?? job.source],
   [tr(lang, "d_first_seen"), formatDate(job.seen, lang, true)],
 ].filter(([, v]) => v) as [string, string][];
 
@@ -83,7 +78,7 @@ const verdictOf = (code: string): Verdict | null => job.verdicts[code]?.v ?? nul
 <div class="wrap job-page" data-job-id={job.id}>
   <nav class="crumbs">
     <a href={href(lang, "country", firstCountry.code)}
-      >← {tr(lang, "back_to_jobs", { country: countryName(firstCountry, lang) })}</a
+      ><span class="flip">←</span> {tr(lang, "back_to_jobs", { country: countryName(firstCountry, lang) })}</a
     >
   </nav>
 
@@ -99,7 +94,7 @@ const verdictOf = (code: string): Verdict | null => job.verdicts[code]?.v ?? nul
   </header>
 
   <div class="jp-actions">
-    <a class="btn btn-primary" href={job.url} target="_blank" rel="noopener noreferrer">
+    <a class="btn btn-primary" href={job.url} target="_blank" rel="noopener">
       {tr(lang, "apply")}
       <span class="sr-only">{tr(lang, "apply_sr")}</span>
       <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
@@ -137,7 +132,7 @@ const verdictOf = (code: string): Verdict | null => job.verdicts[code]?.v ?? nul
                     </>
                   ) : (
                     <span class="jp-reason">
-                      {tr(lang, "not_shown", { country: lang === "fr" ? c.fr_en : countryName(c, lang) })}
+                      {tr(lang, "not_shown", { country: countryName(c, lang), country_en: c.fr_en })}
                     </span>
                   )}
                 </li>
@@ -174,7 +169,7 @@ const verdictOf = (code: string): Verdict | null => job.verdicts[code]?.v ?? nul
 
     <aside class="jp-side">
       <a class="panel jp-guide" href={`${href(lang, "guide")}#${firstCountry.code.toLowerCase()}`}>
-        {tr(lang, "guide_cta", { country: countryName(firstCountry, lang), country_en: firstCountry.fr_en })} →
+        {tr(lang, "guide_cta", { country: countryName(firstCountry, lang), country_en: firstCountry.fr_en })} <span class="flip">→</span>
       </a>
       {
         named.length > 0 && (
