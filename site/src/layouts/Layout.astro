@@ -96,5 +96,13 @@ const alternate = (l: Lang) => new URL(href(l, page, country), Astro.site).toStr
         <p>© {new Date(site.updated).getUTCFullYear()} {site.product} · {site.domain}</p>
       </div>
     </footer>
+    {
+      page === "search" && (
+        <script is:inline>
+          // Switching language keeps the current filters.
+          document.querySelectorAll("a[hreflang]").forEach((a) => a.addEventListener("click", () => (a.search = location.search)));
+        </script>
+      )
+    }
   </body>
 </html>
