@@ -1,0 +1,1754 @@
+{
+ "offers": [
+  {
+   "postal_code": null,
+   "options_cv": "off",
+   "close_at": null,
+   "position": 1634,
+   "locations_question_required": true,
+   "careers_url": "https://careers.bunq.com/o/deputy-aml-manager-belgium",
+   "country": "Belgium",
+   "careers_apply_url": "https://careers.bunq.com/o/deputy-aml-manager-belgium/c/new",
+   "education_code": "professional",
+   "state_code": "BRU",
+   "experience_code": "experienced",
+   "open_questions": [
+    {
+     "id": 4415333,
+     "position": 1,
+     "options": {},
+     "required": true,
+     "body": "What country do you currently live in?",
+     "kind": "string",
+     "translations": {
+      "en": {
+       "body": "What country do you currently live in?"
+      }
+     },
+     "open_question_options": []
+    },
+    {
+     "id": 4415334,
+     "position": 2,
+     "options": {},
+     "required": false,
+     "body": "<p>For this role, we’re not sponsoring visas at the moment.</p>\n<p><br />But no worries, you can explore exciting opportunities in the Netherlands or Türkiye instead! Check them out at <strong><strong><a target=\"_blank\" href=\"http://careers.bunq.com/\" rel=\"noopener\">careers.bunq.com</a> </strong></strong>🌍✨<br /></p>\n",
+     "kind": "infobox",
+     "translations": {
+      "en": {
+       "body": "<p>For this role, we’re not sponsoring visas at the moment.</p>\n<p><br />But no worries, you can explore exciting opportunities in the Netherlands or Türkiye instead! Check them out at <strong><strong><a target=\"_blank\" href=\"http://careers.bunq.com/\" rel=\"noopener\">careers.bunq.com</a> </strong></strong>🌍✨<br /></p>\n"
+      }
+     },
+     "open_question_options": []
+    },
+    {
+     "id": 4415335,
+     "position": 3,
+     "options": {},
+     "required": true,
+     "body": "Are you eligible to work in the country you're applying to, without requiring sponsorship or a visa?",
+     "kind": "single_choice",
+     "translations": {
+      "en": {
+       "body": "Are you eligible to work in the country you're applying to, without requiring sponsorship or a visa?"
+      }
+     },
+     "open_question_options": [
+      {
+       "id": 6799405,
+       "position": 0,
+       "body": "I do not require visa sponsorship",
+       "translations": {
+        "en": {
+         "body": "I do not require visa sponsorship"
+        }
+       }
+      },
+      {
+       "id": 6799406,
+       "position": 1,
+       "body": "I require visa sponsorship",
+       "translations": {
+        "en": {
+         "body": "I require visa sponsorship"
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": 4415336,
+     "position": 4,
+     "options": {},
+     "required": false,
+     "body": "<p><strong>💡 Important Info: At bunq, our working language is English. Fluency in both writing and speaking English is a must for all roles in all locations.</strong></p>",
+     "kind": "infobox",
+     "translations": {
+      "en": {
+       "body": "<p><strong>💡 Important Info: At bunq, our working language is English. Fluency in both writing and speaking English is a must for all roles in all locations.</strong></p>"
+      }
+     },
+     "open_question_options": []
+    },
+    {
+     "id": 4415337,
+     "position": 5,
+     "options": {},
+     "required": true,
+     "body": "How do you assess your writing and speaking English skills?",
+     "kind": "single_choice",
+     "translations": {
+      "en": {
+       "body": "How do you assess your writing and speaking English skills?"
+      }
+     },
+     "open_question_options": [
+      {
+       "id": 6799407,
+       "position": 0,
+       "body": "Beginner",
+       "translations": {
+        "en": {
+         "body": "Beginner"
+        }
+       }
+      },
+      {
+       "id": 6799408,
+       "position": 1,
+       "body": "Intermediate",
+       "translations": {
+        "en": {
+         "body": "Intermediate"
+        }
+       }
+      },
+      {
+       "id": 6799409,
+       "position": 2,
+       "body": "Upper Intermediate",
+       "translations": {
+        "en": {
+         "body": "Upper Intermediate"
+        }
+       }
+      },
+      {
+       "id": 6799410,
+       "position": 3,
+       "body": "Advanced",
+       "translations": {
+        "en": {
+         "body": "Advanced"
+        }
+       }
+      },
+      {
+       "id": 6799411,
+       "position": 4,
+       "body": "Native",
+       "translations": {
+        "en": {
+         "body": "Native"
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": 4415338,
+     "position": 6,
+     "options": {},
+     "required": false,
+     "body": "<p><strong>💡 If successful in the hiring process, the contractual arrangement would look like this: </strong> </p>\n<strong><p>🇧🇪 Belgium: an indefinite contract. </p></strong>\n<p><strong><br />💡 <strong>This role will be remote within the country you have applied to, but we'd love for you to join us in our Amsterdam office as well ✈️ You will spend the first 3 weeks of your onboarding in Amsterdam, and two weeks per quarter after 🌈</strong></strong></p>\n\n\n\n<p><strong><strong><strong><strong><br /><strong>💡 </strong>Our standard working hours are from 09:00 to 18:00. This ensures that everyone is available and can rely on each other during this time.</strong></strong><br /></strong></strong></p>\n<p><br /></p>",
+     "kind": "infobox",
+     "translations": {
+      "en": {
+       "body": "<p><strong>💡 If successful in the hiring process, the contractual arrangement would look like this: </strong> </p>\n<strong><p>🇧🇪 Belgium: an indefinite contract. </p></strong>\n<p><strong><br />💡 <strong>This role will be remote within the country you have applied to, but we'd love for you to join us in our Amsterdam office as well ✈️ You will spend the first 3 weeks of your onboarding in Amsterdam, and two weeks per quarter after 🌈</strong></strong></p>\n\n\n\n<p><strong><strong><strong><strong><br /><strong>💡 </strong>Our standard working hours are from 09:00 to 18:00. This ensures that everyone is available and can rely on each other during this time.</strong></strong><br /></strong></strong></p>\n<p><br /></p>"
+      }
+     },
+     "open_question_options": []
+    },
+    {
+     "id": 4415339,
+     "position": 7,
+     "options": {},
+     "required": true,
+     "body": "Do you agree and confirm with the above mentioned terms (contract duration, hybrid way of working, and standard working hours)?",
+     "kind": "single_choice",
+     "translations": {
+      "en": {
+       "body": "Do you agree and confirm with the above mentioned terms (contract duration, hybrid way of working, and standard working hours)?"
+      }
+     },
+     "open_question_options": [
+      {
+       "id": 6799412,
+       "position": 0,
+       "body": "Yes, I agree with the proposed setup.",
+       "translations": {
+        "en": {
+         "body": "Yes, I agree with the proposed setup."
+        }
+       }
+      },
+      {
+       "id": 6799413,
+       "position": 1,
+       "body": "No, I do not agree with the initial 3 weeks in Amsterdam office and then hybrid setup",
+       "translations": {
+        "en": {
+         "body": "No, I do not agree with the initial 3 weeks in Amsterdam office and then hybrid setup"
+        }
+       }
+      },
+      {
+       "id": 6799414,
+       "position": 2,
+       "body": "No, I do not agree with the contract duration / setup",
+       "translations": {
+        "en": {
+         "body": "No, I do not agree with the contract duration / setup"
+        }
+       }
+      },
+      {
+       "id": 6799415,
+       "position": 3,
+       "body": "No, I do not agree with the working hours setup",
+       "translations": {
+        "en": {
+         "body": "No, I do not agree with the working hours setup"
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": 4415340,
+     "position": 8,
+     "options": {},
+     "required": true,
+     "body": "What are your salary expectations? (gross, annual, in EUR/GBP)",
+     "kind": "string",
+     "translations": {
+      "en": {
+       "body": "What are your salary expectations? (gross, annual, in EUR/GBP)"
+      }
+     },
+     "open_question_options": []
+    },
+    {
+     "id": 4415341,
+     "position": 9,
+     "options": {},
+     "required": false,
+     "body": "<p>Please double check if the salary expectations is the <strong>yearly</strong> <strong>gross</strong> amount, mentioning <strong>EUR </strong>or <strong>GBP</strong>!</p>",
+     "kind": "infobox",
+     "translations": {
+      "en": {
+       "body": "<p>Please double check if the salary expectations is the <strong>yearly</strong> <strong>gross</strong> amount, mentioning <strong>EUR </strong>or <strong>GBP</strong>!</p>"
+      }
+     },
+     "open_question_options": []
+    },
+    {
+     "id": 4415342,
+     "position": 10,
+     "options": {},
+     "required": true,
+     "body": "Have you previously worked at bunq?",
+     "kind": "boolean",
+     "translations": {
+      "en": {
+       "body": "Have you previously worked at bunq?"
+      }
+     },
+     "open_question_options": []
+    },
+    {
+     "id": 4415343,
+     "position": 11,
+     "options": {},
+     "required": false,
+     "body": "<p><em>All new hires are subject to Pre-employment Screening (PES), which includes checks conducted by our third-party partner, Zinc. This is part of our commitment to a secure and trustworthy workplace</em></p>",
+     "kind": "infobox",
+     "translations": {
+      "en": {
+       "body": "<p><em>All new hires are subject to Pre-employment Screening (PES), which includes checks conducted by our third-party partner, Zinc. This is part of our commitment to a secure and trustworthy workplace</em></p>"
+      }
+     },
+     "open_question_options": []
+    },
+    {
+     "id": 4415344,
+     "position": 12,
+     "options": {},
+     "required": true,
+     "body": "How do you usually approach your work, its impact, and solving challenges?",
+     "kind": "single_choice",
+     "translations": {
+      "en": {
+       "body": "How do you usually approach your work, its impact, and solving challenges?"
+      }
+     },
+     "open_question_options": [
+      {
+       "id": 6799418,
+       "position": 0,
+       "body": "I don’t have formal work experience yet, but I’ve practiced through studies or small projects",
+       "translations": {
+        "en": {
+         "body": "I don’t have formal work experience yet, but I’ve practiced through studies or small projects"
+        }
+       }
+      },
+      {
+       "id": 6799419,
+       "position": 1,
+       "body": "I successfully handle defined tasks, follow processes, and ask for guidance when needed",
+       "translations": {
+        "en": {
+         "body": "I successfully handle defined tasks, follow processes, and ask for guidance when needed"
+        }
+       }
+      },
+      {
+       "id": 6799420,
+       "position": 2,
+       "body": "I work mostly on my own, support team goals, and deal with common issues",
+       "translations": {
+        "en": {
+         "body": "I work mostly on my own, support team goals, and deal with common issues"
+        }
+       }
+      },
+      {
+       "id": 6799421,
+       "position": 3,
+       "body": "I deliver projects from start to finish, tie my work to team results, and suggest fixes",
+       "translations": {
+        "en": {
+         "body": "I deliver projects from start to finish, tie my work to team results, and suggest fixes"
+        }
+       }
+      },
+      {
+       "id": 6799422,
+       "position": 4,
+       "body": "I turn bigger goals into initiatives, improve how we work, and prevent problems",
+       "translations": {
+        "en": {
+         "body": "I turn bigger goals into initiatives, improve how we work, and prevent problems"
+        }
+       }
+      },
+      {
+       "id": 6799423,
+       "position": 5,
+       "body": "I lead projects across teams, align people, and create tools that help others solve problems faster",
+       "translations": {
+        "en": {
+         "body": "I lead projects across teams, align people, and create tools that help others solve problems faster"
+        }
+       }
+      },
+      {
+       "id": 6799424,
+       "position": 6,
+       "body": "I redesign systems across departments, focus on long-term goals, and drive strategic change",
+       "translations": {
+        "en": {
+         "body": "I redesign systems across departments, focus on long-term goals, and drive strategic change"
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": 4415345,
+     "position": 13,
+     "options": {},
+     "required": true,
+     "body": "Which of the following statements best describes your approach to using AI in a professional context?",
+     "kind": "single_choice",
+     "translations": {
+      "en": {
+       "body": "Which of the following statements best describes your approach to using AI in a professional context?"
+      }
+     },
+     "open_question_options": [
+      {
+       "id": 6799425,
+       "position": 0,
+       "body": "I have limited to no experience with AI tools and am not yet convinced of their practical benefits in a work environment.",
+       "translations": {
+        "en": {
+         "body": "I have limited to no experience with AI tools and am not yet convinced of their practical benefits in a work environment."
+        }
+       }
+      },
+      {
+       "id": 6799426,
+       "position": 1,
+       "body": "I consistently use AI tools to improve my personal efficiency, validate the quality of my own work, and build simple automations for my individual tasks.",
+       "translations": {
+        "en": {
+         "body": "I consistently use AI tools to improve my personal efficiency, validate the quality of my own work, and build simple automations for my individual tasks."
+        }
+       }
+      },
+      {
+       "id": 6799427,
+       "position": 2,
+       "body": "I proactively improve team efficiency by designing, building, and maintaining multi-step automated workflows, and I actively share these solutions with my team.",
+       "translations": {
+        "en": {
+         "body": "I proactively improve team efficiency by designing, building, and maintaining multi-step automated workflows, and I actively share these solutions with my team."
+        }
+       }
+      },
+      {
+       "id": 6799428,
+       "position": 3,
+       "body": "I strategically redesign core operations by architecting scalable AI systems, coaching others to raise their AI skills, and identifying work that can be entirely eliminated by AI.",
+       "translations": {
+        "en": {
+         "body": "I strategically redesign core operations by architecting scalable AI systems, coaching others to raise their AI skills, and identifying work that can be entirely eliminated by AI."
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": 4415346,
+     "position": 14,
+     "options": {},
+     "required": true,
+     "body": "How would you rate your practical proficiency with Belgian AML/CFT regulation (NBB requirements) and experience managing compliance transitions or upgrades from lighter to stricter regulatory models?",
+     "kind": "single_choice",
+     "translations": {
+      "en": {
+       "body": "How would you rate your practical proficiency with Belgian AML/CFT regulation (NBB requirements) and experience managing compliance transitions or upgrades from lighter to stricter regulatory models?"
+      }
+     },
+     "open_question_options": [
+      {
+       "id": 6799429,
+       "position": 0,
+       "body": "I've managed regulatory transitions or branch upgrades, worked directly with NBB or similar national regulators, and can navigate Belgian AML/CFT rules with confidence.",
+       "translations": {
+        "en": {
+         "body": "I've managed regulatory transitions or branch upgrades, worked directly with NBB or similar national regulators, and can navigate Belgian AML/CFT rules with confidence."
+        }
+       }
+      },
+      {
+       "id": 6799430,
+       "position": 1,
+       "body": "I have Belgian AML/CFT compliance experience; I understand NBB requirements and have supported or led compliance changes.",
+       "translations": {
+        "en": {
+         "body": "I have Belgian AML/CFT compliance experience; I understand NBB requirements and have supported or led compliance changes."
+        }
+       }
+      },
+      {
+       "id": 6799431,
+       "position": 2,
+       "body": "I have AML/CFT experience, including some Belgian market familiarity; I'm ready to lead a transition.",
+       "translations": {
+        "en": {
+         "body": "I have AML/CFT experience, including some Belgian market familiarity; I'm ready to lead a transition."
+        }
+       }
+      },
+      {
+       "id": 6799432,
+       "position": 3,
+       "body": "Limited Belgian AML/CFT experience or no track record with regulatory transitions; my background is primarily generic AML or non-compliance roles.",
+       "translations": {
+        "en": {
+         "body": "Limited Belgian AML/CFT experience or no track record with regulatory transitions; my background is primarily generic AML or non-compliance roles."
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": 4415347,
+     "position": 15,
+     "options": {},
+     "required": true,
+     "body": "How familiar and practised are you with running AML operational readiness, SIRA integrity-risk assessments, and FIU financial-crime reporting end-to-end alone, using AI and automation instead of a local compliance team?",
+     "kind": "single_choice",
+     "translations": {
+      "en": {
+       "body": "How familiar and practised are you with running AML operational readiness, SIRA integrity-risk assessments, and FIU financial-crime reporting end-to-end alone, using AI and automation instead of a local compliance team?"
+      }
+     },
+     "open_question_options": [
+      {
+       "id": 6799433,
+       "position": 0,
+       "body": "I've built or scaled compliance operations using AI/automation as core tooling; I've managed AML, risk assessment, and reporting workflows across a team or solo.",
+       "translations": {
+        "en": {
+         "body": "I've built or scaled compliance operations using AI/automation as core tooling; I've managed AML, risk assessment, and reporting workflows across a team or solo."
+        }
+       }
+      },
+      {
+       "id": 6799434,
+       "position": 1,
+       "body": "I have running compliance operations experience and understand how to leverage automation; I'm comfortable making AI-first design decisions.",
+       "translations": {
+        "en": {
+         "body": "I have running compliance operations experience and understand how to leverage automation; I'm comfortable making AI-first design decisions."
+        }
+       }
+      },
+      {
+       "id": 6799435,
+       "position": 2,
+       "body": "I understand compliance operations and automation basics; I'm ready to deepen my AI-first approach.",
+       "translations": {
+        "en": {
+         "body": "I understand compliance operations and automation basics; I'm ready to deepen my AI-first approach."
+        }
+       }
+      },
+      {
+       "id": 6799436,
+       "position": 3,
+       "body": "I haven't operated compliance solo or primarily rely on manual processes and headcount rather than AI/automation.",
+       "translations": {
+        "en": {
+         "body": "I haven't operated compliance solo or primarily rely on manual processes and headcount rather than AI/automation."
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": 4415348,
+     "position": 16,
+     "options": {},
+     "required": true,
+     "body": "How familiar and practised are you with preparing compliance programs for regulatory inspection readiness and managing AML compliance audits or inspection responses?",
+     "kind": "single_choice",
+     "translations": {
+      "en": {
+       "body": "How familiar and practised are you with preparing compliance programs for regulatory inspection readiness and managing AML compliance audits or inspection responses?"
+      }
+     },
+     "open_question_options": [
+      {
+       "id": 6799438,
+       "position": 0,
+       "body": "I've prepared AML programs for inspection, documented control evidence, managed inspection responses, and addressed compliance gaps.",
+       "translations": {
+        "en": {
+         "body": "I've prepared AML programs for inspection, documented control evidence, managed inspection responses, and addressed compliance gaps."
+        }
+       }
+      },
+      {
+       "id": 6799439,
+       "position": 1,
+       "body": "I have direct experience responding to regulatory audits and inspections—preparing evidence, documenting controls, and leading remediation.",
+       "translations": {
+        "en": {
+         "body": "I have direct experience responding to regulatory audits and inspections—preparing evidence, documenting controls, and leading remediation."
+        }
+       }
+      },
+      {
+       "id": 6799478,
+       "position": 2,
+       "body": "I've managed supervisory meetings and built regulator relationships; audit preparation is an area I'd develop in this role.",
+       "translations": {
+        "en": {
+         "body": "I've managed supervisory meetings and built regulator relationships; audit preparation is an area I'd develop in this role."
+        }
+       }
+      },
+      {
+       "id": 6799479,
+       "position": 3,
+       "body": "I have audit experience and understand inspection processes; I'm ready to lead inspection readiness and deepen my expertise.",
+       "translations": {
+        "en": {
+         "body": "I have audit experience and understand inspection processes; I'm ready to lead inspection readiness and deepen my expertise."
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": 4415349,
+     "position": 17,
+     "options": {},
+     "required": true,
+     "body": "Please indicate your proficiency in Dutch or/and French (speaking, reading, writing):",
+     "kind": "single_choice",
+     "translations": {
+      "en": {
+       "body": "Please indicate your proficiency in Dutch or/and French (speaking, reading, writing):"
+      }
+     },
+     "open_question_options": [
+      {
+       "id": 6799440,
+       "position": 0,
+       "body": "No proficiency - I do not speak or understand the language.",
+       "translations": {
+        "en": {
+         "body": "No proficiency - I do not speak or understand the language."
+        }
+       }
+      },
+      {
+       "id": 6799441,
+       "position": 1,
+       "body": "Basic - I can understand and use simple phrases; limited for work. (A1–A2)",
+       "translations": {
+        "en": {
+         "body": "Basic - I can understand and use simple phrases; limited for work. (A1–A2)"
+        }
+       }
+      },
+      {
+       "id": 6799442,
+       "position": 2,
+       "body": "Conversational - I can hold everyday conversations and handle routine tasks. (B1–B2)",
+       "translations": {
+        "en": {
+         "body": "Conversational - I can hold everyday conversations and handle routine tasks. (B1–B2)"
+        }
+       }
+      },
+      {
+       "id": 6799443,
+       "position": 3,
+       "body": "Fluent / Professional - I can work, present, write, and negotiate comfortably. (C1)",
+       "translations": {
+        "en": {
+         "body": "Fluent / Professional - I can work, present, write, and negotiate comfortably. (C1)"
+        }
+       }
+      },
+      {
+       "id": 6799444,
+       "position": 4,
+       "body": "Native / Bilingual - Mother tongue or equivalent; full professional and cultural fluency. (C2)",
+       "translations": {
+        "en": {
+         "body": "Native / Bilingual - Mother tongue or equivalent; full professional and cultural fluency. (C2)"
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": 4415350,
+     "position": 18,
+     "options": {},
+     "required": true,
+     "body": "How did you first hear about this role?",
+     "kind": "single_choice",
+     "translations": {
+      "en": {
+       "body": "How did you first hear about this role?"
+      }
+     },
+     "open_question_options": [
+      {
+       "id": 6799445,
+       "position": 0,
+       "body": "I found it myself on bunq's careers website",
+       "translations": {
+        "en": {
+         "body": "I found it myself on bunq's careers website"
+        }
+       }
+      },
+      {
+       "id": 6799446,
+       "position": 1,
+       "body": "A current bunq employee told me about it",
+       "translations": {
+        "en": {
+         "body": "A current bunq employee told me about it"
+        }
+       }
+      },
+      {
+       "id": 6799447,
+       "position": 2,
+       "body": "A former bunq employee referred me",
+       "translations": {
+        "en": {
+         "body": "A former bunq employee referred me"
+        }
+       }
+      },
+      {
+       "id": 6799448,
+       "position": 3,
+       "body": "A bunq recruiter reached out to me",
+       "translations": {
+        "en": {
+         "body": "A bunq recruiter reached out to me"
+        }
+       }
+      },
+      {
+       "id": 6799449,
+       "position": 4,
+       "body": "A job portal (LinkedIn, Glassdoor, Indeed, Google Jobs)",
+       "translations": {
+        "en": {
+         "body": "A job portal (LinkedIn, Glassdoor, Indeed, Google Jobs)"
+        }
+       }
+      },
+      {
+       "id": 6799450,
+       "position": 5,
+       "body": "A social media post (LinkedIn, Instagram, Facebook, YouTube, X)",
+       "translations": {
+        "en": {
+         "body": "A social media post (LinkedIn, Instagram, Facebook, YouTube, X)"
+        }
+       }
+      },
+      {
+       "id": 6799451,
+       "position": 6,
+       "body": "News or media coverage",
+       "translations": {
+        "en": {
+         "body": "News or media coverage"
+        }
+       }
+      },
+      {
+       "id": 6799452,
+       "position": 7,
+       "body": "At an event where bunq was present",
+       "translations": {
+        "en": {
+         "body": "At an event where bunq was present"
+        }
+       }
+      },
+      {
+       "id": 6799453,
+       "position": 8,
+       "body": "Through my university (ad, newsletter, event)",
+       "translations": {
+        "en": {
+         "body": "Through my university (ad, newsletter, event)"
+        }
+       }
+      }
+     ]
+    }
+   ],
+   "options_cover_letter": "off",
+   "options_photo": "off",
+   "published_at": "2026-10-05 16:05:18 UTC",
+   "city": "Brussels",
+   "location_question_visible": false,
+   "on_site": false,
+   "cover_image": null,
+   "sharing_title": "Deputy AML Manager - Belgium",
+   "location": "Brussels, Brussels, Belgium",
+   "mailbox_email": "job.wgtlr@bunq.recruitee.com",
+   "guid": "wgtlr",
+   "state_name": "Brussels",
+   "slug": "deputy-aml-manager-belgium",
+   "options_title": "off",
+   "tags": [],
+   "country_code": "BE",
+   "highlight": null,
+   "locations": [
+    {
+     "id": 39964,
+     "name": "Brussels",
+     "state": "Brussels",
+     "country": "Belgium",
+     "city": "Brussels",
+     "translations": {
+      "en": {
+       "name": "Brussels",
+       "city": "Brussels",
+       "postal_code": null,
+       "street": null,
+       "note": null
+      }
+     },
+     "country_code": "BE",
+     "postal_code": null,
+     "state_code": "BRU",
+     "street": null,
+     "note": null
+    }
+   ],
+   "employment_type_code": "fulltime_permanent",
+   "dynamic_fields": [],
+   "hybrid": true,
+   "description": "<p><strong>Ready to Get Shit Done?</strong></p><p>At bunq, we're more than just a bank, we're transforming how people experience banking across Europe. Our users deserve to bank like locals, no matter where they are. We started Belgium with local IBANs, but we're now upgrading to full-branch status, which means taking on direct regulatory standing, deeper compliance obligations, and new accountability to Belgium's NBB (National Bank of Belgium) and financial regulators.</p><p style=\"min-height: 1.7em;\"></p><p>As AML Manager Belgium, your mission is to lead Belgium through this compliance transition, ensuring we move seamlessly from our lighter vIBAN model to full-branch operations while maintaining regulatory trust and operational excellence. You'll be the accountable person who owns Belgium's entire compliance footprint, AML/CFT operational readiness, integrity-risk assessment (SIRA), and financial-crime reporting (FIU), all operating at full-branch regulatory standards.</p><p><strong>Take Ownership</strong></p><p>As AML Belgium, you'll own:</p><ul><li><p>Transition Belgium to full-branch compliance model, migrate from vIBAN-era compliance systems to full-branch operations, ensuring seamless readiness for NBB oversight and maintaining zero regulatory findings during the upgrade.</p></li><li><p>Own Belgium's SIRA, AML/CFT, and FIU obligations end-to-end, establish Belgium-localized SIRA integrity-risk assessments, AML/CFT gap analysis, and FIU financial-crime reporting, using AI-first mechanisms to deliver what traditional banks staff with a local team.</p></li><li><p>Prepare Belgium's AML program for regulatory inspection readiness, maintain audit trails, evidence documentation, and control testing for NBB oversight.</p></li></ul><p style=\"min-height: 1.7em;\"></p><p><strong>What You'll Work on Right Away</strong></p><ol><li><p>Full-Branch Compliance Readiness Audit : Conduct a comprehensive audit of Belgium's current compliance posture under vIBAN model, identify gaps for full-branch requirements (NBB, FSMA, Ombudsfin), and deliver a remediation roadmap with specific AI-driven solutions.</p></li><li><p>Belgium-Localized SIRA &amp; FIU Systems : Design and implement Belgium-specific SIRA integrity-risk controls and FIU financial-crime reporting mechanisms, using AI tooling to automate what possible and keeping humans in the loop for judgment calls and escalations.</p></li></ol>",
+   "created_at": "2026-10-05 15:45:18 UTC",
+   "category_code": "banking",
+   "min_hours": 40,
+   "options_phone": "required",
+   "remote": false,
+   "sharing_image": null,
+   "min_hours_per_week": "40",
+   "locations_question_type": "single_choice",
+   "company_name": "bunq",
+   "max_hours_per_week": "40",
+   "updated_at": "2026-10-08 10:14:42 UTC",
+   "sharing_description": "Ready to Get Shit Done?At bunq, we're more than just a bank, we're transforming how people experience banking across Europe. Our users deserve to bank like locals, no matter where they are. We started",
+   "department": null,
+   "id": 2771751,
+   "salary": {
+    "max": null,
+    "min": null,
+    "period": null,
+    "currency": null
+   },
+   "max_hours": 40,
+   "locations_question": "What is your preferred work location?",
+   "options_salutation": "off",
+   "status": "published",
+   "title": "Deputy AML Manager - Belgium",
+   "requirements": "<p>Do You Have What It Takes?</p><ul><li><p>Deep Belgian AML/CFT &amp; regulatory expertise - You understand NBB requirements, FSMA rules, local banking regulations, and their practical application; you can translate Belgian regulatory language into operational compliance controls.</p></li><li><p>Proven ownership of compliance programs end-to-end - You've built or scaled a compliance program (not just supported one), managing operational readiness, risk assessment, and regulatory reporting as the accountable person.</p></li><li><p>Proven ability to manage AML inspections and regulatory audits, preparing evidence, audit trails, and control documentation for regulator scrutiny.</p></li><li><p>AI-first operating mindset - You're comfortable building compliance operations using AI and automation (not traditional local headcount), and you can design mechanisms that let AI handle routine workflows while you focus on exceptions and regulatory judgment.</p></li><li><p>Fluency in Dutch, French, or both + English - You can navigate Belgian regulatory communication and engage with local stakeholders in their language; English fluency for bunq-wide collaboration.</p></li></ul><p style=\"min-height: 1.7em;\"></p><p><em>Curious to see how we make life easy? - try the <a rel=\"noopener\" target=\"_blank\" href=\"https://app.adjust.com/1tyd4x67?fallback=https%3A%2F%2Fwww.bunq.com%2F&redirect_macos=https%3A%2F%2Fwww.bunq.com%2F\">bunq app</a>, it only takes 5 minutes to sign up.</em></p><p style=\"min-height: 1.7em;\"></p><p style=\"text-align:start;\"><strong>Your space to perform</strong></p><p style=\"text-align:start;\">We give you the space and the tools you need to succeed 💪🏼</p><p style=\"text-align:start;\">🤟 Great, international colleagues who share your mindset</p><p style=\"text-align:start;\">🌟 Make lasting impact by working on complex &amp; exciting challenges</p><p style=\"text-align:start;\">👩‍💻 Remote setup: after 3 weeks onboarding in Amsterdam (“AMS”) office, work 2 weeks a quarter in AMS - the rest of time you can work in Belgium.</p><p style=\"text-align:start;\">📚 We support growth with bunq Academy and €1500 annual learning budget</p><p style=\"text-align:start;\">🚌 Travel expenses are covered for AMS visits</p><p style=\"text-align:start;\">💻 A MacBook so you can Get Shit Done with us</p><p style=\"text-align:start;\">🧘 €60 monthly allowance that rolls over monthly and resets annually, replacing the phone/internet line above</p><p style=\"text-align:start;\">🍹 Frequent epic events, including an annual bunq weekend away</p><p style=\"min-height: 1.7em;\"></p><p><em>All new hires are subject to Pre-employment Screening (PES), which includes checks conducted by our third-party partner, Zinc. This is part of our commitment to a secure and trustworthy workplace</em></p><p style=\"min-height: 1.7em;\"></p>"
+  },
+  {
+   "postal_code": null,
+   "options_cv": "off",
+   "close_at": null,
+   "position": 1633,
+   "locations_question_required": true,
+   "careers_url": "https://careers.bunq.com/o/website-lead",
+   "country": "Netherlands",
+   "careers_apply_url": "https://careers.bunq.com/o/website-lead/c/new",
+   "education_code": "professional",
+   "state_code": "NH",
+   "experience_code": "experienced",
+   "open_questions": [
+    {
+     "id": 4415173,
+     "position": 1,
+     "options": {},
+     "required": true,
+     "body": "What country do you currently live in?",
+     "kind": "string",
+     "translations": {
+      "en": {
+       "body": "What country do you currently live in?"
+      }
+     },
+     "open_question_options": []
+    },
+    {
+     "id": 4415174,
+     "position": 2,
+     "options": {},
+     "required": false,
+     "body": "<p>💡 Each country has different rules for eligibility to work without requiring sponsorship.</p>\n<p><br />🇳🇱 <strong>Netherlands</strong>: You must be a Dutch/EU/EEA/Swiss citizen, or hold a valid Dutch residence permit with full work rights (e.g., refugee status, spousal visa, or permanent residence).</p>\n<p>🇧🇬 <strong>Bulgaria</strong>: You must have the legal right to work in Bulgaria without needing a company-sponsored visa.  </p>\n<p>🇹🇷 <strong>Turkey</strong>: You must be a Turkish citizen, hold a Turquoise Card, refugee status, or a permanent residency/work permit (student/family/temporary residencies are not eligible to work without company sponsorship).</p>\n<p><br /><strong>For this role, we are not sponsoring visas at the moment. But take a look at <strong><a target=\"_blank\" href=\"http://careers.bunq.com/\" rel=\"noopener\">careers.bunq.com</a> </strong>- you might find another exciting role that’s a great fit! <strong>🌈</strong></strong></p>\n<p><strong><br /></strong><br /></p>",
+     "kind": "infobox",
+     "translations": {
+      "en": {
+       "body": "<p>💡 Each country has different rules for eligibility to work without requiring sponsorship.</p>\n<p><br />🇳🇱 <strong>Netherlands</strong>: You must be a Dutch/EU/EEA/Swiss citizen, or hold a valid Dutch residence permit with full work rights (e.g., refugee status, spousal visa, or permanent residence).</p>\n<p>🇧🇬 <strong>Bulgaria</strong>: You must have the legal right to work in Bulgaria without needing a company-sponsored visa.  </p>\n<p>🇹🇷 <strong>Turkey</strong>: You must be a Turkish citizen, hold a Turquoise Card, refugee status, or a permanent residency/work permit (student/family/temporary residencies are not eligible to work without company sponsorship).</p>\n<p><br /><strong>For this role, we are not sponsoring visas at the moment. But take a look at <strong><a target=\"_blank\" href=\"http://careers.bunq.com/\" rel=\"noopener\">careers.bunq.com</a> </strong>- you might find another exciting role that’s a great fit! <strong>🌈</strong></strong></p>\n<p><strong><br /></strong><br /></p>"
+      }
+     },
+     "open_question_options": []
+    },
+    {
+     "id": 4415175,
+     "position": 3,
+     "options": {},
+     "required": true,
+     "body": "Which visa situation fits you best? Please choose according to the office you are applying for: Amsterdam (NL), Istanbul (TR), Sofia (BG).",
+     "kind": "single_choice",
+     "translations": {
+      "en": {
+       "body": "Which visa situation fits you best? Please choose according to the office you are applying for: Amsterdam (NL), Istanbul (TR), Sofia (BG)."
+      }
+     },
+     "open_question_options": [
+      {
+       "id": 6799112,
+       "position": 0,
+       "body": "NL: I am a EU/EEA/Swiss citizen",
+       "translations": {
+        "en": {
+         "body": "NL: I am a EU/EEA/Swiss citizen"
+        }
+       }
+      },
+      {
+       "id": 6799113,
+       "position": 1,
+       "body": "NL: I am on a spousal visa / search year visa / under the reduced salary criterion",
+       "translations": {
+        "en": {
+         "body": "NL: I am on a spousal visa / search year visa / under the reduced salary criterion"
+        }
+       }
+      },
+      {
+       "id": 6799114,
+       "position": 2,
+       "body": "NL: I require visa sponsorship and I am under 29 years of age",
+       "translations": {
+        "en": {
+         "body": "NL: I require visa sponsorship and I am under 29 years of age"
+        }
+       }
+      },
+      {
+       "id": 6799115,
+       "position": 3,
+       "body": "NL: I require visa sponsorship and I am over 29 years of age",
+       "translations": {
+        "en": {
+         "body": "NL: I require visa sponsorship and I am over 29 years of age"
+        }
+       }
+      },
+      {
+       "id": 6799116,
+       "position": 4,
+       "body": "TR: I am Turkish citizen",
+       "translations": {
+        "en": {
+         "body": "TR: I am Turkish citizen"
+        }
+       }
+      },
+      {
+       "id": 6799117,
+       "position": 5,
+       "body": "TR: I have a Turkish permanent residency / working permit / Turquoise Card / official refugee or subsidiary protection status",
+       "translations": {
+        "en": {
+         "body": "TR: I have a Turkish permanent residency / working permit / Turquoise Card / official refugee or subsidiary protection status"
+        }
+       }
+      },
+      {
+       "id": 6799118,
+       "position": 6,
+       "body": "TR: I need visa sponsorship / I have a short-term, long-term, family or student permit",
+       "translations": {
+        "en": {
+         "body": "TR: I need visa sponsorship / I have a short-term, long-term, family or student permit"
+        }
+       }
+      },
+      {
+       "id": 6799119,
+       "position": 7,
+       "body": "BG: I do not require visa sponsorship",
+       "translations": {
+        "en": {
+         "body": "BG: I do not require visa sponsorship"
+        }
+       }
+      },
+      {
+       "id": 6799120,
+       "position": 8,
+       "body": "BG: I require visa sponsorship",
+       "translations": {
+        "en": {
+         "body": "BG: I require visa sponsorship"
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": 4415176,
+     "position": 4,
+     "options": {},
+     "required": false,
+     "body": "<p><strong>💡 Important Info: At bunq, our working language is English. Fluency in both writing and speaking English is a must for all roles in all locations.</strong></p>",
+     "kind": "infobox",
+     "translations": {
+      "en": {
+       "body": "<p><strong>💡 Important Info: At bunq, our working language is English. Fluency in both writing and speaking English is a must for all roles in all locations.</strong></p>"
+      }
+     },
+     "open_question_options": []
+    },
+    {
+     "id": 4415177,
+     "position": 5,
+     "options": {},
+     "required": true,
+     "body": "How do you assess your writing and speaking English skills?",
+     "kind": "single_choice",
+     "translations": {
+      "en": {
+       "body": "How do you assess your writing and speaking English skills?"
+      }
+     },
+     "open_question_options": [
+      {
+       "id": 6799121,
+       "position": 0,
+       "body": "Beginner",
+       "translations": {
+        "en": {
+         "body": "Beginner"
+        }
+       }
+      },
+      {
+       "id": 6799122,
+       "position": 1,
+       "body": "Intermediate",
+       "translations": {
+        "en": {
+         "body": "Intermediate"
+        }
+       }
+      },
+      {
+       "id": 6799123,
+       "position": 2,
+       "body": "Upper Intermediate",
+       "translations": {
+        "en": {
+         "body": "Upper Intermediate"
+        }
+       }
+      },
+      {
+       "id": 6799124,
+       "position": 3,
+       "body": "Advanced",
+       "translations": {
+        "en": {
+         "body": "Advanced"
+        }
+       }
+      },
+      {
+       "id": 6799125,
+       "position": 4,
+       "body": "Native",
+       "translations": {
+        "en": {
+         "body": "Native"
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": 4415178,
+     "position": 6,
+     "options": {},
+     "required": false,
+     "body": "<p><strong>💡 If successful in the hiring process, the contractual arrangement would look like this: <br /><br />🇳🇱 Netherlands: A first contract of 9 months, extended with a second contract of 12 months, followed by an indefinite contract. <br />🇹🇷 Turkey: A first contract of 9 months, extended with a second contract of 12 months, <strong>followed by</strong> an indefinite contract. <br />🇧🇬 Bulgaria: an indefinite contract. <br /><br />💡 For the first 3 months, all new hires are required to be in the office 5 days a week to complete the onboarding process, get to know everyone, and immerse <strong>themselves in the culture of bunq. After that, the work arrangement will be hybrid, with 3 days in the office and 2 days working from home.<br /><br /><strong>💡 </strong>Our standard working hours are from 09:00 to 18:00. This ensures that everyone is available and can rely on each other during this time.<br /></strong></strong></p>",
+     "kind": "infobox",
+     "translations": {
+      "en": {
+       "body": "<p><strong>💡 If successful in the hiring process, the contractual arrangement would look like this: <br /><br />🇳🇱 Netherlands: A first contract of 9 months, extended with a second contract of 12 months, followed by an indefinite contract. <br />🇹🇷 Turkey: A first contract of 9 months, extended with a second contract of 12 months, <strong>followed by</strong> an indefinite contract. <br />🇧🇬 Bulgaria: an indefinite contract. <br /><br />💡 For the first 3 months, all new hires are required to be in the office 5 days a week to complete the onboarding process, get to know everyone, and immerse <strong>themselves in the culture of bunq. After that, the work arrangement will be hybrid, with 3 days in the office and 2 days working from home.<br /><br /><strong>💡 </strong>Our standard working hours are from 09:00 to 18:00. This ensures that everyone is available and can rely on each other during this time.<br /></strong></strong></p>"
+      }
+     },
+     "open_question_options": []
+    },
+    {
+     "id": 4415179,
+     "position": 7,
+     "options": {},
+     "required": true,
+     "body": "Do you agree and confirm with the above mentioned terms (contract duration, hybrid way of working, and standard working hours)?",
+     "kind": "single_choice",
+     "translations": {
+      "en": {
+       "body": "Do you agree and confirm with the above mentioned terms (contract duration, hybrid way of working, and standard working hours)?"
+      }
+     },
+     "open_question_options": [
+      {
+       "id": 6799126,
+       "position": 0,
+       "body": "Yes, I agree with the proposed setup.",
+       "translations": {
+        "en": {
+         "body": "Yes, I agree with the proposed setup."
+        }
+       }
+      },
+      {
+       "id": 6799127,
+       "position": 1,
+       "body": "No, I do not agree with the initial in-office and then hybrid setup",
+       "translations": {
+        "en": {
+         "body": "No, I do not agree with the initial in-office and then hybrid setup"
+        }
+       }
+      },
+      {
+       "id": 6799128,
+       "position": 2,
+       "body": "No, I do not agree with the contract duration / setup",
+       "translations": {
+        "en": {
+         "body": "No, I do not agree with the contract duration / setup"
+        }
+       }
+      },
+      {
+       "id": 6799129,
+       "position": 3,
+       "body": "No, I do not agree with the working hours setup",
+       "translations": {
+        "en": {
+         "body": "No, I do not agree with the working hours setup"
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": 4415180,
+     "position": 8,
+     "options": {},
+     "required": true,
+     "body": "What are your salary expectations? (gross, annual, in EUR)",
+     "kind": "string",
+     "translations": {
+      "en": {
+       "body": "What are your salary expectations? (gross, annual, in EUR)"
+      }
+     },
+     "open_question_options": []
+    },
+    {
+     "id": 4415181,
+     "position": 9,
+     "options": {},
+     "required": false,
+     "body": "<p>Please double check if the salary expectations is the <strong>yearly</strong> <strong>gross</strong> amount, in <strong>EUR</strong>!</p>",
+     "kind": "infobox",
+     "translations": {
+      "en": {
+       "body": "<p>Please double check if the salary expectations is the <strong>yearly</strong> <strong>gross</strong> amount, in <strong>EUR</strong>!</p>"
+      }
+     },
+     "open_question_options": []
+    },
+    {
+     "id": 4415182,
+     "position": 10,
+     "options": {},
+     "required": true,
+     "body": "Have you previously worked at bunq?",
+     "kind": "boolean",
+     "translations": {
+      "en": {
+       "body": "Have you previously worked at bunq?"
+      }
+     },
+     "open_question_options": []
+    },
+    {
+     "id": 4415183,
+     "position": 11,
+     "options": {},
+     "required": false,
+     "body": "<p><em>All new hires are subject to Pre-employment Screening (PES), which includes checks conducted by our third-party partner, Zinc. This is part of our commitment to a secure and trustworthy workplace</em></p>",
+     "kind": "infobox",
+     "translations": {
+      "en": {
+       "body": "<p><em>All new hires are subject to Pre-employment Screening (PES), which includes checks conducted by our third-party partner, Zinc. This is part of our commitment to a secure and trustworthy workplace</em></p>"
+      }
+     },
+     "open_question_options": []
+    },
+    {
+     "id": 4415184,
+     "position": 12,
+     "options": {},
+     "required": true,
+     "body": "How do you usually approach your work, its impact, and solving challenges?",
+     "kind": "single_choice",
+     "translations": {
+      "en": {
+       "body": "How do you usually approach your work, its impact, and solving challenges?"
+      }
+     },
+     "open_question_options": [
+      {
+       "id": 6799132,
+       "position": 0,
+       "body": "I don’t have formal work experience yet, but I’ve practiced through studies or small projects",
+       "translations": {
+        "en": {
+         "body": "I don’t have formal work experience yet, but I’ve practiced through studies or small projects"
+        }
+       }
+      },
+      {
+       "id": 6799133,
+       "position": 1,
+       "body": "I successfully handle defined tasks, follow processes, and ask for guidance when needed",
+       "translations": {
+        "en": {
+         "body": "I successfully handle defined tasks, follow processes, and ask for guidance when needed"
+        }
+       }
+      },
+      {
+       "id": 6799134,
+       "position": 2,
+       "body": "I work mostly on my own, support team goals, and deal with common issues",
+       "translations": {
+        "en": {
+         "body": "I work mostly on my own, support team goals, and deal with common issues"
+        }
+       }
+      },
+      {
+       "id": 6799135,
+       "position": 3,
+       "body": "I deliver projects from start to finish, tie my work to team results, and suggest fixes",
+       "translations": {
+        "en": {
+         "body": "I deliver projects from start to finish, tie my work to team results, and suggest fixes"
+        }
+       }
+      },
+      {
+       "id": 6799136,
+       "position": 4,
+       "body": "I turn bigger goals into initiatives, improve how we work, and prevent problems",
+       "translations": {
+        "en": {
+         "body": "I turn bigger goals into initiatives, improve how we work, and prevent problems"
+        }
+       }
+      },
+      {
+       "id": 6799137,
+       "position": 5,
+       "body": "I lead projects across teams, align people, and create tools that help others solve problems faster",
+       "translations": {
+        "en": {
+         "body": "I lead projects across teams, align people, and create tools that help others solve problems faster"
+        }
+       }
+      },
+      {
+       "id": 6799138,
+       "position": 6,
+       "body": "I redesign systems across departments, focus on long-term goals, and drive strategic change",
+       "translations": {
+        "en": {
+         "body": "I redesign systems across departments, focus on long-term goals, and drive strategic change"
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": 4415185,
+     "position": 13,
+     "options": {},
+     "required": true,
+     "body": "Which of the following statements best describes your approach to using AI in a professional context?",
+     "kind": "single_choice",
+     "translations": {
+      "en": {
+       "body": "Which of the following statements best describes your approach to using AI in a professional context?"
+      }
+     },
+     "open_question_options": [
+      {
+       "id": 6799139,
+       "position": 0,
+       "body": "I have limited to no experience with AI tools and am not yet convinced of their practical benefits in a work environment.",
+       "translations": {
+        "en": {
+         "body": "I have limited to no experience with AI tools and am not yet convinced of their practical benefits in a work environment."
+        }
+       }
+      },
+      {
+       "id": 6799140,
+       "position": 1,
+       "body": "I consistently use AI tools to improve my personal efficiency, validate the quality of my own work, and build simple automations for my individual tasks.",
+       "translations": {
+        "en": {
+         "body": "I consistently use AI tools to improve my personal efficiency, validate the quality of my own work, and build simple automations for my individual tasks."
+        }
+       }
+      },
+      {
+       "id": 6799141,
+       "position": 2,
+       "body": "I proactively improve team efficiency by designing, building, and maintaining multi-step automated workflows, and I actively share these solutions with my team.",
+       "translations": {
+        "en": {
+         "body": "I proactively improve team efficiency by designing, building, and maintaining multi-step automated workflows, and I actively share these solutions with my team."
+        }
+       }
+      },
+      {
+       "id": 6799142,
+       "position": 3,
+       "body": "I strategically redesign core operations by architecting scalable AI systems, coaching others to raise their AI skills, and identifying work that can be entirely eliminated by AI.",
+       "translations": {
+        "en": {
+         "body": "I strategically redesign core operations by architecting scalable AI systems, coaching others to raise their AI skills, and identifying work that can be entirely eliminated by AI."
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": 4415186,
+     "position": 14,
+     "options": {},
+     "required": true,
+     "body": "How would you rate your practical proficiency with building or optimizing websites for conversion, including user journey design, A/B testing, and performance optimization?",
+     "kind": "single_choice",
+     "translations": {
+      "en": {
+       "body": "How would you rate your practical proficiency with building or optimizing websites for conversion, including user journey design, A/B testing, and performance optimization?"
+      }
+     },
+     "open_question_options": [
+      {
+       "id": 6799143,
+       "position": 0,
+       "body": "I've owned end-to-end website strategy for high-traffic sites, led conversion optimization programs, and delivered measurable uplift in sign-ups or revenue.",
+       "translations": {
+        "en": {
+         "body": "I've owned end-to-end website strategy for high-traffic sites, led conversion optimization programs, and delivered measurable uplift in sign-ups or revenue."
+        }
+       }
+      },
+      {
+       "id": 6799144,
+       "position": 1,
+       "body": "I have hands-on experience optimizing websites; I've run A/B tests, improved conversion funnels, and managed performance improvements.",
+       "translations": {
+        "en": {
+         "body": "I have hands-on experience optimizing websites; I've run A/B tests, improved conversion funnels, and managed performance improvements."
+        }
+       }
+      },
+      {
+       "id": 6799145,
+       "position": 2,
+       "body": "I have website optimization or product experience; I understand conversion principles and am ready to lead initiatives with guidance.",
+       "translations": {
+        "en": {
+         "body": "I have website optimization or product experience; I understand conversion principles and am ready to lead initiatives with guidance."
+        }
+       }
+      },
+      {
+       "id": 6799146,
+       "position": 3,
+       "body": "Limited website or conversion optimization experience; my background is primarily in design, marketing, or other non-execution roles.",
+       "translations": {
+        "en": {
+         "body": "Limited website or conversion optimization experience; my background is primarily in design, marketing, or other non-execution roles."
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": 4415187,
+     "position": 15,
+     "options": {},
+     "required": true,
+     "body": "How familiar and practised are you with website tech fundamentals (architecture, core web vitals, mobile optimization, analytics platforms like GA4)?",
+     "kind": "single_choice",
+     "translations": {
+      "en": {
+       "body": "How familiar and practised are you with website tech fundamentals (architecture, core web vitals, mobile optimization, analytics platforms like GA4)?"
+      }
+     },
+     "open_question_options": [
+      {
+       "id": 6799147,
+       "position": 0,
+       "body": "I can discuss site architecture, optimize for speed, read analytics dashboards, and collaborate directly with engineers on performance.",
+       "translations": {
+        "en": {
+         "body": "I can discuss site architecture, optimize for speed, read analytics dashboards, and collaborate directly with engineers on performance."
+        }
+       }
+      },
+      {
+       "id": 6799148,
+       "position": 1,
+       "body": "I understand the fundamentals of site performance, mobile optimization, and can interpret analytics; I work well with technical teams.",
+       "translations": {
+        "en": {
+         "body": "I understand the fundamentals of site performance, mobile optimization, and can interpret analytics; I work well with technical teams."
+        }
+       }
+      },
+      {
+       "id": 6799149,
+       "position": 2,
+       "body": "I have basic knowledge of these areas; I'm ready to deepen my technical understanding in the role.",
+       "translations": {
+        "en": {
+         "body": "I have basic knowledge of these areas; I'm ready to deepen my technical understanding in the role."
+        }
+       }
+      },
+      {
+       "id": 6799150,
+       "position": 3,
+       "body": "No technical website knowledge; I focus purely on creative or marketing aspects without hands-on technical involvement.",
+       "translations": {
+        "en": {
+         "body": "No technical website knowledge; I focus purely on creative or marketing aspects without hands-on technical involvement."
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": 4415205,
+     "position": 16,
+     "options": {},
+     "required": true,
+     "body": "How familiar and practised are you with scaling websites to handle millions of visitors while maintaining speed, reliability, and conversion?",
+     "kind": "single_choice",
+     "translations": {
+      "en": {
+       "body": "How familiar and practised are you with scaling websites to handle millions of visitors while maintaining speed, reliability, and conversion?"
+      }
+     },
+     "open_question_options": [
+      {
+       "id": 6799195,
+       "position": 0,
+       "body": "I've scaled high-traffic sites, managed infrastructure decisions, and optimized for performance at scale.",
+       "translations": {
+        "en": {
+         "body": "I've scaled high-traffic sites, managed infrastructure decisions, and optimized for performance at scale."
+        }
+       }
+      },
+      {
+       "id": 6799196,
+       "position": 1,
+       "body": "I have experience with multi-market websites or sites with 100k+ monthly visitors; I understand scalability challenges.",
+       "translations": {
+        "en": {
+         "body": "I have experience with multi-market websites or sites with 100k+ monthly visitors; I understand scalability challenges."
+        }
+       }
+      },
+      {
+       "id": 6799197,
+       "position": 2,
+       "body": "I've worked on smaller sites; scaling to millions of users is an area I'm ready to develop.",
+       "translations": {
+        "en": {
+         "body": "I've worked on smaller sites; scaling to millions of users is an area I'm ready to develop."
+        }
+       }
+      },
+      {
+       "id": 6799198,
+       "position": 3,
+       "body": "This is an area I'd like to develop in the role.",
+       "translations": {
+        "en": {
+         "body": "This is an area I'd like to develop in the role."
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": 4415188,
+     "position": 17,
+     "options": {},
+     "required": true,
+     "body": "Are you comfortable designing and running experiments, interpreting analytics, and making decisions based on data rather than assumptions?",
+     "kind": "single_choice",
+     "translations": {
+      "en": {
+       "body": "Are you comfortable designing and running experiments, interpreting analytics, and making decisions based on data rather than assumptions?"
+      }
+     },
+     "open_question_options": [
+      {
+       "id": 6799152,
+       "position": 0,
+       "body": "Yes, I design A/B tests, build conversion funnels, interpret analytics dashboards, and use data to drive all major decisions.",
+       "translations": {
+        "en": {
+         "body": "Yes, I design A/B tests, build conversion funnels, interpret analytics dashboards, and use data to drive all major decisions."
+        }
+       }
+      },
+      {
+       "id": 6799153,
+       "position": 1,
+       "body": "Yes, with support, I'm comfortable with analytics and data-driven thinking; I may need support.",
+       "translations": {
+        "en": {
+         "body": "Yes, with support, I'm comfortable with analytics and data-driven thinking; I may need support."
+        }
+       }
+      },
+      {
+       "id": 6799194,
+       "position": 2,
+       "body": "No, I prefer qualitative feedback or intuition; data-heavy analysis is outside my comfort zone.",
+       "translations": {
+        "en": {
+         "body": "No, I prefer qualitative feedback or intuition; data-heavy analysis is outside my comfort zone."
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": 4415189,
+     "position": 18,
+     "options": {},
+     "required": true,
+     "body": "How did you first hear about this role?",
+     "kind": "single_choice",
+     "translations": {
+      "en": {
+       "body": "How did you first hear about this role?"
+      }
+     },
+     "open_question_options": [
+      {
+       "id": 6799154,
+       "position": 0,
+       "body": "I found it myself on bunq's careers website",
+       "translations": {
+        "en": {
+         "body": "I found it myself on bunq's careers website"
+        }
+       }
+      },
+      {
+       "id": 6799155,
+       "position": 1,
+       "body": "A current bunq employee told me about it",
+       "translations": {
+        "en": {
+         "body": "A current bunq employee told me about it"
+        }
+       }
+      },
+      {
+       "id": 6799156,
+       "position": 2,
+       "body": "A former bunq employee referred me",
+       "translations": {
+        "en": {
+         "body": "A former bunq employee referred me"
+        }
+       }
+      },
+      {
+       "id": 6799157,
+       "position": 3,
+       "body": "A bunq recruiter reached out to me",
+       "translations": {
+        "en": {
+         "body": "A bunq recruiter reached out to me"
+        }
+       }
+      },
+      {
+       "id": 6799158,
+       "position": 4,
+       "body": "A job portal (LinkedIn, Glassdoor, Indeed, Google Jobs)",
+       "translations": {
+        "en": {
+         "body": "A job portal (LinkedIn, Glassdoor, Indeed, Google Jobs)"
+        }
+       }
+      },
+      {
+       "id": 6799159,
+       "position": 5,
+       "body": "A social media post (LinkedIn, Instagram, Facebook, YouTube, X)",
+       "translations": {
+        "en": {
+         "body": "A social media post (LinkedIn, Instagram, Facebook, YouTube, X)"
+        }
+       }
+      },
+      {
+       "id": 6799160,
+       "position": 6,
+       "body": "News or media coverage",
+       "translations": {
+        "en": {
+         "body": "News or media coverage"
+        }
+       }
+      },
+      {
+       "id": 6799161,
+       "position": 7,
+       "body": "At an event where bunq was present",
+       "translations": {
+        "en": {
+         "body": "At an event where bunq was present"
+        }
+       }
+      },
+      {
+       "id": 6799162,
+       "position": 8,
+       "body": "Through my university (ad, newsletter, event)",
+       "translations": {
+        "en": {
+         "body": "Through my university (ad, newsletter, event)"
+        }
+       }
+      }
+     ]
+    }
+   ],
+   "options_cover_letter": "off",
+   "options_photo": "off",
+   "published_at": "2026-10-05 15:07:51 UTC",
+   "city": "Amsterdam",
+   "location_question_visible": true,
+   "on_site": false,
+   "cover_image": null,
+   "sharing_title": "Website Lead",
+   "location": "Amsterdam, Noord-Holland, Netherlands",
+   "mailbox_email": "job.vgk5y@bunq.recruitee.com",
+   "guid": "vgk5y",
+   "state_name": "Noord-Holland",
+   "slug": "website-lead",
+   "options_title": "off",
+   "tags": [
+    "E4",
+    "Enablers",
+    "L4"
+   ],
+   "country_code": "NL",
+   "highlight": null,
+   "locations": [
+    {
+     "id": 39979,
+     "name": "Amsterdam",
+     "state": "Noord-Holland",
+     "country": "Netherlands",
+     "city": "Amsterdam",
+     "translations": {
+      "en": {
+       "name": "Amsterdam",
+       "city": "Amsterdam",
+       "postal_code": null,
+       "street": null,
+       "note": null
+      }
+     },
+     "country_code": "NL",
+     "postal_code": null,
+     "state_code": "NH",
+     "street": null,
+     "note": null
+    },
+    {
+     "id": 39977,
+     "name": "Istanbul",
+     "state": "İstanbul",
+     "country": "Türkiye",
+     "city": "İstanbul",
+     "translations": {
+      "en": {
+       "name": "Istanbul",
+       "city": "İstanbul",
+       "postal_code": null,
+       "street": null,
+       "note": null
+      }
+     },
+     "country_code": "TR",
+     "postal_code": null,
+     "state_code": "34",
+     "street": null,
+     "note": null
+    },
+    {
+     "id": 39967,
+     "name": "Sofia",
+     "state": "Sofia (stolitsa)",
+     "country": "Bulgaria",
+     "city": "Sofia",
+     "translations": {
+      "en": {
+       "name": "Sofia",
+       "city": "Sofia",
+       "postal_code": null,
+       "street": null,
+       "note": null
+      }
+     },
+     "country_code": "BG",
+     "postal_code": null,
+     "state_code": "22",
+     "street": null,
+     "note": null
+    }
+   ],
+   "employment_type_code": "fulltime_permanent",
+   "dynamic_fields": [],
+   "hybrid": true,
+   "description": "<p>Ready to Get Shit Done?</p><p>At bunq, we're reshaping how people experience banking globally. Our website is the digital front door, where millions of potential users first discover who we are, what we offer, and why they should trust us. As a Website Lead, your mission is to own the entire website experience from strategy through execution, making sure our digital presence converts visitors into loyal users and establishes bunq as the go-to fintech solution.</p><p>Your role is to build, optimize, and scale bunq.com into a high-performing, conversion-focused asset that tells our story compellingly and gets users to sign up or download our app.</p><p style=\"min-height: 1.7em;\"></p><p><strong>Take Ownership</strong></p><p>As a Website Lead, you'll own:</p><ul><li><p>Develop and execute the website strategy, including technical SEO, conversion optimization, content roadmap, and mobile-first UX, driving measurable growth in sign-ups and app downloads.</p></li><li><p>Lead website performance and optimization, implementing A/B tests, analyzing conversion funnels, identifying bottlenecks, and continuously improving KPIs (speed, engagement, conversion rate).</p></li><li><p>Own the website tech stack and roadmap, ensuring the site scales, performs at speed, and is built with modern best practices (accessibility, mobile, core web vitals).</p></li></ul><p style=\"min-height: 1.7em;\"></p><p><strong>What You'll Work on Right Away</strong></p><ol><li><p>Conversion Funnel Audit: Conduct a deep-dive analysis of bunq.com's current user journey from landing to sign-up, identifying friction points and quick wins to improve conversion rate.</p></li><li><p>Mobile-First Optimization: Overhaul mobile UX and performance , implementing improvements that meaningfully impact sign-up conversion.</p></li><li><p>AI-Powered Content Strategy: Design and launch a content strategy leveraging AI for personalization, SEO optimization, and messaging that resonates with different user segments and markets.</p></li></ol><p style=\"min-height: 1.7em;\"></p>",
+   "created_at": "2026-10-05 14:47:43 UTC",
+   "category_code": "banking",
+   "min_hours": 40,
+   "options_phone": "required",
+   "remote": false,
+   "sharing_image": null,
+   "min_hours_per_week": "40",
+   "locations_question_type": "single_choice",
+   "company_name": "bunq",
+   "max_hours_per_week": "40",
+   "updated_at": "2026-10-07 12:29:32 UTC",
+   "sharing_description": "Ready to Get Shit Done?At bunq, we're reshaping how people experience banking globally. Our website is the digital front door, where millions of potential users first discover who we are, what we offe",
+   "department": "Growth",
+   "id": 2771667,
+   "salary": {
+    "max": null,
+    "min": null,
+    "period": null,
+    "currency": null
+   },
+   "max_hours": 40,
+   "locations_question": "What is your preferred work location?",
+   "options_salutation": "off",
+   "status": "published",
+   "title": "Website Lead",
+   "requirements": "<p><strong>Do You Have What It Takes?</strong></p><ul><li><p>Website strategy &amp; execution expertise: Proven track record building and optimizing high-traffic websites with focus on conversion, user experience, and measurable impact.</p></li><li><p>Technical depth: You understand site architecture, core web vitals, mobile optimization, and analytics; hands-on experience with web tech stack (front-end, performance tools, A/B testing platforms).</p></li><li><p>Data-driven mindset: You design experiments, interpret analytics (GA4, Looker), build conversion funnels, and use data to make decisions—not gut feel.</p></li><li><p>Product thinking: You understand user psychology, can design intuitive flows, and collaborate closely with design, content, and product teams.</p></li><li><p>Fluency in English (ideally multilingual for our multi-market operations).</p></li></ul><p style=\"min-height: 1.7em;\"></p><p><em>Curious to see how we make life easy? - try the <a rel=\"noopener\" target=\"_blank\" href=\"https://app.adjust.com/1tyd4x67?fallback=https%3A%2F%2Fwww.bunq.com%2F&redirect_macos=https%3A%2F%2Fwww.bunq.com%2F\">bunq app</a>, it only takes 5 minutes to sign up.</em></p><p style=\"min-height: 1.7em;\"></p><p><strong>Your space to perform</strong></p><p>We give you the space and the tools you need to succeed 💪<br>🤟 Great, international colleagues who share your mindset<br>👩‍💻 Hybrid setup: after 3 months in-office, work 2 days remote, 3 days in-office weekly.<br>📚 We support growth with bunq Academy and €1500 annual learning budget<br>🇧🇬 Flex Benefits: €70 monthly budget via Re: benefit, offering access to 150+ perks tailored to your lifestyle.<br>🚌 Travel expenses are covered whether you come walking or by bike, bus or car (though we prefer green choices 🌳) (in the Netherlands)<br>🧳 Digital Nomad Program: After your first year, enjoy up to 20 days per year to work while traveling, combining flexibility with strong team collaboration<br>🚀 We reward tenure with a dedicated travel budget: €1.5k after 2 years and €3k after 4 years to visit another core office.<br>💻 A MacBook so you can Get Shit Done with us<br>🥦 Delicious lunches from our fabulous in-house chefs with vegan and vegetarian options<br>💰 An optional pension plan with monthly contribution from bunq (in the Netherlands)<br>⚕️ Private health insurance, just in case (in Turkey or Bulgaria)<br>🧘 €60 monthly allowance via Alleo by Epassi, rolling over monthly and resetting annually (in the Netherlands)<br>🍻 Friday drinks and other celebrations - bunq style</p><p style=\"min-height: 1.7em;\"></p><p><em>All new hires are subject to Pre-employment Screening (PES), which includes checks conducted by our third-party partner, Zinc. This is part of our commitment to a secure and trustworthy workplace</em></p><p style=\"min-height: 1.7em;\"></p>"
+  }
+ ]
+}

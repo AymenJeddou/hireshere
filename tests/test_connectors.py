@@ -108,3 +108,52 @@ def test_http_timeout_is_a_fetch_error():
 
     with pytest.raises(FetchError, match="ReadTimeout"):
         _get(handler)
+
+
+def test_recruitee(fixture):
+    from pipeline.connectors import recruitee
+
+    jobs = recruitee.parse(fixture("recruitee_bunq.json"), board("recruitee", "bunq"))
+    assert len(jobs) == 2
+    j = jobs[0]
+    assert j.id.startswith("recruitee:bunq:")
+    assert j.location_raw.startswith("Brussels")
+    assert j.remote_flag_raw == "hybrid"
+    assert j.apply_url.startswith("https://careers.bunq.com/")
+    assert "<p>" not in j.description_text and j.description_text
+
+
+def test_teamtailor(fixture):
+    from pipeline.connectors import teamtailor
+
+    data = fixture("teamtailor_teamtailor.json")
+    jobs = teamtailor.parse(data, board("teamtailor", "career"))
+    assert len(jobs) == 2
+    assert jobs[0].title == "UK Account Executive - SMB"
+    assert "London" in jobs[0].location_raw and jobs[0].remote_flag_raw is None
+    data["items"][0]["_jobposting"]["jobLocationType"] = "TELECOMMUTE"
+    remote = teamtailor.parse(data, board("teamtailor", "career"))[0]
+    assert remote.remote_flag_raw == "remote" and remote.location_raw.startswith("Remote; ")
+
+
+def test_workable(fixture):
+    from pipeline.connectors import workable
+
+    jobs = workable.parse(fixture("workable_1000heads.json"), board("workable", "1000heads"))
+    assert len(jobs) == 2
+    assert jobs[0].location_raw == "New York, United States"
+    assert jobs[0].remote_flag_raw is None
+    assert jobs[1].remote_flag_raw == "remote" and jobs[1].location_raw.startswith("Remote; ")
+    assert jobs[0].description_text
+
+
+def test_remoteok_skips_legal_notice(fixture):
+    from pipeline.connectors import remoteok
+
+    jobs = remoteok.parse(fixture("remoteok.json"), board("remoteok", "all"))
+    assert len(jobs) == 2
+    assert jobs[0].company_name == "Lemon.io"
+    assert jobs[0].apply_url.startswith(
+        "https://remoteOK.com/"
+    )  # link back required by their terms
+    assert jobs[0].salary_currency == "USD"
