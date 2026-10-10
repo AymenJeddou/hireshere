@@ -1,7 +1,6 @@
 ---
-import { allJobs, countries, countryName } from "../data";
+import { jobs, site, world } from "../data";
 import { href, labels, languageName, type Lang, tr, VERDICTS } from "../i18n";
-import JobCard from "./JobCard.astro";
 import Lamp from "./Lamp.astro";
 import SearchBand from "./SearchBand.astro";
 
@@ -9,18 +8,14 @@ interface Props {
   lang: Lang;
 }
 const { lang } = Astro.props;
-// Best verdict anywhere first, then newest: the order before any filter is applied.
-const rank = (j: (typeof allJobs)[number]) =>
-  Math.min(...Object.values(j.verdicts).map((x) => VERDICTS.indexOf(x.v as (typeof VERDICTS)[number])));
-const jobs = [...allJobs].sort((a, b) => rank(a) - rank(b) || b.seen_at.localeCompare(a.seen_at));
-
+// Facet values come from the index; cards and counts are rendered in the browser.
 const values = (key: "family" | "seniority" | "engagement") => {
   const order = Object.keys(labels[key]);
   return [...new Set(jobs.map((j) => j[key]))].sort((a, b) => order.indexOf(a) - order.indexOf(b));
 };
-const languages = [...new Set(jobs.flatMap((j) => j.languages))].sort(
-  (a, b) => jobs.filter((j) => j.languages.includes(b)).length - jobs.filter((j) => j.languages.includes(a)).length,
-);
+const langCount = new Map<string, number>();
+for (const j of jobs) for (const l of j.languages) langCount.set(l, (langCount.get(l) ?? 0) + 1);
+const languages = [...langCount.keys()].sort((a, b) => langCount.get(b)! - langCount.get(a)!);
 const groupsList = [
   { key: "f", title: tr(lang, "filter_family"), items: values("family").map((v) => [v, labels.family[v as keyof typeof labels.family]?.[lang] ?? v]) },
   { key: "s", title: tr(lang, "filter_seniority"), items: values("seniority").map((v) => [v, labels.seniority[v as keyof typeof labels.seniority]?.[lang] ?? v]) },
@@ -33,10 +28,7 @@ const i18n = {
   openTo: tr(lang, "jobs_open_to"),
   openAny: tr(lang, "jobs_open_any"),
   region: tr(lang, "region_name"),
-  inPlaces: tr(lang, "verdict_in"),
-  inAll: tr(lang, "verdict_all"),
   label: Object.fromEntries(VERDICTS.map((v) => [v, labels.verdict[v][lang]])),
-  names: Object.fromEntries(countries.map((c) => [c.code, countryName(c, lang)])),
   filters: tr(lang, "filters_title"),
   noneQ: tr(lang, "results_none_q"),
   noneTitle: tr(lang, "results_none_title"),
@@ -48,9 +40,10 @@ const i18n = {
   alertsInvalid: tr(lang, "alerts_invalid"),
   remove: tr(lang, "remove"),
 };
+const countries = world(lang);
 ---
 
-<div class="search-page" data-search data-i18n={JSON.stringify(i18n)}>
+<div class="search-page" data-search data-lang={lang} data-updated={site.updated} data-i18n={JSON.stringify(i18n)}>
   <SearchBand lang={lang} title={tr(lang, "search_title")} />
 
   <div class="wrap results">
@@ -60,18 +53,6 @@ const i18n = {
           <h2>{tr(lang, "filters_title")}</h2>
           <button type="button" class="link-button" data-clear>{tr(lang, "clear_all")}</button>
         </div>
-        <fieldset class="facet">
-          <legend>{tr(lang, "facet_country")}</legend>
-          {
-            countries.map((c) => (
-              <label>
-                <input type="checkbox" name="c" value={c.code} />
-                {countryName(c, lang)}
-                <span class="n" data-n={`c:${c.code}`} />
-              </label>
-            ))
-          }
-        </fieldset>
         <fieldset class="facet">
           <legend>{tr(lang, "facet_verdict")}</legend>
           {
@@ -126,7 +107,7 @@ const i18n = {
           <label class="field">
             <span>{tr(lang, "alerts_country")}</span>
             <select name="country" data-alert-country>
-              {countries.map((c) => <option value={c.code}>{countryName(c, lang)}</option>)}
+              {countries.map((c) => <option value={c.code}>{c.name}</option>)}
             </select>
           </label>
           <label class="field">
@@ -161,8 +142,16 @@ const i18n = {
         <a href={href(lang, "saved")}>{tr(lang, "profile_edit")}</a>
         <button type="button" class="link-button" data-profile-off>{tr(lang, "profile_show_all")}</button>
       </p>
-      <ol class="cards" data-cards>
-        {jobs.map((job) => <JobCard job={job} lang={lang} />)}
+      <!-- Without JavaScript: the newest jobs as plain links. The script replaces them with cards. -->
+      <p class="fine" data-fallback>{tr(lang, "jobs_fallback")}</p>
+      <ol class="cards plain-links" data-cards>
+        {
+          jobs.slice(0, 100).map((j) => (
+            <li>
+              <a href={href(lang, "job", j.slug)}>{j.title}</a> · {j.company}
+            </li>
+          ))
+        }
       </ol>
       <div class="empty" data-empty hidden>
         <h3 data-empty-title>{tr(lang, "results_none_title")}</h3>

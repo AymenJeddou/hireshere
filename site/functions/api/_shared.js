@@ -1,8 +1,8 @@
 // Shared validation for the two form endpoints. Runs on Cloudflare Pages Functions.
-// Countries come from the pipeline's export, so adding a country needs no change here.
+// Countries come from the pipeline's export (every country in data/countries.json).
 import meta from "../../src/data/meta.json";
 
-export const COUNTRIES = Object.keys(meta.countries);
+export const COUNTRIES = Object.keys(meta.world);
 export const FAMILIES = ["", "engineering", "data", "design", "product", "marketing", "sales", "support", "ops", "other"];
 
 export function json(body, status = 200) {

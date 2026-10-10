@@ -1,5 +1,5 @@
 import type { APIRoute } from "astro";
-import { allJobs, site as meta } from "../data";
+import { companies, jobs, site as meta } from "../data";
 import { href, LANGS, type Page } from "../i18n";
 
 export const GET: APIRoute = ({ site }) => {
@@ -8,11 +8,11 @@ export const GET: APIRoute = ({ site }) => {
     ["how"],
     ["sources"],
     ["search"],
-    ...allJobs.map((j): [Page, string] => ["job", j.slug]),
+    ...jobs.map((j): [Page, string] => ["job", j.slug]),
     ["companies"],
     ["guide"],
     ["employers"],
-    ...[...new Set(allJobs.map((j) => j.company_key))].map((k): [Page, string] => ["company", k]),
+    ...Object.keys(companies).map((k): [Page, string] => ["company", k]),
   ];
   const lastmod = meta.updated.slice(0, 10);
   const urls = pages.flatMap(([p, c]) =>

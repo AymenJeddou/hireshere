@@ -1,5 +1,5 @@
 ---
-import { countries, countryName } from "../data";
+import { world } from "../data";
 import { labels, languageName, type Lang, tr } from "../i18n";
 
 interface Props {
@@ -16,7 +16,7 @@ const LANGS = ["en", "fr", "ar", "de", "es", "it", "pt", "nl"];
     <label class="field">
       <span>{tr(lang, "profile_country")}</span>
       <select name="country">
-        {countries.map((c) => <option value={c.code}>{countryName(c, lang)}</option>)}
+        {world(lang).map((c) => <option value={c.code}>{c.name}</option>)}
       </select>
     </label>
     <label class="field">
@@ -65,6 +65,7 @@ const LANGS = ["en", "fr", "ar", "de", "es", "it", "pt", "nl"];
 </section>
 
 <script>
+  import { remember } from "../scripts/country";
   import { clearProfile, loadProfile, saveProfile } from "../scripts/profile";
 
   const form = document.querySelector<HTMLFormElement>("[data-profile-form]")!;
@@ -88,6 +89,7 @@ const LANGS = ["en", "fr", "ar", "de", "es", "it", "pt", "nl"];
       e: String(fd.get("e") ?? ""),
       langs: fd.getAll("langs").map(String),
     });
+    remember(String(fd.get("country")));
     msg.textContent = form.dataset.savedMsg ?? "";
   });
   form.querySelector("[data-profile-clear]")!.addEventListener("click", () => {

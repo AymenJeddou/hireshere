@@ -1,16 +1,16 @@
 ---
 import CompanyPage from "../../../components/CompanyPage.astro";
 import Layout from "../../../layouts/Layout.astro";
-import { allJobs, companyJobs, site } from "../../../data";
+import { companies, site } from "../../../data";
 import { tr } from "../../../i18n";
 
 export function getStaticPaths() {
-  return [...new Set(allJobs.map((j) => j.company_key))].map((key) => ({ params: { key } }));
+  return Object.keys(companies).map((key) => ({ params: { key } }));
 }
 const { key } = Astro.params as { key: string };
 const lang = "fr";
-const jobs = companyJobs(key);
-const vars = { company: jobs[0].company, product: site.product, n: jobs.length };
+const co = companies[key];
+const vars = { company: co.name, product: site.product, n: co.n };
 ---
 
 <Layout

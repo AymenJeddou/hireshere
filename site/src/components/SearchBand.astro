@@ -1,5 +1,5 @@
 ---
-import { countries, countryName } from "../data";
+import { world } from "../data";
 import { href, labels, type Lang, tr } from "../i18n";
 
 interface Props {
@@ -28,8 +28,7 @@ const fields = ["engineering", "support", "data", "design", "sales", "marketing"
         <span class="sr-only">{tr(lang, "facet_country")}</span>
         <select name="c">
           <option value="">{tr(lang, "all_countries")}</option>
-          {countries.map((c) => <option value={c.code}>{countryName(c, lang)}</option>)}
-          <option value="multi" hidden disabled>{tr(lang, "several_countries")}</option>
+          {world(lang).map((c) => <option value={c.code}>{c.name}</option>)}
         </select>
       </label>
       <button class="btn btn-accent sb-go" type="submit">{tr(lang, "search_btn")}</button>

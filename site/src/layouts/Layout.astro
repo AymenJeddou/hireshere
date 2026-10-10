@@ -13,8 +13,9 @@ interface Props {
   title: string;
   description: string;
   country?: string;
+  noindex?: boolean;
 }
-const { lang, page, title, description, country } = Astro.props;
+const { lang, page, title, description, country, noindex = false } = Astro.props;
 const others = LANGS.filter((l) => l !== lang);
 const canonical = new URL(href(lang, page, country), Astro.site).toString();
 const alternate = (l: Lang) => new URL(href(l, page, country), Astro.site).toString();
@@ -27,6 +28,7 @@ const alternate = (l: Lang) => new URL(href(l, page, country), Astro.site).toStr
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex" />}
     <meta name="theme-color" content="#0b3a53" />
     <link rel="canonical" href={canonical} />
     <link rel="alternate" hreflang="en" href={alternate("en")} />

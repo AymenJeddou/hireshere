@@ -671,3 +671,207 @@
 .search-page:not(.enhanced) .chips {
   display: none;
 }
+
+/* Company mark (Avatar.astro and scripts/cards.ts) */
+.avatar {
+  flex: none;
+  width: var(--size, 40px);
+  height: var(--size, 40px);
+  border-radius: 8px;
+  object-fit: contain;
+  background: #fff;
+  border: 1px solid var(--line);
+}
+.avatar-initials {
+  display: inline-grid;
+  place-items: center;
+  background: hsl(var(--hue) 35% 93%);
+  color: hsl(var(--hue) 45% 28%);
+  border-color: hsl(var(--hue) 30% 85%);
+  font-weight: 700;
+  font-size: calc(var(--size) * 0.38);
+  letter-spacing: 0.02em;
+}
+
+/* Job page (scripts/jobpage.ts, rendered by functions/_job.js) */
+.job-page {
+  padding-block: var(--space-4) 0;
+}
+.crumbs {
+  font-size: var(--step--1);
+  color: var(--ink-3);
+  margin-bottom: var(--space-4);
+}
+.crumbs a {
+  color: inherit;
+}
+.jp-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: var(--space-5);
+  align-items: start;
+}
+.jp-main,
+.jp-side {
+  display: grid;
+  gap: var(--space-4);
+}
+.jp-head {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr);
+  gap: var(--space-4);
+}
+.jp-head h1 {
+  font-size: var(--step-4);
+  color: var(--ink);
+  line-height: 1.2;
+}
+.jp-head .new-badge {
+  margin-inline-start: var(--space-2);
+}
+.jp-company {
+  color: var(--ink-3);
+}
+.jp-company a {
+  color: inherit;
+}
+.jp-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}
+.who {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--step-0);
+}
+.who th,
+.who td {
+  text-align: start;
+  padding: var(--space-3);
+  padding-inline-start: 0;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+.who thead th {
+  font-size: var(--step--1);
+  color: var(--ink-3);
+  font-weight: 500;
+  padding-top: 0;
+}
+.who tbody th {
+  font-weight: 500;
+}
+.who tbody th a {
+  color: var(--ink);
+}
+.wv {
+  white-space: nowrap;
+  font-weight: 500;
+  color: var(--ink);
+}
+.muted {
+  color: var(--ink-3);
+}
+.jp-note {
+  margin-top: var(--space-3);
+}
+.jp-details {
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4) var(--space-5);
+}
+.jp-details dt {
+  font-size: var(--step--1);
+  color: var(--ink-3);
+}
+.jp-details dd {
+  margin: 0;
+  color: var(--ink);
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+.report summary {
+  cursor: pointer;
+  font-weight: 500;
+  color: var(--ink);
+}
+.jp-co {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  margin-bottom: var(--space-3);
+}
+.jp-co div {
+  display: grid;
+}
+.jp-co b {
+  color: var(--ink);
+}
+.jp-hires {
+  font-size: var(--step-0);
+  color: var(--go);
+  margin-bottom: var(--space-3);
+}
+.jp-links {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.jp-links li {
+  padding: var(--space-3) 0;
+  border-top: 1px solid var(--line);
+  display: grid;
+  gap: 0.15rem;
+}
+.jp-links a {
+  color: var(--ink);
+  font-weight: 500;
+}
+.jp-links span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: var(--step--1);
+  color: var(--ink-3);
+}
+.jp-guide {
+  background: var(--brand);
+  border-color: var(--brand);
+}
+.jp-guide h2 {
+  color: #fff;
+}
+.jp-guide a {
+  color: #fff;
+  font-weight: 700;
+}
+@media (max-width: 980px) {
+  .jp-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 600px) {
+  .jp-head {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .jp-details {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .jp-actions .btn {
+    flex: 1;
+  }
+}
+.who details summary {
+  cursor: pointer;
+}
+.who-me th {
+  font-weight: 700;
+}
+
+/* No-JS fallback lists, replaced by cards when scripts run */
+.cards.plain-links li {
+  padding: var(--space-2) 0;
+}

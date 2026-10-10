@@ -1,0 +1,51 @@
+---
+// Job page shell, one per language. functions/_job.js fills the placeholders and the slot
+// with the job from its detail shard, so 8,000 jobs x 3 languages are not prerendered.
+import Layout from "../../layouts/Layout.astro";
+import { site } from "../../data";
+import type { Lang } from "../../i18n";
+
+export function getStaticPaths() {
+  return ["en", "fr", "ar"].map((lang) => ({ params: { lang } }));
+}
+const lang = Astro.params.lang as Lang;
+---
+
+<Layout lang={lang} page="job" country="__SLUG__" title={`__TITLE__ | ${site.product}`} description="__DESC__" noindex>
+  <div id="job-slot"></div>
+</Layout>
+
+<script>
+  import { groupFor } from "../../scripts/cards";
+  import { initSaveButtons } from "../../scripts/saved";
+  initSaveButtons();
+  const f = document.querySelector<HTMLFormElement>(".report-form");
+  if (f) {
+    const gs = (JSON.parse(f.dataset.g ?? "[]") as [string, string[] | "*"][]).map(([v, c]) => ({ v, c }));
+    const country = f.elements.namedItem("country") as HTMLSelectElement;
+    country.addEventListener("change", () => {
+      (f.elements.namedItem("verdict") as HTMLInputElement).value = groupFor(gs, country.value)?.v ?? "not_eligible";
+    });
+    f.addEventListener("submit", async (ev) => {
+      ev.preventDefault();
+      if (!f.reportValidity()) return;
+      const button = f.querySelector<HTMLButtonElement>("button[type=submit]")!;
+      const msg = f.querySelector<HTMLElement>(".form-msg")!;
+      const label = button.textContent;
+      button.disabled = true;
+      button.textContent = button.dataset.sending ?? "";
+      try {
+        const res = await fetch(f.action, { method: "POST", body: new FormData(f) });
+        if (!res.ok) throw new Error(String(res.status));
+        msg.className = "form-msg ok";
+        msg.textContent = button.dataset.ok ?? "";
+        f.querySelectorAll("fieldset, label.field, button").forEach((el) => el.remove());
+      } catch {
+        msg.className = "form-msg err";
+        msg.textContent = button.dataset.err ?? "";
+        button.disabled = false;
+        button.textContent = label;
+      }
+    });
+  }
+</script>

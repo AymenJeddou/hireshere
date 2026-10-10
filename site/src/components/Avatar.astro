@@ -40,25 +40,3 @@ const hue = [...companyKey].reduce((h, c) => (h * 31 + c.charCodeAt(0)) % 360, 7
     </span>
   )
 }
-
-<style>
-  .avatar {
-    flex: none;
-    width: var(--size, 40px);
-    height: var(--size, 40px);
-    border-radius: 8px;
-    object-fit: contain;
-    background: #fff;
-    border: 1px solid var(--line);
-  }
-  .avatar-initials {
-    display: inline-grid;
-    place-items: center;
-    background: hsl(var(--hue) 35% 93%);
-    color: hsl(var(--hue) 45% 28%);
-    border-color: hsl(var(--hue) 30% 85%);
-    font-weight: 700;
-    font-size: calc(var(--size) * 0.38);
-    letter-spacing: 0.02em;
-  }
-</style>

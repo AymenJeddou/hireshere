@@ -1,84 +1,84 @@
 ---
-import { companyJobs, countries, countryName, type JobRecord } from "../data";
-import { labels, type Lang, tr } from "../i18n";
+import { companies, companyJobs, countryName, site, world } from "../data";
+import { href, labels, type Lang, tr } from "../i18n";
 import Avatar from "./Avatar.astro";
-import JobCard from "./JobCard.astro";
 
 interface Props {
   companyKey: string;
   lang: Lang;
 }
 const { companyKey, lang } = Astro.props;
-const jobs = companyJobs(companyKey).sort((a, b) => b.seen_at.localeCompare(a.seen_at));
-const name = jobs[0].company;
-const website = jobs.find((j) => j.website)?.website ?? "";
-const openFor = (j: JobRecord, code: string) => {
-  const v = j.verdicts[code]?.v;
-  return v === "eligible" || v === "likely";
-};
-const named = [...new Set(jobs.flatMap((j) => j.named))].filter((c) =>
-  countries.some((x) => x.code === c),
-);
+const co = companies[companyKey];
+const jobs = companyJobs(companyKey);
+const names = Object.fromEntries(world(lang).map((c) => [c.code, c.name]));
 const contracts = [...new Set(jobs.map((j) => j.engagement).filter((e) => e !== "unclear"))];
 ---
 
-<div class="wrap company-page">
+<div class="wrap company-page" data-company={companyKey} data-lang={lang} data-updated={site.updated} data-names={JSON.stringify(names)}>
   <header class="cp-head">
-    <Avatar name={name} companyKey={companyKey} size={64} />
+    <Avatar name={co.name} companyKey={companyKey} size={64} />
     <div>
-      <h1>{name}</h1>
-      <p class="sub">{tr(lang, "company_intro", { n: jobs.length, company: name })}</p>
+      <h1>{co.name}</h1>
+      <p class="sub">{tr(lang, "company_intro", { n: co.n, company: co.name })}</p>
       {
-        website && (
+        co.website && (
           <p>
-            <a href={website} rel="noopener" target="_blank">
-              {tr(lang, "website")}: {new URL(website).hostname.replace(/^www\./, "")}
+            <a href={co.website} rel="noopener" target="_blank">
+              {tr(lang, "website")}: {new URL(co.website).hostname.replace(/^www\./, "")}
             </a>
           </p>
         )
       }
     </div>
   </header>
-
-  <dl class="cp-stats">
-    {
-      countries.map((c) => (
-        <div>
-          <dt>{countryName(c, lang)}</dt>
-          <dd>
-            {tr(lang, "company_open_n", { n: jobs.filter((j) => openFor(j, c.code)).length })}
-          </dd>
-        </div>
-      ))
-    }
-  </dl>
   {
-    named.length > 0 && (
+    co.named.length > 0 && (
       <p class="cp-hires">
-        {tr(lang, "hires_here", {
-          countries: named
-            .map((c) => countryName(countries.find((x) => x.code === c)!, lang))
-            .join(", "),
-        })}
+        {tr(lang, "hires_here", { countries: co.named.map((c) => countryName(site.world[c as keyof typeof site.world], lang)).join(", ") })}
       </p>
     )
   }
   {
     contracts.length > 0 && (
       <p class="cp-contracts">
-        {tr(lang, "contracts")}:{" "}
-        {contracts
-          .map((e) => labels.engagement[e as keyof typeof labels.engagement]?.[lang])
-          .join(", ")}
+        {tr(lang, "contracts")}: {contracts.map((e) => labels.engagement[e as keyof typeof labels.engagement]?.[lang]).join(", ")}
       </p>
     )
   }
 
-  <h2 class="cp-h2">{tr(lang, "jobs_at", { company: name })}</h2>
-  <ol class="cards">
-    {jobs.map((j) => <JobCard job={j} lang={lang} />)}
+  <h2 class="cp-h2">{tr(lang, "jobs_at", { company: co.name })}</h2>
+  <!-- Without JavaScript: plain links. The script renders cards for the visitor's country. -->
+  <ol class="cards plain-links" data-cards>
+    {
+      jobs.map((j) => (
+        <li>
+          <a href={href(lang, "job", j.slug)}>{j.title}</a>
+        </li>
+      ))
+    }
   </ol>
 </div>
+
+<script>
+  import type { Lang } from "../i18n";
+  import { card, loadJobs, verdictsFor } from "../scripts/cards";
+  import { visitorCountry } from "../scripts/country";
+  import { initSaveButtons } from "../scripts/saved";
+
+  const root = document.querySelector<HTMLElement>("[data-company]")!;
+  const list = root.querySelector<HTMLOListElement>("[data-cards]")!;
+  const names = JSON.parse(root.dataset.names ?? "{}");
+  const lang = root.dataset.lang as Lang;
+  Promise.all([loadJobs(lang), visitorCountry((c) => c in names)]).then(([all, code]) => {
+    // Jobs open to the visitor's country first, newest first within each.
+    const open = (j: (typeof all)[number]) => (code && verdictsFor(j.groups, code).length ? 0 : 1);
+    const jobs = all.filter((j) => j.company_key === root.dataset.company).sort((a, b) => open(a) - open(b));
+    if (!jobs.length) return;
+    list.classList.remove("plain-links");
+    list.innerHTML = jobs.map((j) => card(j, { lang, code, names, updated: root.dataset.updated ?? "" })).join("");
+    initSaveButtons(list);
+  });
+</script>
 
 <style>
   .company-page {
@@ -88,6 +88,7 @@ const contracts = [...new Set(jobs.map((j) => j.engagement).filter((e) => e !== 
     display: flex;
     gap: var(--space-4);
     align-items: flex-start;
+    margin-bottom: var(--space-4);
   }
   .cp-head h1 {
     font-size: var(--step-3);
@@ -95,37 +96,6 @@ const contracts = [...new Set(jobs.map((j) => j.engagement).filter((e) => e !== 
   .cp-head .sub {
     color: var(--ink-2);
     margin: var(--space-2) 0;
-  }
-  .cp-stats {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: var(--space-3);
-    margin: var(--space-6) 0 var(--space-4);
-  }
-  .cp-stats div {
-    background: var(--surface);
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
-    padding: var(--space-3) var(--space-4);
-  }
-  .cp-stats dt {
-    font-size: var(--step--1);
-    color: var(--ink-2);
-    font-weight: 600;
-  }
-  .cp-stats dd {
-    margin: 0;
-    font-size: var(--step-1);
-    font-weight: 700;
-  }
-  .cp-stats .num {
-    font-size: var(--step-2);
-    font-weight: 700;
-    margin-inline-end: 0.35rem;
-  }
-  .cp-sub {
-    color: var(--ink-3);
-    font-size: var(--step--1);
   }
   .cp-hires {
     color: var(--go);
@@ -140,34 +110,4 @@ const contracts = [...new Set(jobs.map((j) => j.engagement).filter((e) => e !== 
     font-size: var(--step-2);
     margin: var(--space-6) 0 var(--space-3);
   }
-  .cp-jobs {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    max-width: 880px;
-  }
-  .cp-jobs li {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: var(--space-1) var(--space-3);
-    padding: var(--space-3) 0;
-    border-bottom: 1px solid var(--line);
-  }
-  .cp-jobs a {
-    font-weight: 600;
-  }
-  .cp-scope {
-    color: var(--ink-3);
-    font-size: var(--step--1);
-  }
-  @media (max-width: 700px) {
-    .cp-stats {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-  }
 </style>
-
-<script>
-  import { initSaveButtons } from "../scripts/saved";
-  initSaveButtons();
-</script>

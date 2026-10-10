@@ -1,15 +1,19 @@
-import { groups, groupText, type LineText, type V } from "../verdictline";
+import type { Lang } from "../i18n";
+import { card, type Ctx, loadJobs, type SJob, verdictsFor } from "./cards";
+import { remember, visitorCountry } from "./country";
 import { languagesFit, loadProfile } from "./profile";
 import { initSaveButtons } from "./saved";
-// Job search: facets with live counts, URL state, pagination, alerts form. No framework.
+// Job search: one country select, facets with live counts, URL state, pagination, alerts form.
 const PAGE = 20;
-const MULTI = ["c", "f", "s", "e", "l"] as const;
+const MULTI = ["f", "s", "e", "l"] as const;
+type V = "eligible" | "likely" | "unclear";
 const DEFAULT_V: V[] = ["eligible", "likely"];
+const RANK: Record<V, number> = { eligible: 0, likely: 1, unclear: 2 };
 
-type Strings = LineText & Record<string, string | Record<string, string>>;
+type Strings = Record<string, string | Record<string, string>>;
 type State = {
   q: string;
-  c: string[];
+  c: string;
   v: V[];
   f: string[];
   s: string[];
@@ -18,30 +22,22 @@ type State = {
   d: string;
   sal: boolean;
   sort: string;
-  p: number;
 };
 type Card = {
-  el: HTMLLIElement;
-  vs: Record<string, V>;
-  r: Record<string, string>;
-  f: string;
-  s: string;
-  e: string;
-  l: string[];
+  job: SJob;
+  vs: V[]; // shown verdicts for the selected country (any country when none is selected)
   q: string;
-  seen: string;
   days: number;
-  sal: boolean;
 };
 const fill = (s: string, vars: Record<string, string | number>) =>
   s.replace(/\{(\w+)\}/g, (_, k) => String(vars[k] ?? ""));
-const RANK: Record<V, number> = { eligible: 0, likely: 1, unclear: 2 };
 
-export function initSearch(): void {
+export async function initSearch(): Promise<void> {
   const root = document.querySelector<HTMLElement>("[data-search]");
   if (!root) return;
   const t = JSON.parse(root.dataset.i18n ?? "{}") as Strings;
-  const ALL = Object.keys(t.names);
+  const lang = root.dataset.lang as Lang;
+  const updated = root.dataset.updated ?? "";
   const form = root.querySelector<HTMLFormElement>("[data-filters]")!;
   const band = root.querySelector<HTMLFormElement>("[data-searchbar]")!;
   const bandQ = band.elements.namedItem("q") as HTMLInputElement;
@@ -51,30 +47,36 @@ export function initSearch(): void {
   const pager = root.querySelector<HTMLElement>("[data-pager]")!;
   const chips = root.querySelector<HTMLElement>("[data-chips]")!;
   const aside = root.querySelector<HTMLElement>(".filters")!;
-  const cards: Card[] = [...list.querySelectorAll<HTMLLIElement>(".card")].map((el) => ({
-    el,
-    vs: JSON.parse(el.dataset.vs ?? "{}"),
-    r: JSON.parse(el.dataset.r ?? "{}"),
-    f: el.dataset.f ?? "",
-    s: el.dataset.s ?? "",
-    e: el.dataset.e ?? "",
-    l: (el.dataset.l ?? "").split(" ").filter(Boolean),
-    q: el.dataset.q ?? "",
-    seen: el.dataset.seen ?? "",
-    days: Number(el.dataset.days ?? 0),
-    sal: el.dataset.sal === "1",
-  }));
   const counts = new Map([...root.querySelectorAll<HTMLElement>("[data-n]")].map((n) => [n.dataset.n!, n]));
-  initSaveButtons(root);
+  const names = Object.fromEntries([...bandC.options].filter((o) => o.value).map((o) => [o.value, o.text]));
+  const ctx: Ctx = { lang, code: "", names, updated };
+
+  const [jobs, country] = await Promise.all([loadJobs(lang), visitorCountry((c) => c in names)]);
+  const now = Date.parse(updated);
+  const cards: Card[] = jobs.map((job) => ({
+    job,
+    vs: [],
+    q: `${job.title} ${job.company}`.toLowerCase(),
+    days: Math.max(0, Math.floor((now - Date.parse(job.seen_at)) / 86400000)),
+  }));
+  let scored = "-";
+  const score = (code: string) => {
+    if (code === scored) return;
+    for (const k of cards) k.vs = verdictsFor(k.job.groups, code) as V[];
+    scored = code;
+  };
+  root.querySelector("[data-fallback]")?.remove();
+  list.classList.remove("plain-links");
   root.classList.add("enhanced");
 
   // ---- state <-> form <-> URL
   const boxes = (name: string) => [...form.querySelectorAll<HTMLInputElement>(`input[name="${name}"]`)];
+  let page = 1;
   function read(): State {
     const fd = new FormData(form);
     return {
       q: bandQ.value.trim().toLowerCase(),
-      c: fd.getAll("c").map(String),
+      c: bandC.value,
       v: fd.getAll("v").map(String) as V[],
       f: fd.getAll("f").map(String),
       s: fd.getAll("s").map(String),
@@ -83,7 +85,6 @@ export function initSearch(): void {
       d: String(fd.get("d") ?? ""),
       sal: fd.has("sal"),
       sort: sortSel.value,
-      p: page,
     };
   }
   function write(st: Partial<State>) {
@@ -98,10 +99,9 @@ export function initSearch(): void {
   }
   const params = new URLSearchParams(location.search);
   const split = (k: string) => (params.get(k) ?? "").split(",").filter(Boolean);
-  let page = Math.max(1, Number(params.get("p")) || 1);
+  page = Math.max(1, Number(params.get("p")) || 1);
   write({
     q: params.get("q") ?? "",
-    c: split("c").map((c) => c.toUpperCase()),
     v: params.has("v") ? (split("v") as V[]) : DEFAULT_V,
     f: split("f"),
     s: split("s"),
@@ -111,18 +111,15 @@ export function initSearch(): void {
     sal: params.get("sal") === "1",
     sort: params.get("sort") ?? "",
   });
+  bandC.value = country;
 
   // Light profile: default filters when the URL carries none.
   const profile = loadProfile();
   const banner = root.querySelector<HTMLElement>("[data-profile-banner]")!;
-  let useProfile = !!profile && !location.search;
+  const filtered = [...params.keys()].some((k) => k !== "c");
+  let useProfile = !!profile && !filtered;
   if (useProfile && profile) {
-    write({
-      c: profile.country ? [profile.country] : [],
-      f: profile.f ? [profile.f] : [],
-      s: profile.s ? [profile.s] : [],
-      e: profile.e ? [profile.e] : [],
-    });
+    write({ f: profile.f ? [profile.f] : [], s: profile.s ? [profile.s] : [], e: profile.e ? [profile.e] : [] });
   }
   banner.hidden = !useProfile;
   root.querySelector("[data-profile-off]")?.addEventListener("click", () => {
@@ -133,25 +130,24 @@ export function initSearch(): void {
   });
 
   // ---- filtering
-  const scopeOf = (st: State) => (st.c.length ? st.c : ALL);
-  type Group = "c" | "v" | "f" | "s" | "e" | "l" | "d" | "sal" | "q";
+  type Group = "v" | "f" | "s" | "e" | "l" | "d" | "sal";
   function passes(k: Card, st: State, skip?: Group): boolean {
-    const scope = scopeOf(st);
+    const j = k.job;
     const words = st.q.split(/\s+/).filter(Boolean);
     return (
-      (skip === "c" || skip === "v" || scope.some((c) => k.vs[c] && st.v.includes(k.vs[c]))) &&
-      (skip === "f" || !st.f.length || st.f.includes(k.f)) &&
-      (skip === "s" || !st.s.length || st.s.includes(k.s)) &&
-      (skip === "e" || !st.e.length || st.e.includes(k.e)) &&
-      (skip === "l" || !st.l.length || st.l.every((l) => k.l.includes(l))) &&
+      k.vs.length > 0 &&
+      (skip === "v" || k.vs.some((v) => st.v.includes(v))) &&
+      (skip === "f" || !st.f.length || st.f.includes(j.family)) &&
+      (skip === "s" || !st.s.length || st.s.includes(j.seniority)) &&
+      (skip === "e" || !st.e.length || st.e.includes(j.engagement)) &&
+      (skip === "l" || !st.l.length || st.l.every((l) => j.languages.includes(l))) &&
       (skip === "d" || !st.d || k.days < Number(st.d)) &&
-      (skip === "sal" || !st.sal || k.sal) &&
+      (skip === "sal" || !st.sal || !!j.salary) &&
       words.every((w) => k.q.includes(w)) &&
-      (!useProfile || !profile || languagesFit(k.l, profile.langs))
+      (!useProfile || !profile || languagesFit(j.languages, profile.langs))
     );
   }
-  const best = (k: Card, st: State) =>
-    Math.min(...scopeOf(st).filter((c) => k.vs[c] && st.v.includes(k.vs[c])).map((c) => RANK[k.vs[c]]));
+  const best = (k: Card, st: State) => Math.min(...k.vs.filter((v) => st.v.includes(v)).map((v) => RANK[v]));
 
   function updateCounts(st: State) {
     const set = (key: string, n: number) => {
@@ -159,50 +155,21 @@ export function initSearch(): void {
       if (el) el.textContent = String(n);
     };
     const pool = (g: Group) => cards.filter((k) => passes(k, st, g));
-    const pc = pool("c");
-    for (const c of ALL) set(`c:${c}`, pc.filter((k) => k.vs[c] && st.v.includes(k.vs[c])).length);
     const pv = pool("v");
-    for (const v of ["eligible", "likely", "unclear"] as V[])
-      set(`v:${v}`, pv.filter((k) => scopeOf(st).some((c) => k.vs[c] === v)).length);
+    for (const v of ["eligible", "likely", "unclear"] as V[]) set(`v:${v}`, pv.filter((k) => k.vs.includes(v)).length);
     for (const g of ["f", "s", "e"] as const) {
+      const key = ({ f: "family", s: "seniority", e: "engagement" } as const)[g];
       const pg = pool(g);
-      boxes(g).forEach((b) => set(`${g}:${b.value}`, pg.filter((k) => k[g] === b.value).length));
+      boxes(g).forEach((b) => set(`${g}:${b.value}`, pg.filter((k) => k.job[key] === b.value).length));
     }
     const pl = pool("l");
-    boxes("l").forEach((b) => set(`l:${b.value}`, pl.filter((k) => k.l.includes(b.value)).length));
+    boxes("l").forEach((b) => set(`l:${b.value}`, pl.filter((k) => k.job.languages.includes(b.value)).length));
     const pd = pool("d");
     set("d:1", pd.filter((k) => k.days < 1).length);
     set("d:7", pd.filter((k) => k.days < 7).length);
     set("d:", pd.length);
-    set("sal:1", pool("sal").filter((k) => k.sal).length);
+    set("sal:1", pool("sal").filter((k) => k.job.salary).length);
   }
-
-  function updateLine(k: Card, st: State) {
-    const scope = scopeOf(st);
-    const gs = groups(k.vs, scope.filter((c) => k.vs[c]), st.v);
-    const line = k.el.querySelector<HTMLElement>("[data-line]")!;
-    const lamps = new Map(
-      [...k.el.querySelectorAll<HTMLElement>(".vl")].map((s) => [s.className.match(/v-(\w+)/)![1], s.querySelector("svg")]),
-    );
-    line.replaceChildren(
-      ...gs.map((g) => {
-        const span = document.createElement("span");
-        span.className = `vl v-${g.v}`;
-        const lamp = lamps.get(g.v) ?? lampFor(g.v);
-        if (lamp) span.append(lamp.cloneNode(true));
-        span.append(groupText(g, st.c.length ? 0 : scope.length, t));
-        return span;
-      }),
-    );
-    if (gs.length === 1) {
-      const why = document.createElement("span");
-      why.className = "why";
-      why.textContent = k.r[gs[0].codes[0]] ?? "";
-      line.append(why);
-    }
-  }
-  // A lamp of each shape, taken from the facet list, for cards that did not render one.
-  const lampFor = (v: V) => form.querySelector(`.v-${v} svg`);
 
   function renderPager(total: number) {
     const pages = Math.ceil(total / PAGE);
@@ -218,7 +185,7 @@ export function initSearch(): void {
       b.addEventListener("click", () => {
         page = p;
         apply(false);
-        root.querySelector("#count")?.scrollIntoView({ block: "start" });
+        root!.querySelector("#count")?.scrollIntoView({ block: "start" });
       });
       return b;
     };
@@ -237,7 +204,7 @@ export function initSearch(): void {
 
   function renderChips(st: State) {
     const keep = chips.querySelector("[data-open-filters]")!;
-    const active = st.c.length + st.f.length + st.s.length + st.e.length + st.l.length + (st.d ? 1 : 0) + (st.sal ? 1 : 0);
+    const active = st.f.length + st.s.length + st.e.length + st.l.length + (st.d ? 1 : 0) + (st.sal ? 1 : 0);
     keep.textContent = active ? `${t.filters} (${active})` : String(t.filters);
     const chip = (label: string, undo: () => void) => {
       const b = document.createElement("button");
@@ -271,46 +238,47 @@ export function initSearch(): void {
   function apply(resetPage = true) {
     if (resetPage) page = 1;
     const st = read();
+    score(st.c);
+    ctx.code = st.c;
     const matches = cards.filter((k) => passes(k, st));
     matches.sort((a, b) =>
       st.sort === "new"
-        ? b.seen.localeCompare(a.seen)
-        : best(a, st) - best(b, st) || b.seen.localeCompare(a.seen),
+        ? b.job.seen_at.localeCompare(a.job.seen_at)
+        : best(a, st) - best(b, st) || b.job.seen_at.localeCompare(a.job.seen_at),
     );
     const pages = Math.max(1, Math.ceil(matches.length / PAGE));
     page = Math.min(page, pages);
-    const visible = new Set(matches.slice((page - 1) * PAGE, page * PAGE));
-    for (const k of cards) k.el.hidden = !visible.has(k);
-    list.append(...matches.map((k) => k.el));
-    for (const k of visible) updateLine(k, st);
+    list.innerHTML = matches
+      .slice((page - 1) * PAGE, page * PAGE)
+      .map((k) => card(k.job, ctx, st.v))
+      .join("");
+    initSaveButtons(list);
 
     updateCounts(st);
     renderPager(matches.length);
     renderChips(st);
-    const names = st.c.map((c) => t.names[c]);
-    root.querySelector("[data-count]")!.textContent =
+    root!.querySelector("[data-count]")!.textContent =
       matches.length === 1 ? String(t.jobsN1) : fill(String(t.jobsN), { n: matches.length });
     // The heading follows the verdict boxes: the usual "open or likely open", else the ticked verdicts.
     const usual = st.v.length === 2 && DEFAULT_V.every((v) => st.v.includes(v));
-    const places = names.length ? names.join(", ") : String(t.region);
+    const place = st.c ? names[st.c] : String(t.region);
     const label = t.label as Record<string, string>;
-    root.querySelector("[data-sub]")!.textContent = usual
-      ? names.length
-        ? fill(String(t.openTo), { places })
+    root!.querySelector("[data-sub]")!.textContent = usual
+      ? st.c
+        ? fill(String(t.openTo), { places: place })
         : String(t.openAny)
-      : `${st.v.map((v) => label[v]).join(" / ")} · ${places}`;
-    const empty = root.querySelector<HTMLElement>("[data-empty]")!;
+      : `${st.v.map((v) => label[v]).join(" / ")} · ${place}`;
+    const empty = root!.querySelector<HTMLElement>("[data-empty]")!;
     empty.hidden = matches.length > 0;
-    root.querySelector("[data-empty-title]")!.textContent = st.q
+    root!.querySelector("[data-empty-title]")!.textContent = st.q
       ? fill(String(t.noneQ), { q: bandQ.value.trim() })
       : String(t.noneTitle);
-    // Band select mirrors the country boxes: one country, all, or "several".
-    bandC.value = st.c.length === 0 ? "" : st.c.length === 1 ? st.c[0] : "multi";
-    const alertC = root.querySelector<HTMLSelectElement>("[data-alert-country]");
-    if (alertC && st.c.length) alertC.value = st.c[0];
+    const alertC = root!.querySelector<HTMLSelectElement>("[data-alert-country]");
+    if (alertC && st.c) alertC.value = st.c;
 
     const p = new URLSearchParams();
     if (st.q) p.set("q", bandQ.value.trim());
+    if (st.c) p.set("c", st.c);
     for (const k of MULTI) if (st[k].length) p.set(k, st[k].join(","));
     if (!(st.v.length === DEFAULT_V.length && DEFAULT_V.every((v) => st.v.includes(v)))) p.set("v", st.v.join(","));
     if (st.d) p.set("d", st.d);
@@ -334,7 +302,7 @@ export function initSearch(): void {
     timer = window.setTimeout(() => apply(), 160);
   });
   bandC.addEventListener("change", () => {
-    if (bandC.value !== "multi") boxes("c").forEach((b) => (b.checked = b.value === bandC.value));
+    remember(bandC.value);
     apply();
   });
   root.querySelectorAll("[data-clear]").forEach((b) =>

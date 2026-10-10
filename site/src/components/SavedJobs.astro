@@ -8,6 +8,7 @@ interface Props {
 const { lang } = Astro.props;
 const t = {
   jobBase: href(lang, "job", ""),
+  index: `/data/search-${lang}.json`,
   statuses: (["saved", "applied", "interview", "offer", "rejected"] as const).map((s) => [s, tr(lang, `st_${s}`)]),
   status: tr(lang, "status"),
   remove: tr(lang, "remove"),
@@ -39,9 +40,10 @@ const t = {
     const ids = Object.keys(store).sort((a, b) => store[b].t - store[a].t);
     empty.hidden = ids.length > 0;
     if (!ids.length) return void list.replaceChildren();
-    const index: Record<string, [string, string, string, string]> = await fetch("/saved-index.json")
+    const jobs: { id: string; slug: string; title: string; company: string }[] = await fetch(t.index)
       .then((r) => r.json())
-      .catch(() => ({}));
+      .catch(() => []);
+    const index = Object.fromEntries(jobs.map((j) => [j.id, [j.slug, j.title, j.company]]));
     list.replaceChildren(
       ...ids.map((id) => {
         const li = document.createElement("li");
