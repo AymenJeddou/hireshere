@@ -91,6 +91,7 @@ const alternate = (l: Lang) => new URL(href(l, page, country), Astro.site).toStr
         <p>{tr(lang, "footer_data")}</p>
         <nav aria-label="Footer">
           <a href={href(lang, "how")}>{tr(lang, "nav_how")}</a>
+          <a href={href(lang, "guide")}>{tr(lang, "nav_guide")}</a>
           <a href={href(lang, "companies")}>{tr(lang, "nav_companies")}</a>
           <a href={href(lang, "sources")}>{tr(lang, "nav_sources")}</a>
           <a href={href(lang, "employers")}>{tr(lang, "nav_employers")}</a>

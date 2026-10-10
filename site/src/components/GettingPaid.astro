@@ -1,0 +1,197 @@
+---
+import { countries, countryName } from "../data";
+import type { Lang } from "../i18n";
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const fr = lang === "fr";
+const CHECKED = "2026-10-10";
+
+type Section = { en: string[]; fr: string[]; links: [string, string][] };
+const byCountry: Record<string, Section> = {
+  TN: {
+    en: [
+      "The Tunisian dinar is not freely convertible, so foreign income goes through official channels. The state encourages service exports: a professional foreign-currency account and the international technology card are the usual routes.",
+      "Payoneer is the most common way to receive from clients and platforms (Upwork, Fiverr) and withdraw to a Tunisian bank in dinars. Wise often has better rates, but withdrawals to Tunisian dinar accounts can be restricted: many people receive on Wise and move the money by bank transfer.",
+      "Banks may ask for proof of where the money comes from (contract, invoices) before crediting it. Keep your paperwork ready.",
+      "An auto-entrepreneur status exists for individuals working alone under a revenue cap. A bill on the status of freelancers working for foreign clients (including access to PayPal) was filed in parliament in 2026 and is not law yet.",
+    ],
+    fr: [
+      "Le dinar tunisien n’est pas librement convertible : les revenus de l’étranger passent par les canaux officiels. L’État encourage l’export de services : le compte professionnel en devises et la carte technologique internationale sont les voies habituelles.",
+      "Payoneer est le moyen le plus courant pour recevoir des clients et des plateformes (Upwork, Fiverr) puis retirer vers une banque tunisienne en dinars. Wise a souvent de meilleurs taux, mais les retraits vers un compte en dinars peuvent être limités : beaucoup reçoivent sur Wise puis transfèrent par virement.",
+      "La banque peut demander l’origine des fonds (contrat, factures) avant de créditer le compte. Gardez vos justificatifs.",
+      "Un statut d’auto-entrepreneur existe pour les personnes travaillant seules sous un plafond de chiffre d’affaires. Une proposition de loi sur le statut des freelances travaillant pour l’étranger (dont l’accès à PayPal) a été déposée en 2026 et n’est pas encore adoptée.",
+    ],
+    links: [
+      ["Le Courrier de l’Atlas: statut du freelance", "https://www.lecourrierdelatlas.com/tunisie-statut-du-freelance-paypal-prelevements-5-choses-a-savoir-sur-la-nouvelle-proposition-de-loi/"],
+      ["Business News: la loi sur les freelances", "https://businessnews.com.tn/2026/08/10/freelances-la-loi-qui-veut-ouvrir-paypal-et-preleve-15/1413684/"],
+      ["Web6: se faire payer de l’étranger", "https://web6.tn/blog/se-faire-payer-etranger-tunisie-2026/"],
+    ],
+  },
+  MA: {
+    en: [
+      "Payoneer is widely used, especially for platform work, with withdrawal to a Moroccan bank in dirhams. Expect a few percent in conversion and withdrawal fees.",
+      "Wise is often cheaper and more transparent for direct clients, but check that withdrawals in dirhams (MAD) to your bank work for your account with a small test transfer before giving clients your details.",
+      "Morocco’s foreign-exchange rules affect how freelancers receive and convert foreign payments. Put the currency and payment method in your contract, and keep contracts, invoices and bank statements.",
+      "The auto-entrepreneur status can suit freelancers, but its revenue cap is low for big retainers and income from a single client may be taxed differently. Check with an accountant.",
+    ],
+    fr: [
+      "Payoneer est très utilisé, surtout pour les plateformes, avec retrait vers une banque marocaine en dirhams. Comptez quelques pour cent de frais de conversion et de retrait.",
+      "Wise est souvent moins cher et plus transparent pour les clients directs, mais vérifiez par un petit virement test que les retraits en dirhams (MAD) vers votre banque fonctionnent avant de donner vos coordonnées.",
+      "La réglementation des changes marocaine encadre la réception et la conversion des paiements étrangers. Indiquez la devise et le mode de paiement dans le contrat, et gardez contrats, factures et relevés.",
+      "Le statut d’auto-entrepreneur peut convenir, mais son plafond est bas pour de gros contrats et un client unique peut entraîner une fiscalité différente. Renseignez-vous auprès d’un comptable.",
+    ],
+    links: [
+      ["Grey: receiving freelance payments in Morocco", "https://grey.co/blog/how-to-receive-freelance-payments-in-morocco"],
+      ["Weepo: contrats freelance au Maroc", "https://weepo.ma/en/blog/contrat-prestation-service-freelance-maroc"],
+    ],
+  },
+  DZ: {
+    en: [
+      "Receiving money from abroad is the hardest part in Algeria: banking restrictions are strict and foreign currency is converted to dinars at the official rate.",
+      "Whether Payoneer fully works for withdrawals in Algeria is disputed between sources. Confirm withdrawal and currency options directly with Payoneer before relying on it.",
+      "Many freelancers combine a platform balance with a foreign-currency (devises) bank account. Ask your bank’s foreign-exchange desk which documents they need for payments for exported services.",
+      "Check the auto-entrepreneur status and the Bank of Algeria’s rules on service exports with your bank or the tax administration (DGI) before you start.",
+    ],
+    fr: [
+      "Recevoir de l’argent de l’étranger est l’étape la plus difficile en Algérie : les restrictions bancaires sont strictes et les devises sont converties en dinars au taux officiel.",
+      "Les sources ne s’accordent pas sur le bon fonctionnement des retraits Payoneer en Algérie. Vérifiez directement auprès de Payoneer les options de retrait et de devise.",
+      "Beaucoup combinent un solde sur plateforme et un compte bancaire en devises. Demandez au service change de votre banque les justificatifs exigés pour les paiements d’export de services.",
+      "Renseignez-vous sur le statut d’auto-entrepreneur et les règles de la Banque d’Algérie sur l’export de services auprès de votre banque ou de la DGI avant de commencer.",
+    ],
+    links: [
+      ["Grey: withdrawing freelance earnings in Algeria", "https://grey.co/blog/how-to-withdraw-your-freelancing-money-in-algeria"],
+      ["Jobbers: Algerian freelancers and international payments", "https://www.jobbers.io/algerian-freelancers-complete-guide-to-international-payments-without-platforms/"],
+    ],
+  },
+  EG: {
+    en: [
+      "Payoneer is the most established option: it works with nearly every freelance platform and withdraws to an Egyptian bank in pounds, but fees add up (receiving, withdrawal and conversion).",
+      "Wise can receive client payments that you then withdraw to an Egyptian bank; the Wise card is not available to Egyptian residents, and support depends on your client’s currency.",
+      "For large one-off payments, a direct international bank transfer is the usual alternative.",
+      "Egyptian residents are generally taxed on worldwide income, including foreign freelance work. Check current rates and registration with the Egyptian Tax Authority or an accountant.",
+    ],
+    fr: [
+      "Payoneer est l’option la plus établie : compatible avec presque toutes les plateformes, retrait vers une banque égyptienne en livres, mais les frais s’additionnent (réception, retrait, conversion).",
+      "Wise peut recevoir les paiements de clients, à retirer ensuite vers une banque égyptienne ; la carte Wise n’est pas disponible pour les résidents égyptiens et la prise en charge dépend de la devise du client.",
+      "Pour les gros paiements ponctuels, le virement bancaire international reste l’alternative habituelle.",
+      "Les résidents égyptiens sont en général imposés sur leurs revenus mondiaux, y compris le freelance pour l’étranger. Vérifiez les taux et l’inscription auprès de l’administration fiscale ou d’un comptable.",
+    ],
+    links: [
+      ["XPay: how freelancers get paid in Egypt", "https://xpay.app/blog/how-freelancers-get-paid-egypt"],
+      ["Grey: receiving freelance payments in Egypt", "https://grey.co/blog/how-to-receive-freelance-payments-in-egypt"],
+    ],
+  },
+};
+const t = fr
+  ? {
+      title: "Être payé depuis l’Afrique du Nord",
+      lede: "Décrocher un poste à distance n’est que la moitié du chemin : il faut aussi recevoir son salaire. Voici l’essentiel, pays par pays.",
+      kinds: "Salarié, freelance ou portage (EOR) ?",
+      kindsBody: [
+        "Salarié via un EOR (employer of record) : une société comme Deel ou Remote vous emploie localement pour l’entreprise. Contrat de travail, cotisations, fiche de paie.",
+        "Freelance (contractor) : vous facturez l’entreprise. Plus fréquent, plus simple pour l’employeur, mais vous gérez statut, impôts et réception des paiements.",
+        "L’annonce indique souvent le type de contrat : nous l’affichons sur chaque offre quand il est connu.",
+      ],
+      tips: "Conseils valables partout",
+      tipsBody: [
+        "Faites un petit paiement test avant le premier vrai virement.",
+        "Gardez contrats, factures et relevés : les banques peuvent demander l’origine des fonds.",
+        "Comparez le coût total (réception + conversion + retrait), pas seulement un frais affiché.",
+        "Pour le statut et les impôts, un comptable local vaut mieux que n’importe quel article de blog.",
+      ],
+      sources: "Sources",
+      checked: "Vérifié le",
+      warn: "Les règles et les frais changent souvent. Ce guide résume des sources publiques et ne constitue pas un conseil juridique ou fiscal.",
+    }
+  : {
+      title: "Getting paid from North Africa",
+      lede: "Landing a remote job is half the work: you also need to receive your pay. Here is what matters, country by country.",
+      kinds: "Employee, contractor or employer of record?",
+      kindsBody: [
+        "Employee through an employer of record (EOR): a company such as Deel or Remote employs you locally on the client’s behalf. Employment contract, social contributions, payslip.",
+        "Contractor (freelance): you invoice the company. More common and simpler for the employer, but you handle your status, taxes and receiving payments.",
+        "Postings often state the contract type: we show it on each job when it is known.",
+      ],
+      tips: "Tips that apply everywhere",
+      tipsBody: [
+        "Do a small test payment before the first real one.",
+        "Keep contracts, invoices and statements: banks may ask where the money comes from.",
+        "Compare the total cost (receiving + conversion + withdrawal), not one advertised fee.",
+        "For status and taxes, a local accountant beats any blog post, including this one.",
+      ],
+      sources: "Sources",
+      checked: "Last checked",
+      warn: "Rules and fees change often. This guide summarises public sources and is not legal or tax advice.",
+    };
+---
+
+<div class="wrap">
+  <header class="page-head">
+    <h1>{t.title}</h1>
+    <p class="sub">{t.lede}</p>
+  </header>
+  <article class="prose">
+    <p class="guide-warn">{t.warn} {t.checked} {CHECKED}.</p>
+    <nav class="guide-toc">
+      {countries.map((c) => <a href={`#${c.code.toLowerCase()}`}>{countryName(c, lang)}</a>)}
+    </nav>
+    <h2>{t.kinds}</h2>
+    <ul>{t.kindsBody.map((p) => <li>{p}</li>)}</ul>
+    {
+      countries.map((c) => {
+        const s = byCountry[c.code];
+        return s ? (
+          <section id={c.code.toLowerCase()}>
+            <h2>{countryName(c, lang)}</h2>
+            <ul>{(fr ? s.fr : s.en).map((p) => <li>{p}</li>)}</ul>
+            <p class="guide-sources">
+              {t.sources}:{" "}
+              {s.links.map(([label, url], i) => (
+                <>
+                  {i > 0 && " · "}
+                  <a href={url} rel="noopener" target="_blank">{label}</a>
+                </>
+              ))}
+            </p>
+          </section>
+        ) : null;
+      })
+    }
+    <h2>{t.tips}</h2>
+    <ul>{t.tipsBody.map((p) => <li>{p}</li>)}</ul>
+  </article>
+</div>
+
+<style>
+  .guide-warn {
+    padding: var(--space-3) var(--space-4);
+    background: var(--maybe-bg);
+    color: #6b3d00;
+    border-radius: var(--radius-sm);
+    font-size: var(--step-0);
+  }
+  .guide-toc {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-bottom: var(--space-4);
+  }
+  .guide-toc a {
+    padding: 0.35rem 0.8rem;
+    border: 1px solid var(--line-2);
+    border-radius: 999px;
+    background: var(--surface);
+    text-decoration: none;
+    font-size: var(--step-0);
+  }
+  .guide-sources {
+    font-size: var(--step--1);
+    color: var(--ink-2);
+  }
+  section {
+    scroll-margin-top: var(--space-5);
+  }
+</style>

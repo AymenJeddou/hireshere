@@ -173,6 +173,9 @@ const verdictOf = (code: string): Verdict | null => job.verdicts[code]?.v ?? nul
     </div>
 
     <aside class="jp-side">
+      <a class="panel jp-guide" href={`${href(lang, "guide")}#${firstCountry.code.toLowerCase()}`}>
+        {tr(lang, "guide_cta", { country: countryName(firstCountry, lang), country_en: firstCountry.fr_en })} →
+      </a>
       {
         named.length > 0 && (
           <p class="panel jp-hires">
@@ -331,6 +334,10 @@ const verdictOf = (code: string): Verdict | null => job.verdicts[code]?.v ?? nul
     display: block;
     color: var(--ink-3);
     font-size: var(--step--1);
+  }
+  .jp-guide {
+    font-weight: 600;
+    text-decoration: none;
   }
   .jp-hires {
     font-size: var(--step-0);

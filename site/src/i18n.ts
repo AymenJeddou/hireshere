@@ -2,7 +2,7 @@
 export type Lang = "en" | "fr";
 export const LANGS: Lang[] = ["en", "fr"];
 
-export type Page = "home" | "country" | "how" | "sources" | "job" | "saved" | "company" | "companies" | "field" | "employers";
+export type Page = "home" | "country" | "how" | "sources" | "job" | "saved" | "company" | "companies" | "field" | "employers" | "guide";
 
 const SLUGS: Record<Page, Record<Lang, string>> = {
   home: { en: "/", fr: "/fr" },
@@ -15,6 +15,7 @@ const SLUGS: Record<Page, Record<Lang, string>> = {
   companies: { en: "/companies", fr: "/fr/entreprises" },
   field: { en: "/", fr: "/fr/" },
   employers: { en: "/employers", fr: "/fr/employeurs" },
+  guide: { en: "/guides/getting-paid", fr: "/fr/guides/etre-paye" },
 };
 
 export function href(lang: Lang, page: Page, country?: string): string {
@@ -245,6 +246,8 @@ const en = {
   jobs_at: "Jobs at {company}",
   nav_companies: "Companies",
   nav_employers: "For employers",
+  nav_guide: "Getting paid",
+  guide_cta: "How to get paid from {country}",
   profile_title: "My profile",
   profile_intro: "Set this once and every board opens filtered for you. Saved on this device only.",
   profile_country: "I live in",
@@ -413,6 +416,8 @@ const fr: typeof en = {
   jobs_at: "Offres chez {company}",
   nav_companies: "Entreprises",
   nav_employers: "Employeurs",
+  nav_guide: "Être payé",
+  guide_cta: "Comment être payé {country_en}",
   profile_title: "Mon profil",
   profile_intro: "Réglez-le une fois et chaque tableau s’ouvre filtré pour vous. Enregistré sur cet appareil uniquement.",
   profile_country: "J’habite en",

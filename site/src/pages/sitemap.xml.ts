@@ -10,6 +10,8 @@ export const GET: APIRoute = ({ site }) => {
     ...countries.map((c): [Page, string] => ["country", c.code]),
     ...allJobs.map((j): [Page, string] => ["job", j.slug]),
     ["companies"],
+    ["guide"],
+    ["employers"],
     ...[...new Set(allJobs.map((j) => j.company_key))].map((k): [Page, string] => ["company", k]),
     ...countries.flatMap((c) =>
       Object.keys(labels.family)
