@@ -7,11 +7,11 @@
 | 2 | Classification (Gemini), verdict function, 200-job eval set | done; eval labels are AI drafts awaiting human review |
 | 3 | Astro site, country pages, filters, alerts signup | done, live at https://hireshere.app |
 | 4 | Cloudflare Pages, custom domain, end to end automation, monitoring | live on hireshere.app with daily deploy; analytics and monitoring pending |
-| 5 | Job, company and field pages, saved jobs and applied tracker, profile, employer page, getting-paid guide, AR (RTL) UI, Workable/Recruitee/Teamtailor/Remote OK | done (2026-10-10) except Telegram channels |
+| 5 | Job, company and field pages, saved jobs and applied tracker, profile, employer page, getting-paid guide, AR (RTL) UI, Workable/Recruitee/Teamtailor/Remote OK | done (2026-10-10) |
 
 ## Open items
 
-- Telegram channel per country: needs a bot token from @BotFather and the four channels (owner).
+- Telegram: live since 2026-10-10 (@hireshere_bot posts to 4 private channels by id, secret TELEGRAM_CHANNELS). Make the channels public to be findable.
 - Native review of the Arabic interface and verdict reasons.
 - Getting-paid guide: recheck sources every few months (date on the page).
 - SmartRecruiters descriptions: fetch posting detail for classification candidates.
