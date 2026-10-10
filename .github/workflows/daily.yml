@@ -20,6 +20,8 @@ env:
   CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
   RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
   UNSUBSCRIBE_SECRET: ${{ secrets.UNSUBSCRIBE_SECRET }}
+  TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+  TELEGRAM_CHANNELS: ${{ secrets.TELEGRAM_CHANNELS }}
 
 jobs:
   fetch:
@@ -88,6 +90,11 @@ jobs:
       - name: Email alerts
         if: env.RESEND_API_KEY != ''
         run: uv run python -m pipeline.run alerts
+
+      - name: Telegram channels
+        if: env.TELEGRAM_BOT_TOKEN != ''
+        continue-on-error: true
+        run: uv run python -m pipeline.run telegram
 
       - name: Upload database
         run: |

@@ -282,3 +282,13 @@ def test_arabic_reason_names_country():
 
     v, reason = verdict(ex(geo_scope="regions", allowed_regions=["EMEA"]), "TN", TN, lang="ar")
     assert v == "likely" and "تونس" in reason and "EMEA" in reason
+
+
+def test_telegram_channels_and_message():
+    from pipeline.telegram import channels, message
+
+    assert channels("TN=@a:fr, eg=@b,XX=@c,MA=") == {"TN": ("@a", "fr"), "EG": ("@b", "en")}
+    job = {"title": "Dev <Go>", "company": "X", "scope": "EMEA", "verdict": "likely",
+           "reason": {"en": "r", "fr": "r", "ar": "سبب"}, "slug": "dev-x-abc123"}  # fmt: skip
+    m = message(job, "ar")
+    assert "Dev &lt;Go&gt;" in m and "سبب" in m and m.endswith("hireshere.app/ar/jobs/dev-x-abc123")

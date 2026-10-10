@@ -188,6 +188,7 @@ def main(argv=None) -> None:
     sub.add_parser("classify-collect", help="store results of finished batches")
     a = sub.add_parser("alerts", help="email new-job digests to subscribers")
     a.add_argument("--dry-run", action="store_true", help="render the first digest, send nothing")
+    sub.add_parser("telegram", help="post new jobs to the per-country Telegram channels")
     x = sub.add_parser("export", help="write per-country JSON for the site")
     x.add_argument("--out", default="site/src/data")
     args = p.parse_args(argv)
@@ -206,6 +207,10 @@ def main(argv=None) -> None:
         from pipeline.alerts import run as send_alerts
 
         report = send_alerts(conn, args.dry_run)
+    elif args.cmd == "telegram":
+        from pipeline.telegram import run as post_telegram
+
+        report = post_telegram(conn)
     elif args.cmd == "export":
         from pipeline.export import export
 
