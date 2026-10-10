@@ -4,6 +4,8 @@ import { countries, countryName, jobsFor, openCount, site, totalBoards } from ".
 import { formatDate, href, labels, type Lang, tr } from "../i18n";
 import JobRow from "./JobRow.astro";
 import Lamp from "./Lamp.astro";
+import { Image } from "astro:assets";
+import homeOffice from "../assets/photos/home-office.jpg";
 
 interface Props {
   lang: Lang;
@@ -130,6 +132,14 @@ const steps = [
 
   <section class="wrap how" aria-labelledby="how-title">
     <h2 id="how-title">{tr(lang, "home_how_title")}</h2>
+    <Image
+      class="photo"
+      src={homeOffice}
+      alt=""
+      widths={[480, 960, 1440]}
+      sizes="(max-width: 1180px) 100vw, 1180px"
+      loading="lazy"
+    />
     <ol class="steps">
       {
         steps.map(([title, body]) => (
@@ -344,6 +354,20 @@ const steps = [
   }
   .how {
     padding-top: var(--space-8);
+  }
+.photo {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 21 / 9;
+    object-fit: cover;
+    border-radius: var(--radius);
+    margin-block: var(--space-5);
+  }
+  @media (max-width: 700px) {
+    .photo {
+      aspect-ratio: 16 / 10;
+    }
   }
   .steps {
     list-style: none;

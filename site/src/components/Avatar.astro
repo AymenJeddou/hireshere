@@ -1,6 +1,11 @@
 ---
-// Company mark: the real logo when we have one (public/logos/<key>.png), else initials.
-import { existsSync } from "node:fs";
+// Company mark: the real logo when we have one (public/logos/<key>.<ext>), else initials.
+import { readdirSync } from "node:fs";
+
+// Logo files fetched by `python -m pipeline.logos`, indexed once per build.
+const LOGOS = new Map(
+  readdirSync(`${process.cwd()}/public/logos`).map((f) => [f.replace(/\.[^.]+$/, ""), f]),
+);
 
 interface Props {
   name: string;
@@ -8,8 +13,9 @@ interface Props {
   size?: number;
 }
 const { name, companyKey, size = 40 } = Astro.props;
-const logo = `/logos/${companyKey}.png`;
-const hasLogo = existsSync(new URL(`../../public${logo}`, import.meta.url));
+const file = LOGOS.get(companyKey);
+const logo = file ? `/logos/${file}` : "";
+const hasLogo = Boolean(file);
 const initials = name
   .replace(/[^A-Za-z0-9 ]/g, " ")
   .split(/\s+/)

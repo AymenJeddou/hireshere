@@ -2,6 +2,8 @@
 import { site, totalBoards } from "../data";
 import { formatDate, href, labels, type Lang, tr, VERDICTS } from "../i18n";
 import Lamp from "./Lamp.astro";
+import { Image } from "astro:assets";
+import office from "../assets/photos/office.jpg";
 
 interface Props {
   lang: Lang;
@@ -15,6 +17,7 @@ const boards = totalBoards();
   <header class="page-head">
     <h1>{tr(lang, "how_title")}</h1>
   </header>
+  <Image class="photo" src={office} alt="" widths={[480, 960, 1440]} sizes="(max-width: 1180px) 100vw, 1180px" />
   <article class="prose">
     {
       fr ? (
@@ -164,3 +167,23 @@ const boards = totalBoards();
     </p>
   </article>
 </div>
+
+<style>
+  .photo {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 21 / 9;
+    object-fit: cover;
+    border-radius: var(--radius);
+    margin-block: var(--space-5);
+  }
+  @media (max-width: 700px) {
+    .photo {
+      aspect-ratio: 16 / 10;
+    }
+  }
+  .photo {
+    margin-top: 0;
+  }
+</style>

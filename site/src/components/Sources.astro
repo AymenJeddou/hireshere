@@ -72,6 +72,13 @@ const boards = site.boards as Record<string, number>;
       </li>
     </ul>
 
+    <h2>{fr ? "Photos" : "Photos"}</h2>
+    <p>
+      {fr ? "Photos de Vitaly Gariev sur " : "Photos by Vitaly Gariev on "}
+      <a href="https://unsplash.com" rel="noopener">Unsplash</a>
+      {fr ? ", sous licence Unsplash. Elles illustrent le travail à distance et ne représentent pas nos utilisateurs." : ", under the Unsplash License. They illustrate remote work and do not show our users."}
+    </p>
+
     <h2>{fr ? "Ce que nous ne faisons pas" : "What we don’t do"}</h2>
     <p>
       {

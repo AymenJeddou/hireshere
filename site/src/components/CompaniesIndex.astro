@@ -2,6 +2,8 @@
 import { allJobs } from "../data";
 import { href, type Lang, tr } from "../i18n";
 import Avatar from "./Avatar.astro";
+import { Image } from "astro:assets";
+import cafe from "../assets/photos/cafe.jpg";
 
 interface Props {
   lang: Lang;
@@ -22,6 +24,7 @@ const companies = [...byKey.entries()].sort((a, b) => b[1].n - a[1].n);
     <h1>{tr(lang, "companies_title")}</h1>
     <p class="sub">{tr(lang, "companies_intro")}</p>
   </header>
+  <Image class="photo" src={cafe} alt="" widths={[480, 960, 1440]} sizes="(max-width: 1180px) 100vw, 1180px" />
   <ul class="co-grid">
     {
       companies.map(([key, c]) => (
@@ -40,6 +43,20 @@ const companies = [...byKey.entries()].sort((a, b) => b[1].n - a[1].n);
 </div>
 
 <style>
+  .photo {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 21 / 9;
+    object-fit: cover;
+    border-radius: var(--radius);
+    margin-block: var(--space-5);
+  }
+  @media (max-width: 700px) {
+    .photo {
+      aspect-ratio: 16 / 10;
+    }
+  }
   .co-grid {
     list-style: none;
     margin: 0;

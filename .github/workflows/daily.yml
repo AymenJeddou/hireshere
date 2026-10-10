@@ -73,6 +73,10 @@ jobs:
           cache: npm
           cache-dependency-path: site/package-lock.json
 
+      - name: Logos for new companies
+        continue-on-error: true
+        run: uv run python -m pipeline.logos
+
       - name: Build and deploy site
         if: env.CLOUDFLARE_API_TOKEN != ''
         working-directory: site
