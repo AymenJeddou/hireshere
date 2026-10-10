@@ -1,0 +1,15 @@
+---
+import CompaniesIndex from "../../components/CompaniesIndex.astro";
+import Layout from "../../layouts/Layout.astro";
+import { site } from "../../data";
+import { tr } from "../../i18n";
+---
+
+<Layout
+  lang="fr"
+  page="companies"
+  title={`${tr("fr", "companies_title")} | ${site.product}`}
+  description={tr("fr", "companies_intro")}
+>
+  <CompaniesIndex lang="fr" />
+</Layout>

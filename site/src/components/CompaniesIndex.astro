@@ -1,0 +1,73 @@
+---
+import { allJobs } from "../data";
+import { href, type Lang, tr } from "../i18n";
+import Avatar from "./Avatar.astro";
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const byKey = new Map<string, { name: string; n: number }>();
+for (const j of allJobs) {
+  if (!Object.values(j.verdicts).some((x) => x.v !== "unclear")) continue;
+  const c = byKey.get(j.company_key) ?? { name: j.company, n: 0 };
+  c.n++;
+  byKey.set(j.company_key, c);
+}
+const companies = [...byKey.entries()].sort((a, b) => b[1].n - a[1].n);
+---
+
+<div class="wrap">
+  <header class="page-head">
+    <h1>{tr(lang, "companies_title")}</h1>
+    <p class="sub">{tr(lang, "companies_intro")}</p>
+  </header>
+  <ul class="co-grid">
+    {
+      companies.map(([key, c]) => (
+        <li>
+          <a href={href(lang, "company", key)}>
+            <Avatar name={c.name} companyKey={key} size={40} />
+            <span>
+              <strong>{c.name}</strong>
+              <small>{tr(lang, "company_open_n", { n: c.n })}</small>
+            </span>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</div>
+
+<style>
+  .co-grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: var(--space-3);
+  }
+  .co-grid a {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    color: var(--ink);
+    text-decoration: none;
+    transition: border-color 0.2s var(--ease-out);
+  }
+  .co-grid a:hover {
+    border-color: var(--ink-3);
+  }
+  .co-grid span {
+    display: grid;
+  }
+  .co-grid small {
+    color: var(--ink-2);
+    font-size: var(--step--1);
+  }
+</style>

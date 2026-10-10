@@ -92,7 +92,7 @@ const verdictOf = (code: string): Verdict | null => job.verdicts[code]?.v ?? nul
     <div>
       <h1>{job.title}</h1>
       <p class="jp-company">
-        {job.company}
+        <a href={href(lang, "company", job.company_key)}>{job.company}</a>
         {isNew(job.seen_at) && <span class="new-badge">{tr(lang, "new_badge")}</span>}
       </p>
     </div>

@@ -279,10 +279,16 @@
   color: var(--ink-2);
   font-size: var(--step-0);
 }
-.job-meta span + span::before {
+.job-meta > * + *::before {
   content: "·";
   margin: 0 0.45rem;
   color: var(--ink-3);
+}
+.job-meta a.company {
+  text-decoration: none;
+}
+.job-meta a.company:hover {
+  text-decoration: underline;
 }
 .job-meta .company {
   color: var(--ink);
@@ -417,6 +423,30 @@
   color: var(--danger);
 }
 
+.field-links {
+  margin-top: var(--space-6);
+}
+.field-links h2 {
+  font-size: var(--step-1);
+  margin-bottom: var(--space-3);
+}
+.field-links ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.field-links a {
+  display: inline-block;
+  padding: 0.4rem 0.85rem;
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+  background: var(--surface);
+  text-decoration: none;
+  font-size: var(--step-0);
+}
 .empty {
   padding: var(--space-7) 0;
   display: grid;

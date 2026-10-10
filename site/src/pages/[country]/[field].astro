@@ -1,0 +1,39 @@
+---
+import FieldPage from "../../components/FieldPage.astro";
+import Layout from "../../layouts/Layout.astro";
+import { type Country, countries, countryName, jobsFor, site } from "../../data";
+import { labels, tr } from "../../i18n";
+
+export function getStaticPaths() {
+  return countries.flatMap((country) =>
+    Object.keys(labels.family)
+      .filter(
+        (f) =>
+          f !== "other" &&
+          jobsFor(country.code).some((j) => j.family === f && j.verdict !== "unclear"),
+      )
+      .map((field) => ({
+        params: { country: country.code.toLowerCase(), field },
+        props: { country, field },
+      })),
+  );
+}
+const { country, field } = Astro.props as { country: Country; field: string };
+const lang = "en";
+const vars = {
+  field: labels.family[field as keyof typeof labels.family][lang].toLowerCase(),
+  country: countryName(country, lang),
+  country_en: country.fr_en,
+  product: site.product,
+};
+---
+
+<Layout
+  lang={lang}
+  page="field"
+  country={`${country.code.toLowerCase()}/${field}`}
+  title={tr(lang, "field_meta", vars)}
+  description={tr(lang, "field_title", vars)}
+>
+  <FieldPage country={country} family={field} lang={lang} />
+</Layout>

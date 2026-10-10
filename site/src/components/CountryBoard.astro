@@ -206,6 +206,23 @@ const sub = tr(lang, "country_sub", {
       </div>
 
       <button type="button" class="btn btn-secondary more" data-more hidden></button>
+
+      <nav class="field-links" aria-label={tr(lang, "browse_fields")}>
+        <h2>{tr(lang, "browse_fields")}</h2>
+        <ul>
+          {
+            families
+              .filter(({ v }) => v !== "other" && jobs.some((j) => j.family === v && j.verdict !== "unclear"))
+              .map(({ v }) => (
+                <li>
+                  <a href={href(lang, "field", `${country.code.toLowerCase()}/${v}`)}>
+                    {labels.family[v as keyof typeof labels.family]?.[lang] ?? v}
+                  </a>
+                </li>
+              ))
+          }
+        </ul>
+      </nav>
     </section>
 
     <aside class="rail">

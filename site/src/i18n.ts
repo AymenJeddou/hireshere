@@ -2,7 +2,7 @@
 export type Lang = "en" | "fr";
 export const LANGS: Lang[] = ["en", "fr"];
 
-export type Page = "home" | "country" | "how" | "sources" | "job" | "saved";
+export type Page = "home" | "country" | "how" | "sources" | "job" | "saved" | "company" | "companies" | "field";
 
 const SLUGS: Record<Page, Record<Lang, string>> = {
   home: { en: "/", fr: "/fr" },
@@ -11,11 +11,16 @@ const SLUGS: Record<Page, Record<Lang, string>> = {
   sources: { en: "/sources", fr: "/fr/sources" },
   job: { en: "/jobs/", fr: "/fr/jobs/" },
   saved: { en: "/my-jobs", fr: "/fr/mes-offres" },
+  company: { en: "/companies/", fr: "/fr/entreprises/" },
+  companies: { en: "/companies", fr: "/fr/entreprises" },
+  field: { en: "/", fr: "/fr/" },
 };
 
 export function href(lang: Lang, page: Page, country?: string): string {
   if (page === "country") return SLUGS.country[lang] + (country ?? "").toLowerCase();
-  if (page === "job") return SLUGS.job[lang] + (country ?? "");
+  if (page === "job" || page === "company") return SLUGS[page][lang] + (country ?? "");
+  // Field pages: country is passed as "tn/engineering".
+  if (page === "field") return SLUGS.field[lang] + (country ?? "");
   return SLUGS[page][lang];
 }
 
@@ -223,6 +228,21 @@ const en = {
   sort_new: "Newest first",
   only_salary: "Shows salary",
   view_details: "Details",
+  field_title: "Remote {field} jobs open to people in {country}",
+  field_meta: "Remote {field} jobs open to {country} | {product}",
+  field_intro: "{n} remote {field} jobs whose postings are open or likely open to candidates in {country}, checked daily from companies’ own hiring pages.",
+  field_all: "See all {n} jobs for {country}, every field",
+  browse_fields: "Browse by field",
+  companies_title: "Companies hiring remotely",
+  companies_intro: "Companies whose current postings are open or likely open to North Africa. Updated daily.",
+  company_open_n: "{n} open roles",
+  company_meta: "{company}: remote jobs open to North Africa | {product}",
+  company_intro: "{n} current remote roles at {company} checked for Tunisia, Morocco, Algeria and Egypt.",
+  website: "Website",
+  open_to: "Open or likely open to",
+  contracts: "Contracts",
+  jobs_at: "Jobs at {company}",
+  nav_companies: "Companies",
 };
 
 const fr: typeof en = {
@@ -361,6 +381,21 @@ const fr: typeof en = {
   sort_new: "Plus récentes",
   only_salary: "Salaire indiqué",
   view_details: "Détails",
+  field_title: "Offres en télétravail en {field} ouvertes aux candidats {country_en}",
+  field_meta: "Télétravail en {field} ouvert aux candidats {country_en} | {product}",
+  field_intro: "{n} offres en télétravail en {field} dont l’annonce est ouverte ou probablement ouverte aux candidats {country_en}, vérifiées chaque jour sur les pages carrières des entreprises.",
+  field_all: "Voir les {n} offres pour {country}, tous métiers",
+  browse_fields: "Parcourir par métier",
+  companies_title: "Entreprises qui recrutent à distance",
+  companies_intro: "Entreprises dont les offres actuelles sont ouvertes ou probablement ouvertes à l’Afrique du Nord. Mis à jour chaque jour.",
+  company_open_n: "{n} postes ouverts",
+  company_meta: "{company} : offres en télétravail ouvertes à l’Afrique du Nord | {product}",
+  company_intro: "{n} postes en télétravail chez {company}, vérifiés pour la Tunisie, le Maroc, l’Algérie et l’Égypte.",
+  website: "Site web",
+  open_to: "Ouvert ou probablement ouvert à",
+  contracts: "Contrats",
+  jobs_at: "Offres chez {company}",
+  nav_companies: "Entreprises",
 };
 
 export const strings = { en, fr };

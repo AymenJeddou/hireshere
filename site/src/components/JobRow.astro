@@ -49,7 +49,7 @@ const titleId = `t-${job.id.replace(/[^a-zA-Z0-9]/g, "-")}`;
           {fresh && <span class="new-badge">{tr(lang, "new_badge")}</span>}
         </h3>
         <p class="job-meta">
-          <span class="company">{job.company}</span>
+          <a class="company" href={href(lang, "company", job.company_key)}>{job.company}</a>
           {meta.map((m) => <span>{m}</span>)}
           <span>
             <time datetime={job.seen}>{tr(lang, "first_seen", { date: formatDate(job.seen, lang) })}</time>

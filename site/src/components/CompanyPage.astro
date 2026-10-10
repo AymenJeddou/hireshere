@@ -1,0 +1,187 @@
+---
+import "../styles/board.css";
+import { companyJobs, countries, countryName, type JobRecord } from "../data";
+import { href, labels, type Lang, tr } from "../i18n";
+import Avatar from "./Avatar.astro";
+import Lamp from "./Lamp.astro";
+
+interface Props {
+  companyKey: string;
+  lang: Lang;
+}
+const { companyKey, lang } = Astro.props;
+const jobs = companyJobs(companyKey).sort((a, b) => b.seen_at.localeCompare(a.seen_at));
+const name = jobs[0].company;
+const website = jobs.find((j) => j.website)?.website ?? "";
+const openFor = (j: JobRecord, code: string) => {
+  const v = j.verdicts[code]?.v;
+  return v === "eligible" || v === "likely";
+};
+const named = [...new Set(jobs.flatMap((j) => j.named))].filter((c) =>
+  countries.some((x) => x.code === c),
+);
+const contracts = [...new Set(jobs.map((j) => j.engagement).filter((e) => e !== "unclear"))];
+const best = (j: JobRecord) =>
+  (["eligible", "likely", "unclear"] as const).find((v) =>
+    Object.values(j.verdicts).some((x) => x.v === v),
+  )!;
+---
+
+<div class="wrap company-page">
+  <header class="cp-head">
+    <Avatar name={name} companyKey={companyKey} size={64} />
+    <div>
+      <h1>{name}</h1>
+      <p class="sub">{tr(lang, "company_intro", { n: jobs.length, company: name })}</p>
+      {
+        website && (
+          <p>
+            <a href={website} rel="noopener" target="_blank">
+              {tr(lang, "website")}: {new URL(website).hostname.replace(/^www\./, "")}
+            </a>
+          </p>
+        )
+      }
+    </div>
+  </header>
+
+  <dl class="cp-stats">
+    {
+      countries.map((c) => (
+        <div>
+          <dt>{countryName(c, lang)}</dt>
+          <dd>
+            {tr(lang, "company_open_n", { n: jobs.filter((j) => openFor(j, c.code)).length })}
+          </dd>
+        </div>
+      ))
+    }
+  </dl>
+  {
+    named.length > 0 && (
+      <p class="cp-hires">
+        {tr(lang, "hires_here", {
+          countries: named
+            .map((c) => countryName(countries.find((x) => x.code === c)!, lang))
+            .join(", "),
+        })}
+      </p>
+    )
+  }
+  {
+    contracts.length > 0 && (
+      <p class="cp-contracts">
+        {tr(lang, "contracts")}:{" "}
+        {contracts
+          .map((e) => labels.engagement[e as keyof typeof labels.engagement]?.[lang])
+          .join(", ")}
+      </p>
+    )
+  }
+
+  <h2 class="cp-h2">{tr(lang, "jobs_at", { company: name })}</h2>
+  <ul class="cp-jobs">
+    {
+      jobs.map((j) => {
+        const v = best(j);
+        return (
+          <li class={`v-${v}`}>
+            <a href={href(lang, "job", j.slug)}>{j.title}</a>
+            <span class="verdict-tag">
+              <Lamp verdict={v} />
+              {labels.verdict[v][lang]}
+            </span>
+            <span class="cp-scope">{j.scope}</span>
+          </li>
+        );
+      })
+    }
+  </ul>
+</div>
+
+<style>
+  .company-page {
+    padding-block: var(--space-6);
+  }
+  .cp-head {
+    display: flex;
+    gap: var(--space-4);
+    align-items: flex-start;
+  }
+  .cp-head h1 {
+    font-size: var(--step-3);
+  }
+  .cp-head .sub {
+    color: var(--ink-2);
+    margin: var(--space-2) 0;
+  }
+  .cp-stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--space-3);
+    margin: var(--space-6) 0 var(--space-4);
+  }
+  .cp-stats div {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: var(--space-3) var(--space-4);
+  }
+  .cp-stats dt {
+    font-size: var(--step--1);
+    color: var(--ink-2);
+    font-weight: 600;
+  }
+  .cp-stats dd {
+    margin: 0;
+    font-size: var(--step-1);
+    font-weight: 700;
+  }
+  .cp-stats .num {
+    font-size: var(--step-2);
+    font-weight: 700;
+    margin-inline-end: 0.35rem;
+  }
+  .cp-sub {
+    color: var(--ink-3);
+    font-size: var(--step--1);
+  }
+  .cp-hires {
+    color: var(--go);
+    font-weight: 600;
+  }
+  .cp-contracts {
+    color: var(--ink-2);
+    font-size: var(--step-0);
+    margin-top: var(--space-2);
+  }
+  .cp-h2 {
+    font-size: var(--step-2);
+    margin: var(--space-6) 0 var(--space-3);
+  }
+  .cp-jobs {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    max-width: 880px;
+  }
+  .cp-jobs li {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--space-1) var(--space-3);
+    padding: var(--space-3) 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .cp-jobs a {
+    font-weight: 600;
+  }
+  .cp-scope {
+    color: var(--ink-3);
+    font-size: var(--step--1);
+  }
+  @media (max-width: 700px) {
+    .cp-stats {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+</style>
