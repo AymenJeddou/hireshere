@@ -1,9 +1,9 @@
 import type { Lang } from "../i18n";
-import { card, type Ctx, loadJobs, type SJob, verdictsFor } from "./cards";
+import { card, type Ctx, loadJobs, type SJob, verdictsFor, when } from "./cards";
 import { remember, visitorCountry } from "./country";
 import { languagesFit, loadProfile } from "./profile";
 import { initSaveButtons } from "./saved";
-// Job search: one country select, facets with live counts, URL state, pagination, alerts form.
+// Job search: one country select, facets with live counts, URL state, pagination.
 const PAGE = 20;
 const MULTI = ["f", "s", "e", "l"] as const;
 type V = "eligible" | "likely" | "unclear";
@@ -58,7 +58,7 @@ export async function initSearch(): Promise<void> {
     job,
     vs: [],
     q: `${job.title} ${job.company}`.toLowerCase(),
-    days: Math.max(0, Math.floor((now - Date.parse(job.seen_at)) / 86400000)),
+    days: Math.max(0, Math.floor((now - Date.parse(when(job))) / 86400000)),
   }));
   let scored = "-";
   const score = (code: string) => {
@@ -244,8 +244,8 @@ export async function initSearch(): Promise<void> {
     const matches = cards.filter((k) => passes(k, st));
     matches.sort((a, b) =>
       st.sort === "new"
-        ? b.job.seen_at.localeCompare(a.job.seen_at)
-        : best(a, st) - best(b, st) || b.job.seen_at.localeCompare(a.job.seen_at),
+        ? when(b.job).localeCompare(when(a.job))
+        : best(a, st) - best(b, st) || when(b.job).localeCompare(when(a.job)),
     );
     const pages = Math.max(1, Math.ceil(matches.length / PAGE));
     page = Math.min(page, pages);
@@ -326,39 +326,6 @@ export async function initSearch(): Promise<void> {
   root.querySelector("[data-open-filters]")?.addEventListener("click", (ev) => {
     ev.preventDefault();
     aside.classList.toggle("open");
-  });
-
-  // ---- alerts form
-  root.querySelector<HTMLFormElement>(".alerts-form")?.addEventListener("submit", async (ev) => {
-    ev.preventDefault();
-    const f = ev.currentTarget as HTMLFormElement;
-    const msg = f.querySelector<HTMLElement>(".form-msg")!;
-    const email = f.elements.namedItem("email") as HTMLInputElement;
-    if (!email.value || !email.validity.valid) {
-      msg.className = "form-msg err";
-      msg.textContent = String(t.alertsInvalid);
-      email.setAttribute("aria-invalid", "true");
-      email.focus();
-      return;
-    }
-    email.removeAttribute("aria-invalid");
-    const button = f.querySelector<HTMLButtonElement>('button[type="submit"]')!;
-    const label = button.textContent;
-    button.disabled = true;
-    button.textContent = String(t.sending);
-    try {
-      const res = await fetch(f.action, { method: "POST", body: new FormData(f) });
-      if (!res.ok) throw new Error(String(res.status));
-      msg.className = "form-msg ok";
-      msg.textContent = String(t.alertsOk);
-      f.reset();
-    } catch {
-      msg.className = "form-msg err";
-      msg.textContent = String(t.alertsFailed);
-    } finally {
-      button.disabled = false;
-      button.textContent = label;
-    }
   });
 
   apply(false);

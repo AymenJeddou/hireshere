@@ -1,0 +1,91 @@
+---
+import { world } from "../data";
+import { labels, type Lang, tr } from "../i18n";
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const countries = world(lang);
+const msgs = {
+  sending: tr(lang, "sending"),
+  ok: tr(lang, "alerts_ok"),
+  failed: tr(lang, "alerts_failed"),
+  invalid: tr(lang, "alerts_invalid"),
+};
+---
+
+<section class="panel alerts" aria-label={tr(lang, "alerts_title")}>
+  <h2>{tr(lang, "alerts_title")}</h2>
+  <p>{tr(lang, "alerts_privacy")}</p>
+  <form class="alerts-form" method="post" action="/api/subscribe" novalidate data-msgs={JSON.stringify(msgs)}>
+    <input type="hidden" name="lang" value={lang} />
+    <div class="hp" aria-hidden="true">
+      <label>Website <input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
+    </div>
+    <label class="field">
+      <span>{tr(lang, "alerts_email")}</span>
+      <input type="email" name="email" required autocomplete="email" inputmode="email" />
+    </label>
+    <label class="field">
+      <span>{tr(lang, "alerts_country")}</span>
+      <select name="country" data-alert-country>
+        {countries.map((c) => <option value={c.code}>{c.name}</option>)}
+      </select>
+    </label>
+    <label class="field">
+      <span>{tr(lang, "alerts_family")}</span>
+      <select name="family">
+        <option value="">{tr(lang, "alerts_all")}</option>
+        {Object.entries(labels.family).map(([k, l]) => <option value={k}>{l[lang]}</option>)}
+      </select>
+    </label>
+    <button class="btn btn-primary" type="submit">{tr(lang, "alerts_submit")}</button>
+    <p class="form-msg" role="status" aria-live="polite"></p>
+  </form>
+</section>
+
+<script>
+  import { visitorCountry } from "../scripts/country";
+
+  for (const f of document.querySelectorAll<HTMLFormElement>(".alerts-form")) {
+    const t = JSON.parse(f.dataset.msgs!);
+    const country = f.querySelector<HTMLSelectElement>("[data-alert-country]")!;
+    visitorCountry((c) => [...country.options].some((o) => o.value === c)).then((c) => {
+      if (c) country.value = c;
+    });
+
+    f.addEventListener("submit", async (ev) => {
+      ev.preventDefault();
+      const msg = f.querySelector<HTMLElement>(".form-msg")!;
+      const email = f.elements.namedItem("email") as HTMLInputElement;
+      if (!email.value || !email.validity.valid) {
+        msg.className = "form-msg err";
+        msg.textContent = t.invalid;
+        email.setAttribute("aria-invalid", "true");
+        email.focus();
+        return;
+      }
+      email.removeAttribute("aria-invalid");
+      const button = f.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+      const label = button.textContent;
+      button.disabled = true;
+      button.textContent = t.sending;
+      try {
+        const res = await fetch(f.action, { method: "POST", body: new FormData(f) });
+        if (!res.ok) throw new Error(String(res.status));
+        msg.className = "form-msg ok";
+        msg.textContent = t.ok;
+        const keep = country.value;
+        f.reset();
+        country.value = keep;
+      } catch {
+        msg.className = "form-msg err";
+        msg.textContent = t.failed;
+      } finally {
+        button.disabled = false;
+        button.textContent = label;
+      }
+    });
+  }
+</script>

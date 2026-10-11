@@ -1,6 +1,7 @@
 ---
-import { jobs, site, world } from "../data";
+import { jobs, site } from "../data";
 import { href, labels, languageName, type Lang, tr, VERDICTS } from "../i18n";
+import Alerts from "./Alerts.astro";
 import Lamp from "./Lamp.astro";
 import SearchBand from "./SearchBand.astro";
 
@@ -36,13 +37,8 @@ const i18n = {
   noneTitle: tr(lang, "results_none_title"),
   prev: tr(lang, "prev"),
   next: tr(lang, "next"),
-  sending: tr(lang, "sending"),
-  alertsOk: tr(lang, "alerts_ok"),
-  alertsFailed: tr(lang, "alerts_failed"),
-  alertsInvalid: tr(lang, "alerts_invalid"),
   remove: tr(lang, "remove"),
 };
-const countries = world(lang);
 ---
 
 <div class="search-page" data-search data-lang={lang} data-updated={site.updated} data-i18n={JSON.stringify(i18n)}>
@@ -94,35 +90,6 @@ const countries = world(lang);
         </fieldset>
       </form>
 
-      <section class="panel alerts" aria-labelledby="alerts-title">
-        <h2 id="alerts-title">{tr(lang, "alerts_title")}</h2>
-        <p>{tr(lang, "alerts_privacy")}</p>
-        <form class="alerts-form" method="post" action="/api/subscribe" novalidate>
-          <input type="hidden" name="lang" value={lang} />
-          <div class="hp" aria-hidden="true">
-            <label>Website <input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
-          </div>
-          <label class="field">
-            <span>{tr(lang, "alerts_email")}</span>
-            <input type="email" name="email" required autocomplete="email" inputmode="email" />
-          </label>
-          <label class="field">
-            <span>{tr(lang, "alerts_country")}</span>
-            <select name="country" data-alert-country>
-              {countries.map((c) => <option value={c.code}>{c.name}</option>)}
-            </select>
-          </label>
-          <label class="field">
-            <span>{tr(lang, "alerts_family")}</span>
-            <select name="family">
-              <option value="">{tr(lang, "alerts_all")}</option>
-              {Object.entries(labels.family).map(([k, l]) => <option value={k}>{l[lang]}</option>)}
-            </select>
-          </label>
-          <button class="btn btn-primary" type="submit">{tr(lang, "alerts_submit")}</button>
-          <p class="form-msg" role="status" aria-live="polite"></p>
-        </form>
-      </section>
     </aside>
 
     <section class="list" aria-labelledby="count">
@@ -161,6 +128,7 @@ const countries = world(lang);
         <button type="button" class="btn btn-secondary" data-clear>{tr(lang, "clear_all")}</button>
       </div>
       <nav class="pager" aria-label="Pagination" data-pager></nav>
+      <Alerts lang={lang} />
     </section>
   </div>
 </div>

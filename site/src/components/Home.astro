@@ -4,6 +4,7 @@ import { Image } from "astro:assets";
 import companies from "../data/companies.json";
 import { jobs, site, totalBoards } from "../data";
 import { href, type Lang, LOCALE, tr } from "../i18n";
+import Alerts from "./Alerts.astro";
 import homeOffice from "../assets/photos/home-office.jpg";
 import cafe from "../assets/photos/cafe.jpg";
 import office from "../assets/photos/office.jpg";
@@ -74,6 +75,7 @@ const t = {
     <ol class="cards plain-links" data-latest>
       {jobs.slice(0, 4).map((j) => <li><a href={href(lang, "job", j.slug)}>{j.title}</a> · {j.company}</li>)}
     </ol>
+    <Alerts lang={lang} />
   </div>
 </section>
 
