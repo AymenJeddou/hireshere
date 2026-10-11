@@ -41,7 +41,8 @@ export async function initSearch(): Promise<void> {
   const form = root.querySelector<HTMLFormElement>("[data-filters]")!;
   const band = root.querySelector<HTMLFormElement>("[data-searchbar]")!;
   const bandQ = band.elements.namedItem("q") as HTMLInputElement;
-  const bandC = band.elements.namedItem("c") as HTMLSelectElement;
+  // The country lives in the site header ("Your country"), shared by every page.
+  const bandC = document.querySelector<HTMLSelectElement>("[data-country]")!;
   const sortSel = root.querySelector<HTMLSelectElement>("[data-sort]")!;
   const list = root.querySelector<HTMLOListElement>("[data-cards]")!;
   const pager = root.querySelector<HTMLElement>("[data-pager]")!;
@@ -268,6 +269,17 @@ export async function initSearch(): Promise<void> {
         ? fill(String(t.openTo), { places: place })
         : String(t.openAny)
       : `${st.v.map((v) => label[v]).join(" / ")} · ${place}`;
+    // The band heading names the visitor's country: "Remote jobs open to <Tunisia>".
+    const h1 = root!.querySelector<HTMLElement>(".band h1");
+    if (h1) {
+      if (st.c) {
+        const [pre, post] = String(t.title).split("{country}");
+        const span = document.createElement("span");
+        span.className = "place";
+        span.textContent = names[st.c];
+        h1.replaceChildren(pre, span, post ?? "");
+      } else h1.textContent = String(t.titleAny);
+    }
     const empty = root!.querySelector<HTMLElement>("[data-empty]")!;
     empty.hidden = matches.length > 0;
     root!.querySelector("[data-empty-title]")!.textContent = st.q

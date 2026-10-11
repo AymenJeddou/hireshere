@@ -23,6 +23,8 @@ const groupsList = [
   { key: "l", title: tr(lang, "filter_language"), items: languages.map((v) => [v, languageName(v, lang)]) },
 ];
 const i18n = {
+  title: tr(lang, "search_open_to"),
+  titleAny: tr(lang, "search_open_any"),
   jobsN: tr(lang, "jobs_n"),
   jobsN1: tr(lang, "jobs_n1"),
   openTo: tr(lang, "jobs_open_to"),
@@ -44,7 +46,7 @@ const countries = world(lang);
 ---
 
 <div class="search-page" data-search data-lang={lang} data-updated={site.updated} data-i18n={JSON.stringify(i18n)}>
-  <SearchBand lang={lang} title={tr(lang, "search_title")} />
+  <SearchBand lang={lang} title={tr(lang, "search_open_any")} />
 
   <div class="wrap results">
     <aside class="filters" id="filters" aria-label={tr(lang, "filters_title")}>

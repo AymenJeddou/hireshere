@@ -1,0 +1,15 @@
+---
+// The mark: a location pin with a check inside ("you can apply from here").
+interface Props {
+  light?: boolean;
+}
+const { light = false } = Astro.props;
+---
+
+<span class:list={["logo", { light }]}>
+  <svg width="28" height="32" viewBox="0 0 32 36" aria-hidden="true">
+    <path d="M16 1C7.7 1 1 7.5 1 15.6 1 26.4 16 35 16 35s15-8.6 15-19.4C31 7.5 24.3 1 16 1z" fill={light ? "#fff" : "#0b3a53"}></path>
+    <path d="M9.6 16l4.5 4.5 8.6-9" stroke="#ff7a59" stroke-width="3.8" fill="none" stroke-linecap="round" stroke-linejoin="round"></path>
+  </svg>
+  <span>Hires<em>Here</em></span>
+</span>

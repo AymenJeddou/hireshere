@@ -1,91 +1,197 @@
 ---
+import { readdirSync } from "node:fs";
+import { Image } from "astro:assets";
+import companies from "../data/companies.json";
 import { jobs, site, totalBoards } from "../data";
 import { href, type Lang, LOCALE, tr } from "../i18n";
-import SearchBand from "./SearchBand.astro";
+import homeOffice from "../assets/photos/home-office.jpg";
+import cafe from "../assets/photos/cafe.jpg";
+import office from "../assets/photos/office.jpg";
 
 interface Props {
   lang: Lang;
 }
 const { lang } = Astro.props;
 const num = (n: number) => n.toLocaleString(LOCALE[lang]);
-const steps = [
-  ["home_how_1_t", "home_how_1"],
-  ["home_how_2_t", "home_how_2"],
-  ["home_how_3_t", "home_how_3"],
-] as const;
+// Logo strip: the companies with the most open jobs that have a real logo file.
+const logos = new Map(readdirSync(`${process.cwd()}/public/logos`).map((f) => [f.replace(/\.[^.]+$/, ""), f]));
+const strip = Object.entries(companies as Record<string, { name: string; n: number }>)
+  .filter(([k]) => logos.has(k))
+  .sort((a, b) => b[1].n - a[1].n)
+  .slice(0, 10)
+  .map(([k, c]) => ({ key: k, name: c.name, file: logos.get(k)! }));
+const [pre, post] = tr(lang, "hero_live").split("{n}");
+const t = {
+  live: tr(lang, "hero_live"),
+  liveAny: tr(lang, "hero_live_any"),
+  youAreIn: tr(lang, "you_are_in"),
+  openTo: tr(lang, "jobs_open_to_c"),
+  anywhere: tr(lang, "hero_anywhere"),
+  locale: LOCALE[lang],
+};
 ---
 
-<SearchBand lang={lang} title={tr(lang, "home_title")} sub={tr(lang, "home_lede")} popular />
-
-<div class="wrap home">
-  <div class="stats">
-    <div class="stat"><b>{num(site.jobs)}</b><span>{tr(lang, "stat_jobs")}</span></div>
-    <div class="stat"><b>{num(totalBoards())}</b><span>{tr(lang, "stat_companies")}</span></div>
-    <div class="stat"><b>{num(site.open_jobs)}</b><span>{tr(lang, "stat_postings")}</span></div>
+<section class="hero" data-home data-lang={lang} data-updated={site.updated} data-t={JSON.stringify(t)}>
+  <div class="wrap hero-grid">
+    <div>
+      <h1>{tr(lang, "hero_title_pre")} <span class="place" data-place>{tr(lang, "hero_anywhere")}</span></h1>
+      <p class="hero-lede">{tr(lang, "hero_lede", { postings: num(site.open_jobs), companies: num(totalBoards()) })}</p>
+      <form class="searchbox" role="search" method="get" action={href(lang, "search")}>
+        <label>
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-4-4"></path></svg>
+          <span class="sr-only">{tr(lang, "search_ph")}</span>
+          <input type="search" name="q" placeholder={tr(lang, "search_ph")} autocomplete="off" />
+        </label>
+        <button class="btn btn-accent" type="submit">{tr(lang, "search_btn")}</button>
+      </form>
+      <p class="live"><i aria-hidden="true"></i><span data-live>{tr(lang, "hero_live_any", { n: num(site.jobs) })}</span></p>
+    </div>
+    <div class="collage" aria-hidden="true">
+      <div class="photo p1"><Image src={homeOffice} alt="" widths={[480, 800]} sizes="(max-width: 900px) 90vw, 520px" loading="eager" /></div>
+      <div class="photo p2"><Image src={cafe} alt="" widths={[240, 400]} sizes="200px" /></div>
+      <div class="float mapcard"><div class="minimap" data-minimap></div><p data-you-are-in></p></div>
+      <div class="float jobcard" data-hero-job hidden></div>
+    </div>
   </div>
+</section>
 
-  <section class="sec" aria-labelledby="latest">
-    <h2 id="latest">{tr(lang, "latest_jobs")}</h2>
-    <!-- Without JavaScript: plain links. The script shows the latest jobs open to the visitor's country. -->
-    <ol class="cards plain-links" data-latest data-lang={lang} data-updated={site.updated}>
-      {
-        jobs.slice(0, 4).map((j) => (
-          <li>
-            <a href={href(lang, "job", j.slug)}>{j.title}</a> · {j.company}
-          </li>
-        ))
-      }
-    </ol>
-    <p class="more-link"><a class="btn btn-secondary" href={href(lang, "search")}>{tr(lang, "see_all_n", { n: num(site.jobs) })}</a></p>
-  </section>
-
-  <section class="sec" aria-labelledby="how">
-    <h2 id="how">{tr(lang, "home_how_title")}</h2>
-    <ol class="howgrid">
-      {
-        steps.map(([title, body]) => (
-          <li class="panel">
-            <h3>{tr(lang, title)}</h3>
-            <p>{tr(lang, body)}</p>
-          </li>
-        ))
-      }
-    </ol>
-    <p class="more-link"><a href={href(lang, "how")}>{tr(lang, "home_more")}</a></p>
-  </section>
+<div class="strip">
+  <div class="wrap">
+    <p>{tr(lang, "companies_strip", { n: num(totalBoards()) })}</p>
+    <ul class="strip-logos">
+      {strip.map((c) => <li><a href={href(lang, "company", c.key)} title={c.name}><img src={`/logos/${c.file}`} alt={c.name} width="30" height="30" loading="lazy" /></a></li>)}
+    </ul>
+  </div>
 </div>
+
+<section class="sec" aria-labelledby="latest">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2 id="latest">{tr(lang, "latest_for_you")}</h2>
+      <a href={href(lang, "search")}>{tr(lang, "see_all")} <span class="flip">→</span></a>
+    </div>
+    <!-- Without JavaScript: plain links. The script shows the latest jobs open to the visitor's country. -->
+    <ol class="cards plain-links" data-latest>
+      {jobs.slice(0, 4).map((j) => <li><a href={href(lang, "job", j.slug)}>{j.title}</a> · {j.company}</li>)}
+    </ol>
+  </div>
+</section>
+
+<section class="mapband" aria-labelledby="map-title">
+  <div class="wrap mapband-grid">
+    <div>
+      <h2 id="map-title">{tr(lang, "map_title")}</h2>
+      <p>{tr(lang, "map_body")}</p>
+      <div class="nums">
+        <div><b data-n-you>{num(site.jobs)}</b><span data-n-you-label>{tr(lang, "remote_checked")}</span></div>
+        <div><b>{num(site.jobs)}</b><span>{tr(lang, "remote_checked")}</span></div>
+        <div><b>{num(Object.keys(site.world).length)}</b><span>{tr(lang, "countries_n")}</span></div>
+      </div>
+    </div>
+    <div>
+      <div class="bigmap" data-bigmap></div>
+      <p class="map-legend">
+        <span><i style="background:#ff7a59"></i>{tr(lang, "map_you")}</span>
+        <span><i style="background:#1d5670"></i>{tr(lang, "map_fewer")}</span>
+        <span><i style="background:#7fd0c7"></i>{tr(lang, "map_more")}</span>
+        <span>{tr(lang, "map_hover")}</span>
+      </p>
+    </div>
+  </div>
+</section>
+
+<section class="sec story" aria-labelledby="story">
+  <div class="wrap story-grid">
+    <div class="photo story-photo"><Image src={office} alt="" widths={[480, 960]} sizes="(max-width: 900px) 90vw, 560px" /></div>
+    <div>
+      <h2 id="story">{tr(lang, "story_title")}</h2>
+      <p>{tr(lang, "story_body")}</p>
+      <p class="quote-big">{tr(lang, "story_quote")}</p>
+      <p><a class="btn btn-primary" href={href(lang, "about")}>{tr(lang, "our_story")}</a></p>
+    </div>
+  </div>
+</section>
 
 <script>
   import type { Lang } from "../i18n";
-  import { card, groupFor, loadJobs } from "../scripts/cards";
+  import { card, cardPill, esc, groupFor, loadJobs, type SJob } from "../scripts/cards";
   import { remember, visitorCountry } from "../scripts/country";
   import { initSaveButtons } from "../scripts/saved";
+  import { colourMap, loadWorld, zoomTo } from "../scripts/worldmap";
 
-  const list = document.querySelector<HTMLOListElement>("[data-latest]")!;
-  const sel = document.querySelector<HTMLSelectElement>("[data-searchbar] select[name=c]")!;
+  const root = document.querySelector<HTMLElement>("[data-home]")!;
+  const t = JSON.parse(root.dataset.t!);
+  const lang = root.dataset.lang as Lang;
+  const updated = root.dataset.updated ?? "";
+  const sel = document.querySelector<HTMLSelectElement>("[data-country]")!;
   const names = Object.fromEntries([...sel.options].filter((o) => o.value).map((o) => [o.value, o.text]));
-  const lang = list.dataset.lang as Lang;
-  sel.addEventListener("change", () => remember(sel.value));
-  Promise.all([loadJobs(lang), visitorCountry((c) => c in names)]).then(([jobs, code]) => {
-    sel.value = code;
-    // Latest jobs with a verbatim quote open or likely open here, one per company, newest first.
+  const fmt = (n: number) => n.toLocaleString(t.locale);
+  const fill = (s: string, v: Record<string, string>) => s.replace(/\{(\w+)\}/g, (_, k) => v[k] ?? "");
+
+  let all: SJob[] = [];
+  let counts: Record<string, number> = {};
+  const open = (j: SJob, code: string) => {
+    const g = groupFor(j.groups, code);
+    return !!g && (g.v === "eligible" || g.v === "likely");
+  };
+
+  async function show(code: string) {
+    root.querySelector("[data-place]")!.textContent = code ? names[code] : t.anywhere;
+    const n = code ? counts[code] ?? 0 : all.length;
+    root.querySelector("[data-live]")!.textContent = code
+      ? fill(t.live, { n: fmt(n), country: names[code] })
+      : fill(t.liveAny, { n: fmt(all.length) });
+    document.querySelector("[data-n-you]")!.textContent = fmt(n);
+    document.querySelector("[data-n-you]")!.parentElement!.hidden = !code;
+    document.querySelector("[data-n-you-label]")!.textContent = code ? fill(t.openTo, { country: names[code] }) : "";
+    root.querySelector("[data-you-are-in]")!.textContent = code ? fill(t.youAreIn, { country: names[code] }) : "";
+
+    // Latest jobs: open (or likely open) here, with a verbatim quote, one per company, newest first.
+    // Companies with a real logo first; jobs keep their newest-first order otherwise.
     const seen = new Set<string>();
-    const latest = jobs
-      .filter((j) => {
-        const g = code ? groupFor(j.groups, code) : j.groups[0];
-        return j.quote && g && (g.v === "eligible" || g.v === "likely");
-      })
+    const latest = all
+      .filter((j) => j.quote && (code ? open(j, code) : true))
+      .sort((a, b) => Number(!!b.logo) - Number(!!a.logo))
       .filter((j) => !seen.has(j.company_key) && seen.add(j.company_key))
       .slice(0, 4);
-    if (!latest.length) return;
-    list.classList.remove("plain-links");
-    list.innerHTML = latest.map((j) => card(j, { lang, code, names, updated: list.dataset.updated ?? "" })).join("");
-    initSaveButtons(list);
+    const list = document.querySelector<HTMLOListElement>("[data-latest]")!;
+    if (latest.length) {
+      list.classList.remove("plain-links");
+      list.innerHTML = latest.map((j) => card(j, { lang, code, names, updated })).join("");
+      initSaveButtons(list);
+      // The hero shows a clear "you can apply" job when there is one.
+      const j = latest.find((x) => (code ? groupFor(x.groups, code)?.v : x.groups[0]?.v) === "eligible") ?? latest[0];
+      const hero = root.querySelector<HTMLElement>("[data-hero-job]")!;
+      hero.innerHTML = `<b>${esc(j.title)}</b><small>${esc(j.company)}</small>${cardPill(j, { lang, code, names, updated })}`;
+      hero.hidden = false;
+    }
+    const world = await loadWorld();
+    const big = document.querySelector<HTMLElement>("[data-bigmap]")!;
+    colourMap(big, world, (c) => ({ fill: c === code ? "#ff7a59" : shade(counts[c] ?? 0), title: `${names[c] ?? c}: ${fmt(counts[c] ?? 0)}` }));
+    const mini = root.querySelector<HTMLElement>("[data-minimap]")!;
+    colourMap(mini, world, (c) => ({ fill: c === code ? "#ff7a59" : "#c9d9e0", title: names[c] ?? c }));
+    if (code) zoomTo(mini, code);
+  }
+  // Fewer to more jobs, on a log scale between the smallest and largest country counts.
+  let lo = 1, hi = 1;
+  function shade(n: number): string {
+    if (!n) return "#123f55";
+    const x = Math.max(0, Math.min(1, Math.log(n / lo) / Math.log(hi / lo || 2)));
+    const mix = (a: number, b: number) => Math.round(a + (b - a) * x);
+    return `rgb(${mix(29, 127)} ${mix(86, 208)} ${mix(112, 199)})`;
+  }
+
+  Promise.all([loadJobs(lang), visitorCountry((c) => c in names)]).then(([jobs, code]) => {
+    all = jobs;
+    for (const c of Object.keys(names)) counts[c] = jobs.reduce((n, j) => n + (open(j, c) ? 1 : 0), 0);
+    const vals = Object.values(counts).filter(Boolean);
+    lo = Math.min(...vals);
+    hi = Math.max(...vals);
+    sel.value = code;
+    show(code);
+  });
+  sel.addEventListener("change", () => {
+    remember(sel.value);
+    show(sel.value);
   });
 </script>
-
-<style>
-  .more-link {
-    margin-top: var(--space-4);
-  }
-</style>

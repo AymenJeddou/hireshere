@@ -1,0 +1,41 @@
+---
+import { countries, countryName, site } from "../data";
+import { href, type Lang, tr } from "../i18n";
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+// Owner's public number (2026-10-11). Telegram channels are private for now: links come later.
+const PHONE = "+216 93 568 670";
+const tel = PHONE.replace(/\s/g, "");
+---
+
+<section class="contact">
+  <div class="wrap">
+    <h1>{tr(lang, "contact_title")}</h1>
+    <p class="about-lede">{tr(lang, "contact_lede")}</p>
+    <ul class="contact-grid">
+      <li class="panel">
+        <svg class="icon big" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3 7l9 6 9-6"></path></svg>
+        <h2>{tr(lang, "contact_email")}</h2>
+        <a href={`mailto:${site.contact}`}>{site.contact}</a>
+      </li>
+      <li class="panel">
+        <svg class="icon big" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"></path></svg>
+        <h2>{tr(lang, "contact_phone")}</h2>
+        <a href={`tel:${tel}`} dir="ltr">{PHONE}</a>
+        <a class="small" href={`https://wa.me/${tel.replace("+", "")}`} rel="noopener" target="_blank">WhatsApp</a>
+      </li>
+      <li class="panel">
+        <svg class="icon big" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 4L3 11l6 2 2 6 3-4 5 4z"></path><path d="M9 13l12-9"></path></svg>
+        <h2>{tr(lang, "contact_telegram")}</h2>
+        <p>{tr(lang, "contact_telegram_note")}</p>
+        <ul class="tg">
+          {countries.map((c) => <li>{countryName(c, lang)} <span class="soon">{tr(lang, "coming_soon")}</span></li>)}
+        </ul>
+      </li>
+    </ul>
+    <p class="about-more"><a href={href(lang, "employers")}>{tr(lang, "contact_employers")}</a></p>
+  </div>
+</section>

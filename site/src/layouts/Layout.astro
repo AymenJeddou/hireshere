@@ -1,10 +1,10 @@
 ---
-import "@fontsource/roboto/400.css";
-import "@fontsource/roboto/500.css";
-import "@fontsource/roboto/700.css";
+import "@fontsource-variable/bricolage-grotesque";
+import "@fontsource-variable/dm-sans";
 import "../styles/global.css";
 import "../styles/components.css";
-import { site } from "../data";
+import Logo from "../components/Logo.astro";
+import { site, world } from "../data";
 import { href, type Lang, LANGS, NATIVE, type Page, tr } from "../i18n";
 
 interface Props {
@@ -17,6 +17,8 @@ interface Props {
 }
 const { lang, page, title, description, country, noindex = false } = Astro.props;
 const others = LANGS.filter((l) => l !== lang);
+// Search and home pages react to the country select themselves; other pages reload with it.
+const live = page === "search" || page === "home";
 const canonical = new URL(href(lang, page, country), Astro.site).toString();
 const alternate = (l: Lang) => new URL(href(l, page, country), Astro.site).toString();
 ---
@@ -50,10 +52,10 @@ const alternate = (l: Lang) => new URL(href(l, page, country), Astro.site).toStr
     <a class="skip" href="#main">{tr(lang, "skip")}</a>
     <header class="site-header">
       <div class="wrap">
-        <a class="brand" href={href(lang, "home")}><span class="brand-mark" aria-hidden="true"></span>{site.product}</a>
+        <a class="brand" href={href(lang, "home")} aria-label={site.product}><Logo /></a>
         <nav class="main-nav" aria-label={tr(lang, "nav_main")}>
           {
-            ([["search", "nav_find"], ["companies", "nav_companies"], ["guide", "nav_guide"], ["how", "nav_how"]] as const).map(([p, k]) => (
+            ([["search", "nav_find"], ["companies", "nav_companies"], ["guide", "nav_guide"], ["about", "nav_about"]] as const).map(([p, k]) => (
               <a href={href(lang, p)} aria-current={page === p || (p === "search" && page === "job") ? "page" : undefined}>
                 {tr(lang, k)}
               </a>
@@ -61,10 +63,13 @@ const alternate = (l: Lang) => new URL(href(l, page, country), Astro.site).toStr
           }
         </nav>
         <div class="header-links">
-          <a class="saved-link" href={href(lang, "saved")} aria-current={page === "saved" ? "page" : undefined}>
-            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9 6.8 19.6l1-5.8L3.5 9.7l5.9-.9z" /></svg>
-            <span class="label">{tr(lang, "my_jobs")}</span>
-          </a>
+          <label class="you">
+            <span class="you-label">{tr(lang, "your_country")}</span>
+            <select data-country data-live={live ? "" : undefined} aria-label={tr(lang, "your_country")}>
+              <option value="">{tr(lang, "all_countries")}</option>
+              {world(lang).map((c) => <option value={c.code}>{c.name}</option>)}
+            </select>
+          </label>
           <span class="lang-switch">
             {
               others.map((l) => (
@@ -74,6 +79,9 @@ const alternate = (l: Lang) => new URL(href(l, page, country), Astro.site).toStr
               ))
             }
           </span>
+          <a class="saved-link" href={href(lang, "saved")} aria-current={page === "saved" ? "page" : undefined} aria-label={tr(lang, "my_jobs")}>
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9 6.8 19.6l1-5.8L3.5 9.7l5.9-.9z" /></svg>
+          </a>
         </div>
       </div>
     </header>
@@ -84,20 +92,49 @@ const alternate = (l: Lang) => new URL(href(l, page, country), Astro.site).toStr
 
     <footer class="site-footer">
       <div class="wrap">
-        <p class="disclaimer">{tr(lang, "footer_disclaimer")}</p>
-        <p>{tr(lang, "footer_data")}</p>
-        <nav aria-label="Footer">
-          <a href={href(lang, "how")}>{tr(lang, "nav_how")}</a>
-          <a href={href(lang, "guide")}>{tr(lang, "nav_guide")}</a>
-          <a href={href(lang, "companies")}>{tr(lang, "nav_companies")}</a>
-          <a href={href(lang, "sources")}>{tr(lang, "nav_sources")}</a>
-          <a href={href(lang, "employers")}>{tr(lang, "nav_employers")}</a>
-          {others.map((l) => <a href={href(l, page, country)} hreflang={l} lang={l}>{NATIVE[l].name}</a>)}
-          <a href={`mailto:${site.contact}`}>{site.contact}</a>
-        </nav>
-        <p>© {new Date(site.updated).getUTCFullYear()} {site.product} · {site.domain}</p>
+        <div class="foot-cols">
+          <div>
+            <a href={href(lang, "home")} aria-label={site.product}><Logo light /></a>
+            <p class="foot-tag">{tr(lang, "footer_tagline")}</p>
+          </div>
+          <nav aria-label={tr(lang, "footer_seekers")}>
+            <h2>{tr(lang, "footer_seekers")}</h2>
+            <a href={href(lang, "search")}>{tr(lang, "nav_find")}</a>
+            <a href={href(lang, "saved")}>{tr(lang, "my_jobs")}</a>
+            <a href={href(lang, "guide")}>{tr(lang, "nav_guide")}</a>
+            <a href={href(lang, "how")}>{tr(lang, "nav_how")}</a>
+          </nav>
+          <nav aria-label={tr(lang, "footer_companies")}>
+            <h2>{tr(lang, "footer_companies")}</h2>
+            <a href={href(lang, "companies")}>{tr(lang, "nav_companies")}</a>
+            <a href={href(lang, "employers")}>{tr(lang, "nav_employers")}</a>
+            <a href={href(lang, "sources")}>{tr(lang, "nav_sources")}</a>
+          </nav>
+          <nav aria-label={site.product}>
+            <h2>{site.product}</h2>
+            <a href={href(lang, "about")}>{tr(lang, "nav_about")}</a>
+            <a href={href(lang, "contact")}>{tr(lang, "nav_contact")}</a>
+            {others.map((l) => <a href={href(l, page, country)} hreflang={l} lang={l}>{NATIVE[l].name}</a>)}
+          </nav>
+        </div>
+        <div class="foot-fine">
+          <span>© {new Date(site.updated).getUTCFullYear()} {site.product} · {site.domain}</span>
+          <span>{tr(lang, "footer_disclaimer")}</span>
+        </div>
       </div>
     </footer>
+    <script>
+      import { remember, visitorCountry } from "../scripts/country";
+      const sel = document.querySelector<HTMLSelectElement>("[data-country]");
+      if (sel && !("live" in sel.dataset)) {
+        const valid = (c: string) => [...sel.options].some((o) => o.value === c);
+        visitorCountry(valid).then((c) => (sel.value = c));
+        sel.addEventListener("change", () => {
+          remember(sel.value);
+          location.reload();
+        });
+      }
+    </script>
     {
       page === "search" && (
         <script is:inline>

@@ -12,6 +12,8 @@ export const GET: APIRoute = ({ site }) => {
     ["companies"],
     ["guide"],
     ["employers"],
+    ["about"],
+    ["contact"],
     ...Object.keys(companies).map((k): [Page, string] => ["company", k]),
   ];
   const lastmod = meta.updated.slice(0, 10);

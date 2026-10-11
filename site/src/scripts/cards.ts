@@ -181,32 +181,52 @@ export function reasonFor(g: Group, ctx: Ctx, code = ""): string {
   return one ? g.r.replaceAll("{c}", ctx.names[one] ?? one) : "";
 }
 
-/** The card's verdict line: "Eligible in Brazil" + reason, or a summary for all countries. */
-export function verdictLine(j: SJob, ctx: Ctx, shown: Verdict[] = SHOWN): string {
+const PILL_ICON: Record<Verdict, string> = {
+  eligible: '<svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><circle cx="7" cy="7" r="7" fill="currentColor"></circle><path d="M4 7.2l2 2 4-4.4" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"></path></svg>',
+  likely: '<svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><circle cx="7" cy="7" r="6" fill="none" stroke="currentColor" stroke-width="1.8"></circle><path d="M7 1a6 6 0 0 1 0 12z" fill="currentColor"></path></svg>',
+  unclear: '<svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><circle cx="7" cy="7" r="5.8" fill="none" stroke="currentColor" stroke-width="2"></circle></svg>',
+};
+export const pill = (v: Verdict, text: string) => `<span class="vp ${v}">${PILL_ICON[v]}${esc(text)}</span>`;
+
+/** The verdict pill: for the visitor's country, or a neutral summary for "All countries". */
+export function cardPill(j: SJob, ctx: Ctx, shown: Verdict[] = SHOWN): string {
   const { lang, code } = ctx;
-  const vl = (v: V, text: string) => `<span class="vl v-${v}">${lamp(v)}${esc(text)}</span>`;
-  const why = (s: string) => (s ? `<span class="why">${esc(s)}</span>` : "");
   const mine = code ? groupFor(j.groups, code) : null;
-  if (mine && mine.v !== "not_eligible") {
-    const text = tr(lang, "verdict_in", { verdict: labels.verdict[mine.v][lang], places: ctx.names[code] ?? code });
-    return vl(mine.v, text) + why(reasonFor(mine, ctx, code));
-  }
-  const gs = j.groups.filter((g) => g.v !== "not_eligible" && shown.includes(g.v));
-  const parts = gs.slice(0, 2).map((g) => vl(g.v, groupText(j.groups, g, ctx)));
-  return parts.join("") + (gs.length === 1 ? why(reasonFor(gs[0], ctx)) : "");
+  if (mine && mine.v !== "not_eligible") return pill(mine.v, labels.verdict[mine.v][lang]);
+  const g = j.groups.find((x) => x.v !== "not_eligible" && shown.includes(x.v as Verdict));
+  if (!g) return "";
+  const v = g.v as Verdict;
+  const word = labels.open[v][lang];
+  const text =
+    g.c === "*"
+      ? tr(lang, excluded(j.groups).length ? "verdict_elsewhere" : "verdict_anywhere", { verdict: word })
+      : tr(lang, "verdict_in", { verdict: word, places: nameList(g.c, ctx, 2) });
+  return pill(v, text);
+}
+
+/** Tags under the title: new, workplace, level, contract, field. */
+function tags(j: SJob, lang: Lang, updated: string): string {
+  const t = [
+    isNew(j.seen_at, updated) ? `<li class="tag new">${esc(tr(lang, "new_badge"))}</li>` : "",
+    `<li class="tag">${esc(tr(lang, `workplace_${j.workplace === "hybrid" ? "hybrid" : "fully_remote"}` as never))}</li>`,
+    j.seniority !== "unclear" ? `<li class="tag">${esc(label("seniority", j.seniority, lang))}</li>` : "",
+    j.engagement !== "unclear" ? `<li class="tag">${esc(label("engagement", j.engagement, lang))}</li>` : "",
+    j.family !== "other" ? `<li class="tag">${esc(label("family", j.family, lang))}</li>` : "",
+  ];
+  return `<ul class="tags">${t.join("")}</ul>`;
 }
 
 export function card(j: SJob, ctx: Ctx, shown: Verdict[] = SHOWN): string {
   const { lang, updated } = ctx;
   const titleId = `t-${j.id.replace(/[^a-zA-Z0-9]/g, "-")}`;
-  const isnew = isNew(j.seen_at, updated) ? ` <span class="new-badge">${esc(tr(lang, "new_badge"))}</span>` : "";
-  const quote = j.quote ? `<blockquote class="card-quote" lang="und"><p>${esc(j.quote)}</p></blockquote>` : "";
+  const salary = salaryText(j.salary, lang);
+  const jobHref = esc(href(lang, "job", j.slug) + (ctx.code ? `?c=${ctx.code}` : ""));
   return `<li class="card" data-id="${esc(j.id)}">${avatar(j.company, j.company_key, j.logo, 52)}<div class="card-body">
-<p class="card-co"><a href="${esc(href(lang, "company", j.company_key))}">${esc(j.company)}</a></p>
-<h3 class="card-title" id="${titleId}"><a href="${esc(href(lang, "job", j.slug))}">${esc(j.title)}</a>${isnew}</h3>
-${infoLine(j, lang, updated)}<p class="card-verdict">${verdictLine(j, ctx, shown)}</p>${quote}</div>
-<div class="card-side"><button type="button" class="icon-btn save-btn" data-save="${esc(j.id)}" aria-pressed="false" aria-label="${esc(`${tr(lang, "save")}: ${j.title}`)}" aria-describedby="${titleId}">${STAR}</button>
-<time class="card-date" datetime="${esc(j.seen_at.slice(0, 10))}">${esc(foundText(j.seen_at, updated, lang))}</time></div></li>`;
+<h3 class="card-title" id="${titleId}"><a href="${jobHref}">${esc(j.title)}</a></h3>
+<p class="card-meta"><a href="${esc(href(lang, "company", j.company_key))}">${esc(j.company)}</a>${salary ? ` · ${esc(salary)}` : ""}</p>
+${tags(j, lang, updated)}</div>
+<div class="card-side">${cardPill(j, ctx, shown)}<time class="card-date" datetime="${esc(j.seen_at.slice(0, 10))}">${esc(foundText(j.seen_at, updated, lang))}</time>
+<button type="button" class="icon-btn save-btn" data-save="${esc(j.id)}" aria-pressed="false" aria-label="${esc(`${tr(lang, "save")}: ${j.title}`)}" aria-describedby="${titleId}">${STAR}</button></div></li>`;
 }
 
 /** Search index for one language, fetched once per page. */

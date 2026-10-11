@@ -1,0 +1,41 @@
+---
+import { Image } from "astro:assets";
+import { href, type Lang, tr } from "../i18n";
+import office from "../assets/photos/office.jpg";
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const promises = [1, 2, 3] as const;
+---
+
+<section class="about-hero">
+  <div class="wrap about-grid">
+    <div>
+      <h1>{tr(lang, "about_title")}</h1>
+      <p class="about-lede">{tr(lang, "about_body")}</p>
+      <p class="about-cta"><a class="btn btn-accent" href={href(lang, "search")}>{tr(lang, "about_cta")}</a></p>
+    </div>
+    <div class="photo about-photo"><Image src={office} alt="" widths={[480, 960]} sizes="(max-width: 900px) 90vw, 560px" loading="eager" /></div>
+  </div>
+</section>
+
+<section class="sec" aria-labelledby="promise">
+  <div class="wrap">
+    <h2 id="promise">{tr(lang, "promise_title")}</h2>
+    <ul class="values">
+      {
+        promises.map((n) => (
+          <li class="panel">
+            <h3>{tr(lang, `promise_${n}_t` as never)}</h3>
+            <p>{tr(lang, `promise_${n}` as never)}</p>
+          </li>
+        ))
+      }
+    </ul>
+    <p class="about-more">
+      <a href={href(lang, "how")}>{tr(lang, "nav_how")}</a> · <a href={href(lang, "contact")}>{tr(lang, "nav_contact")}</a>
+    </p>
+  </div>
+</section>

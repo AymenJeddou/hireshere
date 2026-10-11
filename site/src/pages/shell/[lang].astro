@@ -18,7 +18,18 @@ const lang = Astro.params.lang as Lang;
 <script>
   import { groupFor } from "../../scripts/cards";
   import { initSaveButtons } from "../../scripts/saved";
+  import { colourMap, loadWorld } from "../../scripts/worldmap";
   initSaveButtons();
+  // Who can apply: every country coloured by its verdict, the visitor in coral.
+  const map = document.querySelector<HTMLElement>("[data-whomap]");
+  if (map) {
+    const groups = (JSON.parse(map.dataset.g ?? "[]") as [string, string[] | "*"][]).map(([v, c]) => ({ v, c }));
+    const you = map.dataset.you ?? "";
+    const FILL: Record<string, string> = { eligible: "#157a43", likely: "#e0a85a", unclear: "#c9c3b8" };
+    loadWorld().then((svg) =>
+      colourMap(map, svg, (c) => ({ fill: c === you ? "#ff7a59" : FILL[groupFor(groups, c)?.v ?? ""] ?? "#e4e0d8" })),
+    );
+  }
   const f = document.querySelector<HTMLFormElement>(".report-form");
   if (f) {
     const gs = (JSON.parse(f.dataset.g ?? "[]") as [string, string[] | "*"][]).map(([v, c]) => ({ v, c }));

@@ -1,0 +1,11 @@
+---
+import Contact from "../../components/Contact.astro";
+import Layout from "../../layouts/Layout.astro";
+import { site } from "../../data";
+import { tr } from "../../i18n";
+const lang = "ar";
+---
+
+<Layout lang={lang} page="contact" title={`${tr(lang, "contact_title")} | ${site.product}`} description={tr(lang, "contact_lede")}>
+  <Contact lang={lang} />
+</Layout>

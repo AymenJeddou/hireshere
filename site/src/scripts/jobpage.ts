@@ -1,6 +1,6 @@
 // Job page body, rendered per request by the Pages Function (functions/_job.js) from a detail
 // shard (public/data/j/<xx>.json). Same markup and classes as the rest of the site.
-import { formatDate, href, labels, languageName, type Lang, tr } from "../i18n";
+import { formatDate, href, labels, languageName, type Lang, tr, type Verdict } from "../i18n";
 import {
   avatar,
   type Ctx,
@@ -8,10 +8,10 @@ import {
   excluded,
   groupFor,
   groupText,
-  infoLine,
   isNew,
   lamp,
   nameList,
+  pill,
   reasonFor,
   salaryText,
   type SJob,
@@ -57,8 +57,6 @@ export function jobPage(job: Detail, lang: Lang, code: string, meta: Meta): stri
   const names = Object.fromEntries(Object.entries(meta.world).map(([k, c]) => [k, nameOf(c, lang)]));
   const ctx: Ctx = { lang, code, names, updated: meta.updated };
   const gs = job.groups.map((g) => ({ ...g, r: g.r[lang] }));
-  const place = job.scope || job.location.split(/;\s*/).slice(0, 2).join(", ");
-  const card = { ...job, scope: place, groups: gs };
   const vname = (v: V) => (v === "not_eligible" ? tr(lang, "not_open") : labels.verdict[v][lang]);
   const lab = (kind: "seniority" | "engagement" | "family", v: string) =>
     (labels[kind] as Record<string, Record<Lang, string>>)[v]?.[lang] ?? "";
@@ -132,7 +130,7 @@ export function jobPage(job: Detail, lang: Lang, code: string, meta: Meta): stri
       .slice(0, 5)
       .map(
         ([[slug, title, company], v]) =>
-          `<li><a href="${esc(href(lang, "job", slug))}">${esc(title)}</a><span class="v-${v}">${withCompany ? `${esc(company)} · ` : ""}${lamp(v!)} ${esc(vname(v!))}</span></li>`,
+          `<li><a href="${esc(href(lang, "job", slug))}">${esc(title)}</a>${withCompany ? `<small>${esc(company)}</small>` : ""}${pill(v as Verdict, vname(v!))}</li>`,
       )
       .join("");
   const more = related(job.more, false);
@@ -146,43 +144,94 @@ export function jobPage(job: Detail, lang: Lang, code: string, meta: Meta): stri
   const mini = gs.map((g) => [g.v, g.c]);
   const searchHref = href(lang, "search") + (code ? `?c=${code}` : "");
 
-  return `<div class="wrap job-page">
+  const v = mine && mine.v !== "not_eligible" ? (mine.v as Verdict) : null;
+  const statusClass = v ?? "unclear";
+  const statusTitle = !code
+    ? tr(lang, "status_pick")
+    : v
+      ? tr(lang, `status_${v}` as never, { country: names[code] })
+      : tr(lang, "status_not", { country: names[code] });
+  const others = gs.filter((g) => g.v !== "not_eligible" && g !== mine);
+  const alsoText = others.length
+    ? tr(lang, "also_open", {
+        places: others.map((g) => (g.c === "*" ? tr(lang, "where_anywhere").toLowerCase() : nameList(g.c, ctx, 4))).join(", "),
+      })
+    : "";
+  const why = v ? reasonFor(mine!, ctx, code) : "";
+  const STATUS_ICON: Record<string, string> = {
+    eligible: '<path d="M7 12.5l3.3 3.3L17 9" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"></path>',
+    likely: '<path d="M12 6a6 6 0 0 1 0 12z" fill="#fff"></path><circle cx="12" cy="12" r="6" fill="none" stroke="#fff" stroke-width="2"></circle>',
+    unclear: '<path d="M12 7v6M12 16.5v.5" stroke="#fff" stroke-width="2.6" stroke-linecap="round"></path>',
+  };
+  const tzFact = job.tz && (job.tz[0] !== null || job.tz[1] !== null) ? tzText : tr(lang, "any_tz");
+  const facts: [string, string][] = [
+    [tr(lang, "d_salary"), salaryText(job.salary, lang) || tr(lang, "not_stated")],
+    [tr(lang, "d_level"), job.seniority !== "unclear" ? lab("seniority", job.seniority) : tr(lang, "not_stated")],
+    [tr(lang, "d_contract"), job.engagement !== "unclear" ? lab("engagement", job.engagement) : tr(lang, "not_stated")],
+    [tr(lang, "d_field"), lab("family", job.family) || tr(lang, "not_stated")],
+    [tr(lang, "working_hours"), tzFact],
+    [tr(lang, "d_first_seen"), formatDate(job.seen_at, lang, true)],
+  ];
+  const site = website || job.company;
+  const applyBtn = (cls: string) =>
+    `<a class="btn btn-accent ${cls}" href="${esc(job.url)}" target="_blank" rel="noopener">${esc(tr(lang, "apply_on", { site }))}<span class="sr-only">${esc(tr(lang, "apply_sr"))}</span><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></a>`;
+  const metaLine = [
+    `<a href="${esc(href(lang, "company", job.company_key))}">${esc(job.company)}</a>`,
+    esc(tr(lang, `workplace_${job.workplace === "hybrid" ? "hybrid" : "fully_remote"}` as never)),
+    job.engagement !== "unclear" ? esc(lab("engagement", job.engagement)) : "",
+    esc(salaryText(job.salary, lang)),
+  ]
+    .filter(Boolean)
+    .join(" · ");
+
+  return `<section class="jtop"><div class="wrap">
   <nav class="crumbs" aria-label="Breadcrumb">
-    <a href="${esc(href(lang, "search"))}">${esc(tr(lang, "nav_find"))}</a>
-    <span aria-hidden="true"> <span class="flip">›</span> </span>
+    <a href="${esc(href(lang, "search"))}">${esc(tr(lang, "nav_find"))}</a><span aria-hidden="true"> <span class="flip">›</span> </span>
     ${code ? `<a href="${esc(searchHref)}">${esc(names[code])}</a><span aria-hidden="true"> <span class="flip">›</span> </span>` : ""}
-    <span aria-current="page">${esc(job.title)}</span>
+    <span aria-current="page">${esc(job.company)}</span>
   </nav>
+  <div class="jhead">
+    ${avatar(job.company, job.company_key, job.logo, 76)}
+    <div>
+      <h1>${esc(job.title)}${isNew(job.seen_at, meta.updated) ? ` <span class="new-badge">${esc(tr(lang, "new_badge"))}</span>` : ""}</h1>
+      <p class="jmeta">${metaLine}</p>
+    </div>
+    ${applyBtn("jhead-apply")}
+  </div>
+</div></section>
+<div class="wrap job-page">
   <div class="jp-grid">
     <div class="jp-main">
-      <header class="panel jp-head">
-        ${avatar(job.company, job.company_key, job.logo, 64)}
+      <section class="status ${statusClass}" aria-labelledby="status">
+        <div class="status-ic" aria-hidden="true"><svg viewBox="0 0 24 24" width="26" height="26">${STATUS_ICON[statusClass]}</svg></div>
         <div>
-          <p class="jp-company"><a href="${esc(href(lang, "company", job.company_key))}">${esc(job.company)}</a></p>
-          <h1>${esc(job.title)}${isNew(job.seen_at, meta.updated) ? ` <span class="new-badge">${esc(tr(lang, "new_badge"))}</span>` : ""}</h1>
-          ${infoLine(card, lang, meta.updated, true)}
-          <div class="jp-actions">
-            <a class="btn btn-primary" href="${esc(job.url)}" target="_blank" rel="noopener">${esc(tr(lang, "apply"))}<span class="sr-only">${esc(tr(lang, "apply_sr"))}</span><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></a>
-            <button type="button" class="btn btn-secondary save-btn" data-save="${esc(job.id)}" aria-pressed="false">${STAR}<span data-save-label data-on="${esc(tr(lang, "saved"))}" data-off="${esc(tr(lang, "save"))}">${esc(tr(lang, "save"))}</span></button>
-          </div>
+          <h2 id="status">${esc(statusTitle)}</h2>
+          ${why || alsoText ? `<p>${esc([why ? `${why}.` : "", alsoText].filter(Boolean).join(" "))}</p>` : ""}
         </div>
-      </header>
+        ${job.quote ? `<blockquote lang="und"><p>${esc(job.quote)}</p><small>${esc(tr(lang, "status_quote_note"))}</small></blockquote>` : ""}
+      </section>
+      <section class="panel" aria-labelledby="glance">
+        <h2 id="glance">${esc(tr(lang, "at_a_glance"))}</h2>
+        <dl class="facts">${facts.map(([k, val]) => `<div class="fact"><dt>${esc(k)}</dt><dd>${esc(val)}</dd></div>`).join("")}</dl>
+      </section>
       <section class="panel" aria-labelledby="who">
         <h2 id="who">${esc(tr(lang, "who_can_apply"))}</h2>
-        <table class="who">
-          <thead><tr><th scope="col">${esc(tr(lang, "country_col"))}</th><th scope="col">${esc(tr(lang, "verdict_col"))}</th><th scope="col">${esc(tr(lang, "why"))}</th></tr></thead>
-          <tbody>${first}${rows}</tbody>
-        </table>
+        <div class="whomap" data-whomap data-g="${esc(JSON.stringify(mini))}" data-you="${esc(code)}"></div>
+        <p class="map-legend dark">
+          <span><i style="background:#ff7a59"></i>${esc(tr(lang, "map_you"))}</span>
+          <span><i style="background:#157a43"></i>${esc(tr(lang, "map_can"))}</span>
+          <span><i style="background:#e0a85a"></i>${esc(tr(lang, "map_likely"))}</span>
+          <span><i style="background:#e4e0d8"></i>${esc(tr(lang, "map_not"))}</span>
+        </p>
+        <details class="who-list">
+          <summary>${esc(tr(lang, "more_details"))}</summary>
+          <table class="who"><tbody>${first}${rows}</tbody></table>
+        </details>
       </section>
-      ${
-        job.quote
-          ? `<section class="panel quote" aria-labelledby="says"><h2 id="says">${esc(tr(lang, "posting_says"))}</h2><blockquote lang="und"><p>${esc(job.quote)}</p></blockquote><p class="fine jp-note">${esc(tr(lang, "quote_note"))}</p></section>`
-          : ""
-      }
-      <section class="panel" aria-labelledby="det">
-        <h2 id="det">${esc(tr(lang, "details"))}</h2>
-        <dl class="jp-details">${details.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join("")}</dl>
-      </section>
+      <details class="panel more-details">
+        <summary>${esc(tr(lang, "details"))}</summary>
+        <dl class="jp-details">${details.map(([k, val]) => `<div><dt>${esc(k)}</dt><dd>${esc(val)}</dd></div>`).join("")}</dl>
+      </details>
       <details class="panel report">
         <summary>${esc(tr(lang, "report"))}</summary>
         <form class="report-form" method="post" action="/api/report" data-g="${esc(JSON.stringify(mini))}">
@@ -202,16 +251,19 @@ export function jobPage(job: Detail, lang: Lang, code: string, meta: Meta): stri
       </details>
     </div>
     <aside class="jp-side">
-      <section class="panel">
+      <section class="panel applybox">
         <div class="jp-co">
-          ${avatar(job.company, job.company_key, job.logo, 44)}
-          <div><b>${esc(job.company)}</b><span class="fine">${esc(tr(lang, "open_jobs_n", { n: job.company_n }))}${website ? ` · ${esc(website)}` : ""}</span></div>
+          ${avatar(job.company, job.company_key, job.logo, 48)}
+          <div><b>${esc(job.company)}</b><span class="fine">${website ? `${esc(website)} · ` : ""}${esc(tr(lang, "open_jobs_n", { n: job.company_n }))}</span></div>
         </div>
         ${named.length ? `<p class="jp-hires">${esc(tr(lang, "hires_here", { countries: named.join(", ") }))}</p>` : ""}
-        <a href="${esc(href(lang, "company", job.company_key))}">${esc(tr(lang, "see_company"))}</a>
+        ${applyBtn("wide")}
+        <button type="button" class="btn btn-secondary save-btn wide" data-save="${esc(job.id)}" aria-pressed="false">${STAR}<span data-save-label data-on="${esc(tr(lang, "saved"))}" data-off="${esc(tr(lang, "save_job"))}">${esc(tr(lang, "save_job"))}</span></button>
+        <p class="fine">${esc(tr(lang, "apply_note", { company: job.company }))}</p>
+        <a class="see-co" href="${esc(href(lang, "company", job.company_key))}">${esc(tr(lang, "see_company"))}</a>
       </section>
+      ${similar ? `<section class="panel"><h2>${esc(tr(lang, "similar_for_you"))}</h2><ul class="jp-links">${similar}</ul></section>` : ""}
       ${more ? `<section class="panel"><h2>${esc(tr(lang, "more_at", { company: job.company }))}</h2><ul class="jp-links">${more}</ul></section>` : ""}
-      ${similar ? `<section class="panel"><h2>${esc(tr(lang, "similar"))}</h2><ul class="jp-links">${similar}</ul></section>` : ""}
       ${
         code in meta.countries
           ? `<section class="panel jp-guide"><h2>${esc(tr(lang, "guide_cta", { country: names[code] }))}</h2><a href="${esc(href(lang, "guide"))}#${code.toLowerCase()}">${esc(tr(lang, "nav_guide"))} <span class="flip">→</span></a></section>`
