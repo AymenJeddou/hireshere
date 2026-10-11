@@ -69,3 +69,7 @@ Jobs come only from public feeds that companies publish for their own careers pa
 Issues and pull requests are welcome, especially new company boards (`data/boards.csv`), connectors for other hiring systems, and corrections to verdicts or translations. For a wrong verdict, open an issue with the job link and your country.
 
 Built by [Aymen Jeddou](https://aymenjeddou.github.io).
+
+## License
+
+MIT, see [LICENSE](LICENSE). Third-party data keeps its own license: see [data/CREDITS.md](data/CREDITS.md).
