@@ -44,10 +44,11 @@ uv run python -m pipeline.seed validate
 - `site/`: Astro site. Design system in `DESIGN.md`, product truth in `PRODUCT.md`.
   `site/functions/api/` are Cloudflare Pages Functions (signups, reports) using D1 (`site/schema.sql`).
 - `data/boards.csv`: validated seed list, committed. `data/candidates.csv` is a build artifact, ignored.
-- `jobs.db` lives on the `data-latest` GitHub Release as `jobs.db.gz`, never in git.
-  Local copy: `gh release download data-latest -p jobs.db.gz && gunzip jobs.db.gz`. Download before
-  working locally and upload (`gh release upload data-latest jobs.db.gz --clobber`) after, or CI and
-  local diverge.
+- `jobs.db` lives on the `data-latest` GitHub Release as an encrypted snapshot, never in git.
+  It is encrypted (`jobs.db.gz.enc`, AES-256, passphrase in the `DB_PASSPHRASE` secret and local `.env`)
+  because it holds full job descriptions. Local copy:
+  `gh release download data-latest -p jobs.db.gz.enc && openssl enc -d -aes-256-cbc -pbkdf2 -iter 200000 -pass env:DB_PASSPHRASE -in jobs.db.gz.enc | gunzip > jobs.db`.
+  Download before working locally and upload the re-encrypted file after, or CI and local diverge.
 - Live site: https://hireshere.app (Cloudflare Pages project `hireshere`, D1 `hireshere`; www and
   hireshere.pages.dev 301 to it via `site/functions/_middleware.js`).
   Deploy by hand: `cd site && npx wrangler pages deploy --branch main` with CLOUDFLARE_* from `.env`.

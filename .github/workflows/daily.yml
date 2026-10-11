@@ -22,6 +22,8 @@ env:
   UNSUBSCRIBE_SECRET: ${{ secrets.UNSUBSCRIBE_SECRET }}
   TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
   TELEGRAM_CHANNELS: ${{ secrets.TELEGRAM_CHANNELS }}
+  # The snapshot holds full job descriptions, so it is stored encrypted on the release.
+  DB_PASSPHRASE: ${{ secrets.DB_PASSPHRASE }}
 
 jobs:
   fetch:
@@ -36,8 +38,10 @@ jobs:
 
       - name: Download previous database
         run: |
-          if gh release download "$TAG" --pattern jobs.db.gz; then
-            gunzip jobs.db.gz
+          if [ -n "$DB_PASSPHRASE" ] && gh release download "$TAG" --pattern jobs.db.gz.enc; then
+            openssl enc -d -aes-256-cbc -pbkdf2 -iter 200000 -pass env:DB_PASSPHRASE -in jobs.db.gz.enc | gunzip > jobs.db
+          elif gh release download "$TAG" --pattern jobs.db.gz; then
+            gunzip jobs.db.gz  # older unencrypted snapshot
           else
             echo "No previous database, starting fresh."
           fi
@@ -103,4 +107,10 @@ jobs:
           gh release view "$TAG" >/dev/null 2>&1 || gh release create "$TAG" \
             --title "Latest data" --latest=false \
             --notes "Rolling SQLite snapshot updated by the daily workflow. Not a code release."
-          gh release upload "$TAG" jobs.db.gz --clobber
+          if [ -n "$DB_PASSPHRASE" ]; then
+            openssl enc -aes-256-cbc -pbkdf2 -iter 200000 -salt -pass env:DB_PASSPHRASE -in jobs.db.gz -out jobs.db.gz.enc
+            gh release upload "$TAG" jobs.db.gz.enc --clobber
+            gh release delete-asset "$TAG" jobs.db.gz --yes 2>/dev/null || true
+          else
+            gh release upload "$TAG" jobs.db.gz --clobber
+          fi

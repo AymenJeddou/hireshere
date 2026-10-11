@@ -198,7 +198,8 @@ def run(conn: sqlite3.Connection, dry_run: bool = False) -> str:
                 },  # fmt: skip
             )
             if r.status_code >= 400:
-                print(f"  send failed for a subscriber: HTTP {r.status_code} {r.text[:200]}")
+                # the response body may echo the address, so only the status is logged
+                print(f"  send failed for a subscriber: HTTP {r.status_code}")
                 continue
             _d1(
                 client,

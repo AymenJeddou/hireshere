@@ -95,5 +95,5 @@ def run(conn: sqlite3.Connection) -> str:
                 sent += 1
                 time.sleep(3)
             conn.commit()
-            report.append(f"{code} ({chat}): {sent} posted, {max(len(new) - sent, 0)} waiting")
+            report.append(f"{code}: {sent} posted, {max(len(new) - sent, 0)} waiting")
     return "## Telegram\n\n" + "\n".join(f"- {line}" for line in report)
