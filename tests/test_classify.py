@@ -351,3 +351,75 @@ def test_telegram_channels_and_message():
            "reason": {"en": "r", "fr": "r", "ar": "سبب"}, "slug": "dev-x-abc123"}  # fmt: skip
     m = message(job, "ar")
     assert "Dev &lt;Go&gt;" in m and "سبب" in m and m.endswith("hireshere.app/ar/jobs/dev-x-abc123")
+
+
+def test_groq_parse_response():
+    from pipeline.classify import groq
+
+    e = ex(seniority="junior")
+    data = {
+        "choices": [{"message": {"content": e.model_dump_json()}}],
+        "usage": {"prompt_tokens": 900, "completion_tokens": 120},
+    }
+    got, tin, tout = groq.parse_response(data)
+    assert got.seniority == "junior" and (tin, tout) == (900, 120)
+    with pytest.raises(gemini.ModelError):
+        groq.parse_response({"choices": []})
+
+
+def test_sync_falls_back_to_groq_then_leaves_the_rest(monkeypatch):
+    import asyncio
+    import contextlib
+
+    from pipeline import db
+    from pipeline.classify import groq
+
+    conn = db.connect(":memory:")
+    jobs = [job(id=f"x:y:{i}", content_hash=f"h{i}") for i in range(5)]
+    calls = {"gemini": 0, "groq": 0}
+
+    async def gem(client, j):
+        calls["gemini"] += 1
+        if calls["gemini"] > 2:
+            raise gemini.QuotaError("Gemini daily quota")
+        return ex(), 10, 5
+
+    async def grq(client, j):
+        calls["groq"] += 1
+        if calls["groq"] > 1:
+            raise gemini.QuotaError("Groq daily quota")
+        return ex(), 10, 5
+
+    monkeypatch.setattr(gemini, "generate", gem)
+    monkeypatch.setattr(groq, "generate", grq)
+    monkeypatch.setattr(gemini, "make_client", lambda: contextlib.AsyncExitStack())
+    monkeypatch.setattr(groq, "make_client", lambda: contextlib.AsyncExitStack())
+    monkeypatch.setattr(groq, "available", lambda: True)
+    monkeypatch.setattr(config, "GEMINI_RPM", 0)
+    monkeypatch.setattr(config, "GROQ_RPM", 0)
+    t = asyncio.run(runner.run_sync(conn, jobs))
+    assert t["done"] == 3 and t["left"] == 2 and t["errors"] == 0
+    assert t["by"] == {config.CLASSIFIER_MODEL: 2, groq.MODEL: 1}
+    models = [r[0] for r in conn.execute("SELECT model FROM extractions ORDER BY content_hash")]
+    assert models.count(groq.MODEL) == 1
+
+
+def test_gemini_daily_quota_and_402_are_quota_errors():
+    import asyncio
+
+    import httpx
+
+    def handler(request):
+        if "a" in request.url.path:
+            return httpx.Response(
+                429, text='{"error": {"details": "GenerateRequestsPerDayPerProject"}}'
+            )
+        return httpx.Response(402, text="credits depleted")
+
+    async def go(path):
+        async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as c:
+            await gemini._post(c, f"https://x/{path}", json={})
+
+    for path in ("a", "b"):
+        with pytest.raises(gemini.QuotaError):
+            asyncio.run(go(path))

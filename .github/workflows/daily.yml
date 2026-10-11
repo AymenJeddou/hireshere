@@ -24,11 +24,12 @@ env:
   TELEGRAM_CHANNELS: ${{ secrets.TELEGRAM_CHANNELS }}
   # The snapshot holds full job descriptions, so it is stored encrypted on the release.
   DB_PASSPHRASE: ${{ secrets.DB_PASSPHRASE }}
+  GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
 
 jobs:
   fetch:
     runs-on: ubuntu-latest
-    timeout-minutes: 75
+    timeout-minutes: 110
     steps:
       - uses: actions/checkout@v7
       - uses: astral-sh/setup-uv@v10.2.0
@@ -49,19 +50,18 @@ jobs:
       - name: Fetch
         run: uv run python -m pipeline.run fetch
 
-      # Classify new jobs through the Batch API (half price). Collect results for up to
-      # 30 minutes; anything still running is collected by the next day's run.
+      # Classify new jobs on free tiers, one request at a time (no billing since 2026-10-11):
+      # Gemini's free tier first, Groq once Gemini's daily quota is used up, at most 500 a day.
+      # Whatever is left waits for the next run. classify-collect picks up any old batch.
       - name: Classify
         if: env.GEMINI_API_KEY != ''
+        env:
+          GEMINI_RPM: "10"
+          GROQ_RPM: "4"
+          CLASSIFY_MINUTES: "35"
         run: |
           uv run python -m pipeline.run classify-collect
-          uv run python -m pipeline.run classify --batch
-          for i in $(seq 30); do
-            out=$(uv run python -m pipeline.run classify-collect)
-            echo "$out"
-            echo "$out" | grep -qE "collected|No open batches|FAILED|CANCELLED|EXPIRED" && break
-            sleep 60
-          done
+          uv run python -m pipeline.run classify --limit 500 --yes
 
       - name: Stats
         run: uv run python -m pipeline.run stats

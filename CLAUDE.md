@@ -39,6 +39,8 @@ uv run python -m pipeline.seed validate
 - `pipeline/classify/`: `schema.py` (what the model extracts), `prompt.py` (prompt, pre-filter,
   excerpt), `verdict.py` (pure per-country verdict), `gemini.py` (the only provider-specific
   file), `runner.py` (triage, cost estimate, storage), `evalset.py` (hand-checked eval).
+  `groq.py` is the free fallback provider. Daily runs classify in sync mode on free tiers
+  (no billing); see DECISIONS.md 2026-10-11.
 - Extractions are stored once per `content_hash` in `extractions`. Verdicts are computed from
   them at export time, never stored, so changing `verdict.py` or `COUNTRIES` needs no model calls.
 - `site/`: Astro site. Design system in `DESIGN.md`, product truth in `PRODUCT.md`.

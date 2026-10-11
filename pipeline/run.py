@@ -166,10 +166,13 @@ async def cmd_classify(conn, limit: int | None, batch: bool, yes: bool) -> str:
         lines.append(f"Submitted batch `{name}`. Run classify-collect later.")
     else:
         t = await runner.run_sync(conn, jobs)
+        by = ", ".join(f"{m}: {n}" for m, n in t["by"].items()) or "none"
         real = (t["input_tokens"] * config.PRICE_IN + t["output_tokens"] * config.PRICE_OUT) / 1e6
         lines.append(
-            f"Classified {t['done']}, errors {t['errors']}. Actual tokens: "
-            f"{t['input_tokens']:,} in, {t['output_tokens']:,} out, about ${real:.2f}."
+            f"Classified {t['done']} ({by}), "
+            f"errors {t['errors']}, left for the next run {t['left']}. Actual tokens: "
+            f"{t['input_tokens']:,} in, {t['output_tokens']:,} out (about ${real:.2f} at paid "
+            "Gemini prices; free tiers cost nothing)."
         )
     return "\n".join(lines)
 

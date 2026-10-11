@@ -17,6 +17,10 @@ class ModelError(Exception):
     pass
 
 
+class QuotaError(ModelError):
+    """The provider's free quota for today is used up (or the account is out of credit)."""
+
+
 def api_key() -> str:
     key = os.environ.get("GEMINI_API_KEY")
     if not key:
@@ -65,6 +69,10 @@ async def _post(client: httpx.AsyncClient, url: str, **kw) -> httpx.Response:
             r = await client.post(url, **kw)
         except httpx.HTTPError:
             continue
+        if r.status_code == 429 and "perday" in r.text.lower().replace("_", "").replace(" ", ""):
+            raise QuotaError(f"Gemini daily quota: {r.text[:200]}")
+        if r.status_code == 402:
+            raise QuotaError(f"HTTP 402: {r.text[:200]}")
         if r.status_code == 429 or r.status_code >= 500:
             continue
         if r.status_code >= 400:

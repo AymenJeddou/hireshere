@@ -83,12 +83,21 @@ def verify_evidence(e: Extraction, job: dict) -> bool:
     return ok
 
 
-def save(conn: sqlite3.Connection, job: dict, e: Extraction, tin: int, tout: int) -> None:
+def save(
+    conn: sqlite3.Connection, job: dict, e: Extraction, tin: int, tout: int, model: str = ""
+) -> None:
     data = e.model_dump() | {"evidence_verified": verify_evidence(e, job)}
     with conn:
         conn.execute(
             "INSERT OR REPLACE INTO extractions VALUES (?, ?, ?, ?, ?, ?)",
-            (job["content_hash"], config.CLASSIFIER_MODEL, json.dumps(data), tin, tout, now()),
+            (
+                job["content_hash"],
+                model or config.CLASSIFIER_MODEL,
+                json.dumps(data),
+                tin,
+                tout,
+                now(),
+            ),
         )
         conn.execute(
             "UPDATE jobs SET classify_status = 'done' WHERE content_hash = ? "
@@ -107,31 +116,47 @@ def mark_error(conn: sqlite3.Connection, content_hash: str) -> None:
 
 
 async def run_sync(conn: sqlite3.Connection, jobs: list[dict]) -> dict:
-    sem = asyncio.Semaphore(config.MAX_CONCURRENCY)
-    t = {"done": 0, "errors": 0, "input_tokens": 0, "output_tokens": 0}
+    """One request at a time, paced for free tiers: Gemini first, then Groq once Gemini's
+    daily quota is used up. Jobs left when every provider is out stay pending for tomorrow."""
+    from pipeline.classify import groq
 
-    async def one(client, job):
-        async with sem:
-            try:
-                return job, await gemini.generate(client, job), None
-            except gemini.ModelError as err:
-                return job, None, str(err)
-
-    async with gemini.make_client() as client:
-        for fut in asyncio.as_completed([one(client, j) for j in jobs]):
-            job, res, err = await fut
-            if err:
-                print(f"  error {job['id']}: {err}", file=sys.stderr)
-                mark_error(conn, job["content_hash"])
-                t["errors"] += 1
-                continue
-            e, tin, tout = res
-            save(conn, job, e, tin, tout)
-            t["done"] += 1
-            t["input_tokens"] += tin
-            t["output_tokens"] += tout
-            if t["done"] % 100 == 0:
-                print(f"  {t['done']}/{len(jobs)} classified", file=sys.stderr)
+    providers = [(gemini, config.CLASSIFIER_MODEL, config.GEMINI_RPM)]
+    if groq.available():
+        providers.append((groq, groq.MODEL, config.GROQ_RPM))
+    t = {"done": 0, "errors": 0, "input_tokens": 0, "output_tokens": 0, "left": 0, "by": {}}
+    queue = list(jobs)
+    loop = asyncio.get_running_loop()
+    deadline = loop.time() + config.CLASSIFY_MINUTES * 60 if config.CLASSIFY_MINUTES else None
+    for mod, model, rpm in providers:
+        if not queue:
+            break
+        async with mod.make_client() as client:
+            while queue and not (deadline and loop.time() > deadline):
+                job = queue[0]
+                started = loop.time()
+                try:
+                    e, tin, tout = await mod.generate(client, job)
+                except gemini.QuotaError as err:
+                    print(f"  {model}: {err}"[:200], file=sys.stderr)
+                    break  # next provider takes the rest of the queue
+                except gemini.ModelError as err:
+                    print(f"  error {job['id']}: {err}"[:300], file=sys.stderr)
+                    mark_error(conn, job["content_hash"])
+                    t["errors"] += 1
+                else:
+                    save(conn, job, e, tin, tout, model)
+                    t["done"] += 1
+                    t["by"][model] = t["by"].get(model, 0) + 1
+                    t["input_tokens"] += tin
+                    t["output_tokens"] += tout
+                    if t["done"] % 50 == 0:
+                        print(f"  {t['done']}/{len(jobs)} classified", file=sys.stderr)
+                queue.pop(0)
+                if rpm:
+                    wait = 60 / rpm - (loop.time() - started)
+                    if wait > 0:
+                        await asyncio.sleep(wait)
+    t["left"] = len(queue)
     return t
 
 
