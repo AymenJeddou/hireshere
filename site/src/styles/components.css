@@ -1431,3 +1431,14 @@
     grid-column: 1 / -1;
   }
 }
+
+/* With JavaScript, the no-JS lists are swapped for cards: hide them and reserve the cards'
+   height up front so nothing below jumps (Cloudflare reported CLS 0.5 on /jobs). --n is the
+   number of cards the script will draw; --card-h is one card plus the list gap. */
+:root { --card-h: 169px; }
+@media (max-width: 900px) { :root { --card-h: 241px; } }
+.js [data-fallback] { display: none; }
+.js .cards.plain-links { visibility: hidden; overflow: hidden; height: calc(var(--n, 4) * var(--card-h)); }
+/* Maps are drawn after data loads: keep their box from the start. */
+.bigmap { aspect-ratio: 960 / 470; }
+.minimap { aspect-ratio: 1; }

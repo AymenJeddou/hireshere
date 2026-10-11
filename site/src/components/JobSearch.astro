@@ -114,7 +114,7 @@ const i18n = {
       </p>
       <!-- Without JavaScript: the newest jobs as plain links. The script replaces them with cards. -->
       <p class="fine" data-fallback>{tr(lang, "jobs_fallback")}</p>
-      <ol class="cards plain-links" data-cards>
+      <ol class="cards plain-links" data-cards style="--n: 20">
         {
           jobs.slice(0, 100).map((j) => (
             <li>

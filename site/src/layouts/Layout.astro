@@ -26,6 +26,8 @@ const alternate = (l: Lang) => new URL(href(l, page, country), Astro.site).toStr
 <!doctype html>
 <html lang={lang} dir={lang === "ar" ? "rtl" : "ltr"}>
   <head>
+    <!-- Lets CSS reserve room for script-rendered cards and maps before they arrive (no layout shift). -->
+    <script is:inline>document.documentElement.classList.add("js")</script>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>

@@ -60,7 +60,7 @@ const levels = Object.keys(labels.seniority)
 
   <h2 class="cp-h2">{tr(lang, "jobs_at", { company: co.name })}</h2>
   <!-- Without JavaScript: plain links. The script renders cards for the visitor's country. -->
-  <ol class="cards plain-links" data-cards>
+  <ol class="cards plain-links" data-cards style={`--n: ${jobs.length}`}>
     {
       jobs.map((j) => (
         <li>
@@ -85,7 +85,10 @@ const levels = Object.keys(labels.seniority)
     // Jobs open to the visitor's country first, newest first within each.
     const open = (j: (typeof all)[number]) => (code && verdictsFor(j.groups, code).length ? 0 : 1);
     const jobs = all.filter((j) => j.company_key === root.dataset.company).sort((a, b) => open(a) - open(b));
-    if (!jobs.length) return;
+    if (!jobs.length) {
+      list.style.cssText = "visibility: visible; height: auto"; // keep the plain list
+      return;
+    }
     list.classList.remove("plain-links");
     list.innerHTML = jobs.map((j) => card(j, { lang, code, names, updated: root.dataset.updated ?? "" })).join("");
     initSaveButtons(list);

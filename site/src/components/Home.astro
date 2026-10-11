@@ -157,6 +157,7 @@ const t = {
       .filter((j) => !seen.has(j.company_key) && seen.add(j.company_key))
       .slice(0, 4);
     const list = document.querySelector<HTMLOListElement>("[data-latest]")!;
+    if (!latest.length) list.style.cssText = "visibility: visible; height: auto"; // keep the plain list
     if (latest.length) {
       list.classList.remove("plain-links");
       list.innerHTML = latest.map((j) => card(j, { lang, code, names, updated })).join("");
