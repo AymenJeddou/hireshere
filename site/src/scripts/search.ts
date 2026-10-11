@@ -1,5 +1,5 @@
 import type { Lang } from "../i18n";
-import { card, type Ctx, loadJobs, type SJob, verdictsFor, when } from "./cards";
+import { card, type Ctx, loadJobs, type SJob, verdictsFor } from "./cards";
 import { remember, visitorCountry } from "./country";
 import { languagesFit, loadProfile } from "./profile";
 import { initSaveButtons } from "./saved";
@@ -58,7 +58,7 @@ export async function initSearch(): Promise<void> {
     job,
     vs: [],
     q: `${job.title} ${job.company}`.toLowerCase(),
-    days: Math.max(0, Math.floor((now - Date.parse(when(job))) / 86400000)),
+    days: Math.max(0, Math.floor((now - Date.parse(job.seen_at)) / 86400000)),
   }));
   let scored = "-";
   const score = (code: string) => {
@@ -244,8 +244,8 @@ export async function initSearch(): Promise<void> {
     const matches = cards.filter((k) => passes(k, st));
     matches.sort((a, b) =>
       st.sort === "new"
-        ? when(b.job).localeCompare(when(a.job))
-        : best(a, st) - best(b, st) || when(b.job).localeCompare(when(a.job)),
+        ? b.job.seen_at.localeCompare(a.job.seen_at)
+        : best(a, st) - best(b, st) || b.job.seen_at.localeCompare(a.job.seen_at),
     );
     const pages = Math.max(1, Math.ceil(matches.length / PAGE));
     page = Math.min(page, pages);

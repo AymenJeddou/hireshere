@@ -1412,11 +1412,6 @@
 .cards.plain-links li {
   padding: var(--space-2) 0;
 }
-/* Postings older than OLD_DAYS (cards.ts): still listed, visibly stale. */
-.is-old {
-  color: var(--ink-3);
-  font-style: italic;
-}
 
 /* ---------- Email alerts band (home and job list) ---------- */
 .alerts {
