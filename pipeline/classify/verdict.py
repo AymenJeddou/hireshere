@@ -15,51 +15,57 @@ LANGS = ("en", "fr", "ar")
 # French templates never put an article or preposition before a country name, so they work
 # for every country: "{name_fr} figure parmi les pays acceptés".
 REASONS = {
-    "excluded": ("{name} is explicitly excluded", "Pays exclu explicitement : {name_fr}"),
+    "excluded": ("The posting rules out {name}", "L’annonce exclut {name_fr}"),
     "office_here": (
-        "Requires {where} in {name}",
+        "Needs {where} in {name}",
         "Demande {where_fr} sur place ({name_fr})",
     ),
     "office_elsewhere": (
-        "Requires {where} outside {name}",
+        "Needs {where} outside {name}",
         "Demande {where_fr} hors de ce pays ({name_fr})",
     ),
     "auth": (
-        "Requires existing work authorization in {places}",
+        "Needs the right to work in {places}",
         "Demande une autorisation de travail en {places}",
     ),
     "listed": (
-        "{name} is listed as an allowed country",
-        "{name_fr} figure parmi les pays acceptés",
+        "The posting names {name} as a place you can work from",
+        "L’annonce cite {name_fr} parmi les pays possibles",
     ),
     "countries_only": ("Limited to {places}", "Limité à {places}"),
     "worldwide_tz": (
-        "Open worldwide but time zone {tz} excludes {name}",
-        "Ouvert partout, mais le fuseau {tz} exclut {name_fr}",
+        "Open worldwide, but the hours ({tz}) do not work from {name}",
+        "Ouvert partout, mais les horaires ({tz}) ne conviennent pas depuis {name_fr}",
     ),
-    "worldwide": ("Open to candidates worldwide", "Ouvert aux candidats du monde entier"),
+    "worldwide": ("Open to people anywhere in the world", "Ouvert aux candidats du monde entier"),
     "conflict": (
-        "The text says anywhere, but the posting is listed for {places}",
-        "Le texte dit « partout », mais l'annonce est publiée pour {places}",
+        "Says “anywhere”, but the job is listed for {places}",
+        "Le texte dit « partout », mais l’offre est publiée pour {places}",
     ),
     "company_remote": (
-        "Remote company, but the posting does not say this role is open worldwide",
-        "Entreprise en télétravail, mais l'annonce ne dit pas que ce poste est ouvert partout",
+        "The company is remote, but this job does not say where you can live",
+        "L’entreprise est en télétravail, mais l’offre ne dit pas d’où vous pouvez postuler",
     ),
     "region": (
-        "Open to the {region} region, which includes {name}",
-        "Ouvert à la région {region}, qui inclut {name_fr}",
+        "Open across {region}, which includes {name}",
+        "Ouvert dans la région {region}, qui inclut {name_fr}",
     ),
     "regions_only": ("Limited to {places}", "Limité à {places}"),
-    "tz_ok": ("Time zone window {tz} includes {name}", "La plage horaire {tz} inclut {name_fr}"),
-    "tz_no": ("Time zone window {tz} excludes {name}", "La plage horaire {tz} exclut {name_fr}"),
+    "tz_ok": (
+        "The required hours ({tz}) work from {name}",
+        "Les horaires demandés ({tz}) conviennent depuis {name_fr}",
+    ),
+    "tz_no": (
+        "The required hours ({tz}) do not work from {name}",
+        "Les horaires demandés ({tz}) ne conviennent pas depuis {name_fr}",
+    ),
     "remote_unclear": (
-        "Remote, but the posting does not say where candidates may live",
-        "Télétravail, mais l'annonce ne précise pas d'où les candidats peuvent travailler",
+        "Remote, but the posting does not say where you can live",
+        "À distance, mais l’annonce ne dit pas d’où vous pouvez travailler",
     ),
     "unclear": (
-        "The posting does not state where candidates may work from",
-        "L'annonce ne précise pas d'où les candidats peuvent travailler",
+        "The posting does not say where you can work from",
+        "L’annonce ne dit pas d’où vous pouvez travailler",
     ),
 }
 WHERE = {
@@ -69,22 +75,22 @@ WHERE = {
 
 # Arabic templates (draft, needs a native review). Country names come from config "name_ar".
 REASONS_AR = {
-    "excluded": "يستثني هذا الإعلان {name_ar} صراحةً",
+    "excluded": "يستثني الإعلان {name_ar}",
     "office_here": "يتطلب {where_ar} في {name_ar}",
     "office_elsewhere": "يتطلب {where_ar} خارج {name_ar}",
     "auth": "يتطلب تصريح عمل ساريًا في {places}",
-    "listed": "يذكر الإعلان {name_ar} ضمن الدول المقبولة",
+    "listed": "يذكر الإعلان {name_ar} ضمن الأماكن التي يمكنك العمل منها",
     "countries_only": "مقصور على {places}",
     "worldwide_tz": "مفتوح عالميًا، لكن المنطقة الزمنية {tz} تستثني {name_ar}",
-    "worldwide": "مفتوح للمرشحين من كل أنحاء العالم",
+    "worldwide": "مفتوحة للجميع من أي مكان في العالم",
     "conflict": "يقول النص «من أي مكان»، لكن الإعلان منشور لـ{places}",
-    "company_remote": "شركة تعمل عن بُعد، لكن الإعلان لا يذكر أن هذه الوظيفة مفتوحة عالميًا",
-    "region": "مفتوح لمنطقة {region} التي تشمل {name_ar}",
+    "company_remote": "الشركة تعمل عن بُعد، لكن الإعلان لا يذكر من أين يمكنك التقديم",
+    "region": "مفتوحة في منطقة {region} التي تشمل {name_ar}",
     "regions_only": "مقصور على {places}",
-    "tz_ok": "النطاق الزمني {tz} يشمل {name_ar}",
-    "tz_no": "النطاق الزمني {tz} يستثني {name_ar}",
-    "remote_unclear": "عن بُعد، لكن الإعلان لا يذكر أين يمكن للمرشحين الإقامة",
-    "unclear": "لا يذكر الإعلان من أين يمكن للمرشحين العمل",
+    "tz_ok": "ساعات العمل المطلوبة ({tz}) تناسب {name_ar}",
+    "tz_no": "ساعات العمل المطلوبة ({tz}) لا تناسب {name_ar}",
+    "remote_unclear": "عن بُعد، لكن الإعلان لا يذكر أين يمكنك الإقامة",
+    "unclear": "لا يذكر الإعلان من أين يمكنك العمل",
 }
 WHERE_AR = {"onsite": "الحضور إلى المكتب", "hybrid": "أيام حضور إلى المكتب (عمل هجين)"}
 

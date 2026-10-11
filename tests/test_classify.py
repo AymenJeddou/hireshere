@@ -187,9 +187,12 @@ def test_worldwide_needs_role_level_evidence():
 def test_reasons_in_french():
     e = ex(geo_scope="timezone_only", timezone_utc_min=-1, timezone_utc_max=3)
     v, reason = verdict(e, "TN", TN, lang="fr")
-    assert v == "likely" and reason == "La plage horaire UTC-1 à UTC+3 inclut Tunisie"
+    assert (
+        v == "likely"
+        and reason == "Les horaires demandés (UTC-1 à UTC+3) conviennent depuis Tunisie"
+    )
     v, reason = verdict(ex(geo_scope="regions", allowed_regions=["EMEA"]), "EG", EG, lang="fr")
-    assert reason == "Ouvert à la région EMEA, qui inclut Égypte"
+    assert reason == "Ouvert dans la région EMEA, qui inclut Égypte"
 
 
 def test_export_shows_open_verdicts_only_and_never_descriptions(tmp_path):
@@ -218,7 +221,7 @@ def test_export_shows_open_verdicts_only_and_never_descriptions(tmp_path):
     fr = json.loads((tmp_path / "pub/search-fr.json").read_text(encoding="utf-8"))
     fr.sort(key=lambda j: j["title"], reverse=True)
     assert [j["title"] for j in fr] == ["Job 1", "Job 0"]
-    assert fr[0]["groups"] == [{"v": "eligible", "r": "{c} figure parmi les pays acceptés",
+    assert fr[0]["groups"] == [{"v": "eligible", "r": "L’annonce cite {c} parmi les pays possibles",
                                 "c": ["US"]}]  # fmt: skip
     assert fr[1]["groups"] == [{"v": "eligible", "r": "Ouvert aux candidats du monde entier",
                                 "c": "*"}]  # fmt: skip
@@ -240,7 +243,7 @@ def test_groups_encoding_and_lookup():
     # Open worldwide except one country: "*" is the common outcome, the exclusion is listed.
     gs = groups(ex(geo_scope="worldwide", excluded_countries=["RU"]), "Remote - Worldwide")
     assert [(g["v"], g["c"]) for g in gs] == [("eligible", "*"), ("not_eligible", ["RU"])]
-    assert gs[1]["r"]["en"] == "{c} is explicitly excluded"
+    assert gs[1]["r"]["en"] == "The posting rules out {c}"
     assert for_country(gs, "BR")["v"] == "eligible" and for_country(gs, "RU")["v"] == "not_eligible"
     # Mostly closed: no "*", exclusions are left out, shown countries are listed.
     gs = groups(ex(geo_scope="countries", allowed_countries=["US", "CA"]))
