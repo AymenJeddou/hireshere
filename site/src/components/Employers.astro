@@ -1,5 +1,5 @@
 ---
-import { countries, countryName } from "../data";
+import { world } from "../data";
 import type { Lang } from "../i18n";
 
 interface Props {
@@ -68,10 +68,10 @@ const t = fr
       <fieldset class="emp-countries">
         <legend class="legend-label">{t.where}</legend>
         {
-          countries.map((c) => (
+          world(lang).map((c) => (
             <label class="check-label">
               <input type="checkbox" name="countries" value={c.code} />
-              {countryName(c, lang)}
+              {c.name}
             </label>
           ))
         }
@@ -129,9 +129,11 @@ const t = fr
     border: 0;
     margin: 0;
     padding: 0;
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
     gap: var(--space-2) var(--space-4);
+    max-height: 14rem;
+    overflow-y: auto;
   }
   .emp-countries legend {
     margin-bottom: var(--space-2);

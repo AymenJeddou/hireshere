@@ -19,7 +19,7 @@ export interface Country {
   name_ar: string;
 }
 
-/** Featured countries: getting-paid guide, Telegram channels, employer form. */
+/** Featured countries: getting-paid guide, Telegram channels. */
 export const countries: Country[] = Object.entries(meta.countries).map(([code, c]) => ({
   code,
   name: c.name,

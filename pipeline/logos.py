@@ -2,11 +2,14 @@
 
     python -m pipeline.logos [--force]
 
-Uses the company's website from data/boards.csv and its declared icons, preferring the
+Fills missing websites in data/boards.csv from the company's own board page first, then
+uses the company's website from data/boards.csv and its declared icons, preferring the
 large apple-touch-icon. Files are committed, so pages never hotlink third parties.
 """
 
 import argparse
+import csv
+import re
 import sys
 from html.parser import HTMLParser
 from pathlib import Path
@@ -44,6 +47,50 @@ class Icons(HTMLParser):
         self.found.append((rank, a["href"]))
 
 
+# Where each board page links to the company's home page.
+HOME = {
+    "ashby": ("https://jobs.ashbyhq.com/{}", r'"publicWebsite":"(https?://[^"]+)"'),
+    "lever": (
+        "https://jobs.lever.co/{}",
+        r'class="main-footer-text"><p><a href="(https?://[^"]+)"',
+    ),
+    "teamtailor": (
+        "https://{}.teamtailor.com/",
+        r'Homepage</span>\s*<a[^>]*href="(https?://[^"]+)"',
+    ),
+    "smartrecruiters": (
+        "https://careers.smartrecruiters.com/{}",
+        r'<li class="nav-item"><a href="(https?://[^"]+)" class="nav-link"',
+    ),
+}
+
+ATS_HOSTS = r"ashbyhq|lever\.co|greenhouse|smartrecruiters|teamtailor|workable|recruitee|ultipro"
+
+
+def discover_websites(client: httpx.Client) -> None:
+    """Write the home page link from each board page into boards.csv where it is empty."""
+    with open(config.BOARDS_CSV, encoding="utf-8", newline="") as f:
+        reader = csv.DictReader(f)
+        fields, rows = reader.fieldnames, list(reader)
+    found = 0
+    for r in rows:
+        if r["website"] or r["ats"] not in HOME:
+            continue
+        url, pattern = HOME[r["ats"]]
+        try:
+            m = re.search(pattern, client.get(url.format(r["slug"])).text)
+        except (httpx.HTTPError, ValueError):
+            continue
+        if m and not re.search(ATS_HOSTS, m.group(1), re.I):
+            r["website"] = m.group(1)
+            found += 1
+    with open(config.BOARDS_CSV, "w", encoding="utf-8", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=fields)
+        w.writeheader()
+        w.writerows(rows)
+    print(f"websites: found {found} from board pages")
+
+
 def fetch_logo(client: httpx.Client, site: str) -> tuple[bytes, str] | None:
     page = client.get(site)
     parser = Icons()
@@ -69,16 +116,17 @@ def main(argv=None) -> None:
     p.add_argument("--force", action="store_true", help="refetch logos that already exist")
     args = p.parse_args(argv)
     OUT.mkdir(parents=True, exist_ok=True)
-    sites = websites()
-    companies = {
-        slugify(b.company_name): sites[(b.ats, b.slug)]
-        for b in load_boards()
-        if (b.ats, b.slug) in sites
-    }
     ok = 0
     with httpx.Client(
         timeout=20, follow_redirects=True, headers={"User-Agent": config.USER_AGENT}
     ) as client:
+        discover_websites(client)
+        sites = websites()
+        companies = {
+            slugify(b.company_name): sites[(b.ats, b.slug)]
+            for b in load_boards()
+            if (b.ats, b.slug) in sites
+        }
         for key, site in sorted(companies.items()):
             if not args.force and any(OUT.glob(f"{key}.*")):
                 ok += 1

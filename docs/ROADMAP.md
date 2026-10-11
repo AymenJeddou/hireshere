@@ -21,4 +21,3 @@
 - Monitoring: the daily job fails (GitHub emails the owner) if the export is empty. Watch whether the cron fires; the first scheduled run (2026-10-09 04:17 UTC) never started. If it keeps missing, trigger it from a Cloudflare cron instead.
 - Email alerts: live since 2026-10-09 (Resend, hireshere.app verified, test digest delivered). No double opt-in yet: add a confirmation email if spam signups appear.
 - Worldwide: country names and region membership come from data/countries.json; a native check of the Arabic and French country names is welcome. The search index is about 500 KB gzipped per language: split it (by country or by page) if it grows much further.
-- Employer form still offers only the four featured countries as checkboxes.
