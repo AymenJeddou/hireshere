@@ -152,7 +152,17 @@ async def cmd_classify(conn, limit: int | None, batch: bool, yes: bool) -> str:
         return "\n".join(lines)
     print("\n".join(lines), file=sys.stderr)
     if batch:
-        name = await runner.submit_batch(conn, jobs)
+        from pipeline.classify.gemini import ModelError
+
+        try:
+            name = await runner.submit_batch(conn, jobs)
+        except ModelError as e:
+            # Out of credit (HTTP 402) must not stop the daily run: everything already
+            # classified still exports and deploys, and these postings wait for the next run.
+            if "HTTP 402" not in str(e):
+                raise
+            lines.append(f"Not submitted: the model account is out of credit. {len(jobs)} wait.")
+            return "\n".join(lines)
         lines.append(f"Submitted batch `{name}`. Run classify-collect later.")
     else:
         t = await runner.run_sync(conn, jobs)

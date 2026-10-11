@@ -166,3 +166,27 @@ def test_rolling_feed_expires_by_age_not_absence(conn, monkeypatch):
     assert diff.expired == 1
     open_ = [r[0] for r in conn.execute("SELECT id FROM jobs WHERE expired_at IS NULL")]
     assert open_ == [new.id]
+
+
+def test_classify_out_of_credit_does_not_fail_the_run(conn, monkeypatch):
+    from pipeline.classify import runner
+    from pipeline.classify.gemini import ModelError
+
+    async def no_credit(conn, jobs):
+        raise ModelError('HTTP 402: {"error": {"status": "RESOURCE_EXHAUSTED"}}')
+
+    monkeypatch.setattr(runner, "open_batches", lambda conn: [])
+    monkeypatch.setattr(
+        runner, "triage", lambda conn, limit: ([{"id": "x"}], {"skipped": 0, "reused": 0})
+    )
+    monkeypatch.setattr(runner, "estimate", lambda jobs, batch: (100, 10, 0.01))
+    monkeypatch.setattr(runner, "submit_batch", no_credit)
+    out = asyncio.run(run.cmd_classify(conn, None, batch=True, yes=False))
+    assert "out of credit" in out and "1 wait" in out
+
+    async def other_error(conn, jobs):
+        raise ModelError("HTTP 500: boom")
+
+    monkeypatch.setattr(runner, "submit_batch", other_error)
+    with pytest.raises(ModelError):
+        asyncio.run(run.cmd_classify(conn, None, batch=True, yes=False))
