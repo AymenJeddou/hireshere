@@ -3,6 +3,7 @@
 from pipeline.connectors import (
     ashby,
     greenhouse,
+    jobicy,
     lever,
     recruitee,
     remoteok,
@@ -20,4 +21,5 @@ CONNECTORS = {
     "teamtailor": teamtailor,
     "workable": workable,
     "remoteok": remoteok,
+    "jobicy": jobicy,
 }

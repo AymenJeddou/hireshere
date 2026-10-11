@@ -12,6 +12,10 @@ const co = companies[companyKey];
 const jobs = companyJobs(companyKey);
 const names = Object.fromEntries(world(lang).map((c) => [c.code, c.name]));
 const contracts = [...new Set(jobs.map((j) => j.engagement).filter((e) => e !== "unclear"))];
+// Every level the company is hiring for, junior to lead, with how many openings each.
+const levels = Object.keys(labels.seniority)
+  .map((s) => [s, jobs.filter((j) => j.seniority === s).length] as const)
+  .filter(([s, n]) => n > 0 && s !== "unclear");
 ---
 
 <div class="wrap company-page" data-company={companyKey} data-lang={lang} data-updated={site.updated} data-names={JSON.stringify(names)}>
@@ -42,6 +46,14 @@ const contracts = [...new Set(jobs.map((j) => j.engagement).filter((e) => e !== 
     contracts.length > 0 && (
       <p class="cp-contracts">
         {tr(lang, "contracts")}: {contracts.map((e) => labels.engagement[e as keyof typeof labels.engagement]?.[lang]).join(", ")}
+      </p>
+    )
+  }
+
+  {
+    levels.length > 0 && (
+      <p class="cp-contracts">
+        {tr(lang, "levels")}: {levels.map(([s, n]) => `${labels.seniority[s as keyof typeof labels.seniority]?.[lang]} (${n})`).join(", ")}
       </p>
     )
   }

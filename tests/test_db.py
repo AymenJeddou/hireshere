@@ -151,3 +151,18 @@ def test_board_removed_from_seed_list_is_retired(conn):
     assert row(conn, "lever:acme:1")["expired_at"] == "t2"
     assert row(conn, "lever:other:9")["expired_at"] is None
     assert db.sync_boards(conn, [OTHER], "t3") == 0
+
+
+def test_rolling_feed_expires_by_age_not_absence(conn, monkeypatch):
+    monkeypatch.setitem(config.ROLLING_DAYS, "lever", 30)
+    old, new = job(1), job(2)
+    old.posted_at, new.posted_at = "2026-08-01T00:00:00+00:00", "2026-10-05T00:00:00+00:00"
+    db.apply_result(
+        conn, FetchResult(board=B, ok=True, jobs=[old, new]), "2026-10-06T00:00:00+00:00"
+    )
+    diff = db.apply_result(
+        conn, FetchResult(board=B, ok=True, jobs=[]), "2026-10-11T00:00:00+00:00"
+    )
+    assert diff.expired == 1
+    open_ = [r[0] for r in conn.execute("SELECT id FROM jobs WHERE expired_at IS NULL")]
+    assert open_ == [new.id]

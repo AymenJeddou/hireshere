@@ -16,7 +16,7 @@ import httpx
 
 from pipeline import config
 from pipeline.alerts import T
-from pipeline.export import build, country_view
+from pipeline.export import build, country_view, fresh
 
 PER_RUN = 15  # ponytail: fixed cap per channel per run; Telegram allows ~20 posts/min per channel
 FIRST_RUN = 5
@@ -68,7 +68,7 @@ def run(conn: sqlite3.Connection) -> str:
             new = [
                 j
                 for j in country_view(jobs, code)
-                if j["verdict"] in ("eligible", "likely") and j["id"] not in done
+                if j["verdict"] in ("eligible", "likely") and j["id"] not in done and fresh(j)
             ]
             # Oldest first, so the newest job ends up at the bottom of the channel.
             new.sort(key=lambda j: first_seen.get(j["id"], ""))

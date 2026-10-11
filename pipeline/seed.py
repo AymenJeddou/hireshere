@@ -18,6 +18,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 from pipeline import config, db
+from pipeline.classify.prompt import ENTRY_LEVEL, OFFICE_FLAGS
 from pipeline.http import FetchError, get_json, make_client
 from pipeline.models import Board
 from pipeline.run import fetch_all, load_boards
@@ -139,14 +140,24 @@ async def build(rit: Path, ats_root: Path, extra: int) -> list[dict]:
     return rows
 
 
+def entry_level(jobs: list) -> int:
+    """Intern, junior and graduate openings not flagged office-only."""
+    return sum(
+        bool(ENTRY_LEVEL.search(j.title))
+        and re.sub(r"[\s-]", "", (j.remote_flag_raw or "").lower()) not in OFFICE_FLAGS
+        for j in jobs
+    )
+
+
 def noise(jobs: list) -> str | None:
     """Why a top-up board is not worth fetching, or None. Jobs need location_raw,
     remote_flag_raw and title. Only applied to ats-scrapers top-ups: remoteintech
-    companies are curated, and their location text often omits "remote"."""
+    companies are curated, and their location text often omits "remote". A board with
+    a few entry-level openings is kept even when few jobs say remote."""
     if not jobs:
         return "no open jobs"
     remote = sum(bool(REMOTE.search(f"{j.location_raw} {j.remote_flag_raw or ''}")) for j in jobs)
-    if remote / len(jobs) < 0.05:
+    if remote / len(jobs) < 0.05 and entry_level(jobs) < 2:
         return f"only {remote}/{len(jobs)} remote-looking jobs"
     if len(jobs) >= 50 and len({j.title for j in jobs}) / len(jobs) < 0.10:
         return f"template spam: {len({j.title for j in jobs})} titles for {len(jobs)} jobs"

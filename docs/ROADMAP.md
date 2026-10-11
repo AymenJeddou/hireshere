@@ -9,8 +9,11 @@
 | 4 | Cloudflare Pages, custom domain, end to end automation, monitoring | live on hireshere.app with daily deploy; analytics and monitoring pending |
 | 5 | Job, company and field pages, saved jobs and applied tracker, profile, employer page, getting-paid guide, AR (RTL) UI, Workable/Recruitee/Teamtailor/Remote OK | done (2026-10-10) |
 | 6 | Worldwide: verdicts for every country, visitor country by default, job pages from Pages Functions | done (2026-10-11) |
+| 7 | Data quality: employer posting dates, hybrid and entry-level jobs classified, Jobicy, 162 junior-friendly companies, levels on company pages | done (2026-10-11) |
 
 ## Open items
+
+- Entry-level coverage: watch how many of the new intern/junior postings come out remote or hybrid after the first classify run; drop added boards whose jobs all turn out office-only (`seed prune` style).
 
 - Telegram: live since 2026-10-10 (@hireshere_bot posts to 4 private channels by id, secret TELEGRAM_CHANNELS). Make the channels public to be findable.
 - Native review of the Arabic interface and verdict reasons.

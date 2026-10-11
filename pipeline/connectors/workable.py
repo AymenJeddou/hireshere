@@ -2,7 +2,7 @@
 
 from pipeline.http import get_json
 from pipeline.models import Board, Job
-from pipeline.text import html_to_text
+from pipeline.text import html_to_text, iso_date
 
 URL = "https://apply.workable.com/api/v1/widget/accounts/{slug}"
 
@@ -28,6 +28,7 @@ def parse(data: dict, board: Board) -> list[Job]:
                 employment_type_raw=j.get("employment_type") or None,
                 description_text=html_to_text(j.get("description")),
                 apply_url=j.get("url") or j["shortlink"],
+                posted_at=iso_date(j.get("published_on") or j.get("created_at")),
             )
         )
     return jobs

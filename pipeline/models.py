@@ -26,6 +26,7 @@ class Job(BaseModel):
     salary_currency: str | None = None
     description_text: str = ""
     apply_url: str
+    posted_at: str | None = None  # when the employer published it, from the feed
 
     @computed_field
     @property

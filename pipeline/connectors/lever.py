@@ -1,6 +1,6 @@
 from pipeline.http import get_json
 from pipeline.models import Board, Job
-from pipeline.text import html_to_text
+from pipeline.text import html_to_text, iso_date
 
 URL = "https://api.lever.co/v0/postings/{slug}"
 
@@ -31,6 +31,7 @@ def parse(data: list, board: Board) -> list[Job]:
                 salary_currency=sal.get("currency"),
                 description_text="\n\n".join(s.strip() for s in sections if s.strip()),
                 apply_url=j["hostedUrl"],
+                posted_at=iso_date(j.get("createdAt")),
             )
         )
     return jobs

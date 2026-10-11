@@ -2,6 +2,7 @@
 
 from pipeline.http import FetchError, get_json
 from pipeline.models import Board, Job
+from pipeline.text import iso_date
 
 URL = "https://api.smartrecruiters.com/v1/companies/{slug}/postings"
 PAGE = 100
@@ -32,6 +33,7 @@ def parse(data: dict, board: Board) -> list[Job]:
                 or (j.get("function") or {}).get("label"),
                 employment_type_raw=(j.get("typeOfEmployment") or {}).get("label"),
                 apply_url=f"https://jobs.smartrecruiters.com/{board.slug}/{j['id']}",
+                posted_at=iso_date(j.get("releasedDate")),
             )
         )
     return jobs

@@ -6,7 +6,7 @@ their page, and the site credits them. The first array element is a legal notice
 
 from pipeline.http import get_json
 from pipeline.models import Board, Job
-from pipeline.text import html_to_text
+from pipeline.text import html_to_text, iso_date
 
 URL = "https://remoteok.com/api"
 
@@ -30,6 +30,7 @@ def parse(data: list, board: Board) -> list[Job]:
                 salary_currency="USD" if j.get("salary_min") or j.get("salary_max") else None,
                 description_text=html_to_text(j.get("description")),
                 apply_url=j["url"],
+                posted_at=iso_date(j.get("date")),
             )
         )
     return jobs

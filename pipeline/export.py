@@ -68,7 +68,7 @@ def websites() -> dict[tuple[str, str], str]:
 def rows(conn: sqlite3.Connection):
     q = """SELECT j.id, j.title, j.company_name, j.location_raw, j.apply_url, j.first_seen_at,
                   j.source, e.data, j.board_slug, j.salary_min, j.salary_max, j.salary_currency,
-                  j.department, j.employment_type_raw, j.remote_flag_raw
+                  j.department, j.employment_type_raw, j.remote_flag_raw, j.posted_at
            FROM jobs j JOIN extractions e ON e.content_hash = j.content_hash
            WHERE j.expired_at IS NULL"""
     for r in conn.execute(q):
@@ -124,6 +124,9 @@ def country_view(jobs: list[dict], code: str) -> list[dict]:
     return out
 
 
+FRESH_DAYS = 14  # alerts and Telegram only announce jobs posted this recently
+
+
 def build(conn: sqlite3.Connection) -> list[dict]:
     """Every remote, hybrid or unclear job open to at least one country, newest first."""
     sites = websites()
@@ -131,7 +134,7 @@ def build(conn: sqlite3.Connection) -> list[dict]:
     out = []
     for r, e, verified in rows(conn):
         jid, title, company, location, url, seen, source, _, board = r[:9]
-        smin, smax, scur, dept, emp, _flag = r[9:]
+        smin, smax, scur, dept, emp, _flag, posted = r[9:]
         if e.remote_type not in WORKPLACES:
             continue
         gs = groups(e, location or "", title)
@@ -146,6 +149,7 @@ def build(conn: sqlite3.Connection) -> list[dict]:
                 "location": location or "",
                 "url": url,
                 "seen_at": seen,
+                "posted_at": posted,
                 "slug": job_slug(jid, company, title),
                 "company_key": key,
                 "logo": logos.get(key, ""),
@@ -171,8 +175,19 @@ def build(conn: sqlite3.Connection) -> list[dict]:
                 "groups": gs,
             }
         )
-    out.sort(key=lambda j: j["seen_at"], reverse=True)
+    out.sort(key=when, reverse=True)
     return out
+
+
+def when(j: dict) -> str:
+    """When the employer posted it, else when we first saw it."""
+    return j.get("posted_at") or j["seen_at"]
+
+
+def fresh(j: dict, now: datetime | None = None) -> bool:
+    """Recent enough to announce as new: a newly added company's old postings are not news."""
+    posted = datetime.fromisoformat(when(j))
+    return ((now or datetime.now(UTC)) - posted).days <= FRESH_DAYS
 
 
 def _trim(q: str) -> str:
@@ -185,6 +200,8 @@ def search_record(j: dict, lang: str) -> dict:
     rec = {k: j[k] for k in ("id", "slug", "title", "company", "company_key", "family")}
     rec |= {k: j[k] for k in ("seniority", "engagement", "languages", "seen_at", "salary")}
     rec |= {"scope": place, "workplace": j["workplace"], "quote": _trim(j["quote"])}
+    if j["posted_at"]:
+        rec["posted_at"] = j["posted_at"][:10]
     if j["logo"]:
         rec["logo"] = j["logo"]
     rec["groups"] = [{"v": g["v"], "r": g["r"][lang], "c": g["c"]} for g in j["groups"]]
@@ -240,8 +257,11 @@ def export(
     write_shards(jobs, public_dir / "j")
     companies: dict[str, dict] = {}
     for j in jobs:
-        c = companies.setdefault(j["company_key"], {"name": j["company"], "website": "", "n": 0})
+        c = companies.setdefault(
+            j["company_key"], {"name": j["company"], "website": "", "n": 0, "entry": 0}
+        )
         c["n"] += 1
+        c["entry"] += j["seniority"] in ("intern", "junior")
         c["website"] = c["website"] or j["website"]
         c.setdefault("named", set()).update(x for x in j["named"] if x in config.WORLD)
     for c in companies.values():

@@ -2,6 +2,7 @@
 
 import sqlite3
 from dataclasses import dataclass
+from datetime import datetime, timedelta
 
 from pipeline import config
 from pipeline.models import Board, FetchResult
@@ -34,6 +35,7 @@ CREATE TABLE IF NOT EXISTS jobs (
     salary_currency TEXT,
     description_text TEXT,
     apply_url TEXT NOT NULL,
+    posted_at TEXT,
     content_hash TEXT NOT NULL,
     first_seen_at TEXT NOT NULL,
     last_seen_at TEXT NOT NULL,
@@ -74,7 +76,7 @@ CREATE TABLE IF NOT EXISTS runs (
 JOB_FIELDS = [
     "source", "board_slug", "company_name", "title", "location_raw", "remote_flag_raw",
     "department", "employment_type_raw", "salary_min", "salary_max", "salary_currency",
-    "description_text", "apply_url", "content_hash",
+    "description_text", "apply_url", "posted_at", "content_hash",
 ]  # fmt: skip
 
 
@@ -90,6 +92,8 @@ def connect(path: str = config.DB_PATH) -> sqlite3.Connection:
     conn = sqlite3.connect(path)
     conn.row_factory = sqlite3.Row
     conn.executescript(SCHEMA)
+    if "posted_at" not in {r[1] for r in conn.execute("PRAGMA table_info(jobs)")}:
+        conn.execute("ALTER TABLE jobs ADD COLUMN posted_at TEXT")  # added 2026-10-11
     return conn
 
 
@@ -157,9 +161,10 @@ def apply_result(conn: sqlite3.Connection, result: FetchResult, now: str) -> Dif
             (now, b.ats, b.slug),
         )
         existing = {
-            r["id"]: (r["content_hash"], r["expired_at"])
+            r["id"]: (r["content_hash"], r["expired_at"], r["since"])
             for r in conn.execute(
-                "SELECT id, content_hash, expired_at FROM jobs WHERE source = ? AND board_slug = ?",
+                "SELECT id, content_hash, expired_at, COALESCE(posted_at, first_seen_at) since "
+                "FROM jobs WHERE source = ? AND board_slug = ?",
                 (b.ats, b.slug),
             )
         }
@@ -177,7 +182,7 @@ def apply_result(conn: sqlite3.Connection, result: FetchResult, now: str) -> Dif
                 )
                 diff.new += 1
                 continue
-            old_hash, expired_at = existing[job.id]
+            old_hash, expired_at, _ = existing[job.id]
             changed = old_hash != job.content_hash
             # Rule 1: refresh last_seen_at and clear expired_at.
             # Rule 4: a content change sends the job back to the classifier.
@@ -190,8 +195,11 @@ def apply_result(conn: sqlite3.Connection, result: FetchResult, now: str) -> Dif
             )
             if changed or expired_at:
                 diff.updated += 1
-        # Rule 2: anything not in a successful fetch is gone.
-        gone = [i for i, (_, exp) in existing.items() if i not in seen and exp is None]
+        # Rule 2: anything not in a successful fetch is gone. Rolling feeds: once old enough.
+        gone = [i for i, (_, exp, _) in existing.items() if i not in seen and exp is None]
+        if days := config.ROLLING_DAYS.get(b.ats):
+            cutoff = (datetime.fromisoformat(now) - timedelta(days=days)).isoformat()
+            gone = [i for i in gone if existing[i][2] < cutoff]
         conn.executemany("UPDATE jobs SET expired_at = ? WHERE id = ?", [(now, i) for i in gone])
         diff.expired = len(gone)
     return diff

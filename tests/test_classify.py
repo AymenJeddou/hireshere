@@ -112,7 +112,13 @@ def job(**kw):
 def test_prefilter():
     assert prefilter(job()) == "no remote signal"
     assert prefilter(job(remote_flag_raw="OnSite")) == "workplace flag onsite"
-    assert prefilter(job(remote_flag_raw="Hybrid")) == "workplace flag hybrid"
+    assert prefilter(job(remote_flag_raw="Hybrid")) is None
+    assert prefilter(job(title="Data Analyst Intern")) is None
+    assert prefilter(job(title="Junior Accountant")) is None
+    assert prefilter(job(title="Marketing Intern", remote_flag_raw="onsite")) == (
+        "workplace flag onsite"
+    )
+    assert prefilter(job(title="Internal Auditor")) == "no remote signal"
     assert prefilter(job(remote_flag_raw="remote")) is None
     assert prefilter(job(location_raw="Remote, EMEA", remote_flag_raw="hybrid")) is None
     assert prefilter(job(description_text="This is a remote role.")) is None
@@ -284,22 +290,29 @@ def test_listed_region_beats_anywhere_text():
 
 
 def test_alert_pick_and_token():
+    from datetime import UTC, datetime
+
     from pipeline.alerts import pick, render, unsubscribe_token
 
-    def job(id_, verdict, family, scope=""):
+    today = datetime.now(UTC).isoformat()
+
+    def job(id_, verdict, family, scope="", posted=None):
         r = {"en": "r", "fr": "r", "ar": "r"}
         return {"id": id_, "verdict": verdict, "family": family, "title": id_.upper(),
-                "company": "X", "scope": scope, "url": f"https://x/{id_}", "reason": r}  # fmt: skip
+                "company": "X", "scope": scope, "url": f"https://x/{id_}", "reason": r,
+                "seen_at": today, "posted_at": posted}  # fmt: skip
 
     jobs = [job("a", "eligible", "data"), job("b", "likely", "engineering", "EMEA"),
-            job("c", "unclear", "data"), job("d", "eligible", "data")]  # fmt: skip
+            job("c", "unclear", "data"), job("d", "eligible", "data"),
+            job("e", "eligible", "data", posted="2025-01-01T00:00:00+00:00")]  # fmt: skip
     seen = {"a": "2026-10-09T08:00:00+00:00", "b": "2026-10-09T09:00:00+00:00",
-            "c": "2026-10-09T09:00:00+00:00", "d": "2026-10-07T08:00:00+00:00"}  # fmt: skip
+            "c": "2026-10-09T09:00:00+00:00", "d": "2026-10-07T08:00:00+00:00",
+            "e": "2026-10-09T09:00:00+00:00"}  # fmt: skip
     since = "2026-10-08T00:00:00.000Z"
     assert [j["id"] for j in pick(jobs, seen, since, "")] == [
         "a",
         "b",
-    ]  # eligible first, no unclear, d is old
+    ]  # eligible first, no unclear, d seen before, e posted long ago
     assert [j["id"] for j in pick(jobs, seen, since, "data")] == ["a"]
     tok = unsubscribe_token("me@x.com", "s3cret")
     assert (

@@ -22,6 +22,14 @@ from pipeline.export import slugify, websites
 from pipeline.run import load_boards
 
 OUT = Path("site/public/logos")
+# Icons that came back unusable (white on white, empty or corrupt): these show initials.
+SKIP = {
+    "intevity",
+    "medium",
+    "niantic-spatial",
+    "spacial-ai",
+    "superior-executive-legal-recruiting",
+}
 TYPES = {"image/png": "png", "image/svg+xml": "svg", "image/x-icon": "ico",
          "image/vnd.microsoft.icon": "ico", "image/jpeg": "jpg", "image/webp": "webp"}  # fmt: skip
 
@@ -64,7 +72,7 @@ HOME = {
     ),
 }
 
-ATS_HOSTS = r"ashbyhq|lever\.co|greenhouse|smartrecruiters|teamtailor|workable|recruitee|ultipro"
+ATS_HOSTS = r"example\.com|ashbyhq|lever\.co|greenhouse|smartrecruiters|teamtailor|workable|recruitee|ultipro"
 
 
 def discover_websites(client: httpx.Client) -> None:
@@ -128,6 +136,8 @@ def main(argv=None) -> None:
             if (b.ats, b.slug) in sites
         }
         for key, site in sorted(companies.items()):
+            if key in SKIP:
+                continue
             if not args.force and any(OUT.glob(f"{key}.*")):
                 ok += 1
                 continue

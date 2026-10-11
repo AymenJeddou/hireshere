@@ -35,7 +35,7 @@ def triage(conn: sqlite3.Connection, limit: int | None = None) -> tuple[list[dic
     content_hash that still needs the model, plus counts."""
     rows = conn.execute(
         f"SELECT {COLS} FROM jobs WHERE expired_at IS NULL "
-        "AND classify_status IN ('pending', 'error') ORDER BY first_seen_at, id"
+        "AND classify_status IN ('pending', 'error', 'skipped') ORDER BY first_seen_at, id"
     ).fetchall()
     known = {r[0] for r in conn.execute("SELECT content_hash FROM extractions")}
     todo: dict[str, dict] = {}

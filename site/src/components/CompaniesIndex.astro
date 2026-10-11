@@ -24,6 +24,7 @@ const list = Object.entries(companies).sort((a, b) => b[1].n - a[1].n);
             <span>
               <strong>{c.name}</strong>
               <small>{tr(lang, "company_open_n", { n: c.n })}</small>
+              {c.entry > 0 && <small class="co-entry">{tr(lang, "company_entry_n", { n: c.entry })}</small>}
             </span>
           </a>
         </li>
@@ -76,5 +77,8 @@ const list = Object.entries(companies).sort((a, b) => b[1].n - a[1].n);
   .co-grid small {
     color: var(--ink-2);
     font-size: var(--step--1);
+  }
+  .co-grid .co-entry {
+    color: var(--go);
   }
 </style>

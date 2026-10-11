@@ -17,7 +17,7 @@ from urllib.parse import quote
 import httpx
 
 from pipeline import config
-from pipeline.export import build, country_view
+from pipeline.export import build, country_view, fresh
 
 # ponytail: Resend free tier caps at 100 emails/day; leftovers go out next run. Paid tier lifts it.
 DAILY_CAP = 95
@@ -80,6 +80,7 @@ def pick(jobs: list[dict], first_seen: dict[str, str], since: str, family: str) 
         for j in jobs
         if j["verdict"] in ("eligible", "likely")
         and first_seen.get(j["id"], "") > since
+        and fresh(j)
         and (not family or j["family"] == family)
     ]
     hits.sort(key=lambda j: first_seen[j["id"]], reverse=True)

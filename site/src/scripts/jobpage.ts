@@ -9,6 +9,7 @@ import {
   groupFor,
   groupText,
   isNew,
+  when,
   lamp,
   nameList,
   pill,
@@ -113,6 +114,7 @@ export function jobPage(job: Detail, lang: Lang, code: string, meta: Meta): stri
       [tr(lang, "d_timezone"), tzText],
       [tr(lang, "d_department"), job.department],
       [tr(lang, "d_source"), SOURCES[job.source]?.name ?? job.source],
+      [tr(lang, "d_posted"), job.posted_at ? formatDate(job.posted_at, lang, true) : ""],
       [tr(lang, "d_first_seen"), formatDate(job.seen_at, lang, true)],
     ] as [string, string][]
   ).filter(([, v]) => v);
@@ -170,6 +172,7 @@ export function jobPage(job: Detail, lang: Lang, code: string, meta: Meta): stri
     [tr(lang, "d_contract"), job.engagement !== "unclear" ? lab("engagement", job.engagement) : tr(lang, "not_stated")],
     [tr(lang, "d_field"), lab("family", job.family) || tr(lang, "not_stated")],
     [tr(lang, "working_hours"), tzFact],
+    [tr(lang, "d_posted"), job.posted_at ? formatDate(job.posted_at, lang, true) : tr(lang, "not_stated")],
     [tr(lang, "d_first_seen"), formatDate(job.seen_at, lang, true)],
   ];
   const site = website || job.company;
@@ -193,7 +196,7 @@ export function jobPage(job: Detail, lang: Lang, code: string, meta: Meta): stri
   <div class="jhead">
     ${avatar(job.company, job.company_key, job.logo, 76)}
     <div>
-      <h1>${esc(job.title)}${isNew(job.seen_at, meta.updated) ? ` <span class="new-badge">${esc(tr(lang, "new_badge"))}</span>` : ""}</h1>
+      <h1>${esc(job.title)}${isNew(when(job), meta.updated) ? ` <span class="new-badge">${esc(tr(lang, "new_badge"))}</span>` : ""}</h1>
       <p class="jmeta">${metaLine}</p>
     </div>
     ${applyBtn("jhead-apply")}

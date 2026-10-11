@@ -13,6 +13,8 @@ MAX_CONCURRENCY = 5
 RETRIES = 2
 TIMEOUT_SECONDS = float(os.environ.get("HTTP_TIMEOUT", "20"))
 MAX_CONSECUTIVE_FAILURES = 5
+# Feeds that only list recent jobs: a missing job expires this many days after it was posted.
+ROLLING_DAYS = {"jobicy": 30}
 
 DB_PATH = os.environ.get("JOBS_DB", "jobs.db")
 BOARDS_CSV = "data/boards.csv"

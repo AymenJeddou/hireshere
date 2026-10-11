@@ -1,6 +1,6 @@
 from pipeline.http import get_json
 from pipeline.models import Board, Job
-from pipeline.text import html_to_text
+from pipeline.text import html_to_text, iso_date
 
 URL = "https://boards-api.greenhouse.io/v1/boards/{slug}/jobs"
 
@@ -29,6 +29,7 @@ def parse(data: dict, board: Board) -> list[Job]:
                 employment_type_raw=_meta(j, "employment type"),
                 description_text=html_to_text(j.get("content"), escaped=True),
                 apply_url=j["absolute_url"],
+                posted_at=iso_date(j.get("first_published")),
             )
         )
     return jobs

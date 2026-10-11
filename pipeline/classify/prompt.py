@@ -46,7 +46,13 @@ REMOTE_SIGNAL = re.compile(
     re.I,
 )
 DESC_REMOTE = re.compile(r"\bremote\b|work from anywhere|fully distributed", re.I)
-OFFICE_FLAGS = {"onsite", "hybrid", "inoffice"}
+# Entry-level postings often name only a city; let the model read them like any other level.
+ENTRY_LEVEL = re.compile(
+    r"\b(intern(ship)?s?|stage|stagiaire|trainee|graduate|new grad|junior|jr|entry[- ]level"
+    r"|werkstudent|working student|apprentice(ship)?|alternan(ce|t)|student)\b",
+    re.I,
+)
+OFFICE_FLAGS = {"onsite", "inoffice"}
 
 
 def prefilter(job: dict) -> str | None:
@@ -56,11 +62,11 @@ def prefilter(job: dict) -> str | None:
     """
     head = f"{job['location_raw'] or ''} {job['title']}"
     flag = re.sub(r"[\s-]", "", (job["remote_flag_raw"] or "").lower())
-    if flag == "remote" or REMOTE_SIGNAL.search(head):
+    if flag in ("remote", "hybrid") or REMOTE_SIGNAL.search(head):
         return None
     if flag in OFFICE_FLAGS:
         return f"workplace flag {flag}"
-    if DESC_REMOTE.search(job["description_text"] or ""):
+    if ENTRY_LEVEL.search(job["title"]) or DESC_REMOTE.search(job["description_text"] or ""):
         return None
     return "no remote signal"
 

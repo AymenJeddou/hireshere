@@ -21,6 +21,8 @@ export interface SJob {
   engagement: string;
   languages: string[];
   seen_at: string;
+  /** When the employer published it (YYYY-MM-DD), when the feed says. */
+  posted_at?: string;
   salary: [number | null, number | null, string | null] | null;
   scope: string;
   workplace: string;
@@ -40,7 +42,7 @@ export interface Ctx {
 
 export const SHOWN: Verdict[] = ["eligible", "likely", "unclear"];
 
-// Where jobs come from. Remote OK's API terms: name them and link back to their job page.
+// Where jobs come from. Remote OK's and Jobicy's API terms: name them and link back to their job page.
 export const SOURCES: Record<string, { name: string; url: string }> = {
   greenhouse: { name: "Greenhouse", url: "https://www.greenhouse.com" },
   lever: { name: "Lever", url: "https://www.lever.co" },
@@ -50,6 +52,7 @@ export const SOURCES: Record<string, { name: string; url: string }> = {
   recruitee: { name: "Recruitee", url: "https://recruitee.com" },
   teamtailor: { name: "Teamtailor", url: "https://www.teamtailor.com" },
   remoteok: { name: "Remote OK", url: "https://remoteok.com" },
+  jobicy: { name: "Jobicy", url: "https://jobicy.com" },
 };
 
 /** The group that holds `code`, else the "*" group, else null (not eligible). */
@@ -120,9 +123,20 @@ export const daysSince = (seenAt: string, updated: string) =>
 /** First seen in the last 36 hours before the export: "new today" for a daily site. */
 export const isNew = (seenAt: string, updated: string) => Date.parse(updated) - Date.parse(seenAt) < 36 * 3600 * 1000;
 
-export function foundText(seenAt: string, updated: string, lang: Lang): string {
-  const d = daysSince(seenAt, updated);
-  return d === 0 ? tr(lang, "found_today") : d === 1 ? tr(lang, "found_1") : tr(lang, "found_ago", { n: d });
+/** The employer's posting date when known, else the day we first saw the job. */
+export const when = (j: { seen_at: string; posted_at?: string | null }) => j.posted_at || j.seen_at;
+/** Postings older than this read as stale and are drawn muted. */
+export const OLD_DAYS = 60;
+
+export function foundText(j: SJob, updated: string, lang: Lang): string {
+  const d = daysSince(when(j), updated);
+  const k = j.posted_at ? "posted" : "found";
+  return d === 0 ? tr(lang, `${k}_today`) : d === 1 ? tr(lang, `${k}_1`) : tr(lang, `${k}_ago`, { n: d });
+}
+
+export function dateTag(j: SJob, updated: string, lang: Lang, cls = ""): string {
+  const old = daysSince(when(j), updated) > OLD_DAYS ? " is-old" : "";
+  return `<time class="${cls}${old}" datetime="${esc(when(j).slice(0, 10))}">${esc(foundText(j, updated, lang))}</time>`;
 }
 
 const ICON = {
@@ -147,7 +161,7 @@ export function infoLine(j: SJob, lang: Lang, updated: string, found = false): s
     ["salary", esc(salaryText(j.salary, lang))],
   ];
   if (found)
-    items.push(["when", `<time datetime="${esc(j.seen_at.slice(0, 10))}">${esc(foundText(j.seen_at, updated, lang))}</time>`]);
+    items.push(["when", dateTag(j, updated, lang)]);
   return `<ul class="card-info">${items
     .filter(([, v]) => v)
     .map(([k, v]) => `<li><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="${ICON[k]}"></path></svg>${v}</li>`)
@@ -207,7 +221,7 @@ export function cardPill(j: SJob, ctx: Ctx, shown: Verdict[] = SHOWN): string {
 /** Tags under the title: new, workplace, level, contract, field. */
 function tags(j: SJob, lang: Lang, updated: string): string {
   const t = [
-    isNew(j.seen_at, updated) ? `<li class="tag new">${esc(tr(lang, "new_badge"))}</li>` : "",
+    isNew(when(j), updated) ? `<li class="tag new">${esc(tr(lang, "new_badge"))}</li>` : "",
     `<li class="tag">${esc(tr(lang, `workplace_${j.workplace === "hybrid" ? "hybrid" : "fully_remote"}` as never))}</li>`,
     j.seniority !== "unclear" ? `<li class="tag">${esc(label("seniority", j.seniority, lang))}</li>` : "",
     j.engagement !== "unclear" ? `<li class="tag">${esc(label("engagement", j.engagement, lang))}</li>` : "",
@@ -225,7 +239,7 @@ export function card(j: SJob, ctx: Ctx, shown: Verdict[] = SHOWN): string {
 <h3 class="card-title" id="${titleId}"><a href="${jobHref}">${esc(j.title)}</a></h3>
 <p class="card-meta"><a href="${esc(href(lang, "company", j.company_key))}">${esc(j.company)}</a>${salary ? ` · ${esc(salary)}` : ""}</p>
 ${tags(j, lang, updated)}</div>
-<div class="card-side">${cardPill(j, ctx, shown)}<time class="card-date" datetime="${esc(j.seen_at.slice(0, 10))}">${esc(foundText(j.seen_at, updated, lang))}</time>
+<div class="card-side">${cardPill(j, ctx, shown)}${dateTag(j, updated, lang, "card-date")}
 <button type="button" class="icon-btn save-btn" data-save="${esc(j.id)}" aria-pressed="false" aria-label="${esc(`${tr(lang, "save")}: ${j.title}`)}" aria-describedby="${titleId}">${STAR}</button></div></li>`;
 }
 

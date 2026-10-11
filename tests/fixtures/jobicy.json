@@ -1,0 +1,73 @@
+{
+ "apiVersion": "2.2.19",
+ "documentationUrl": "https://jobi.cy/apidocs",
+ "friendlyNotice": "Thanks for using Jobicy API! Please ensure Jobicy is clearly credited with a direct link to the source, and all application buttons redirect to the original job URL provided in this feed. That’s all! You might be building something amazing, we wish you the best of luck!",
+ "jobCount": 100,
+ "lastUpdate": "2026-10-11T08:39:51+00:00",
+ "nextCursor": "AgAAAABqy3tOAAAAAGrLB3AAAAAAAAJVoZGStyjVOt7ULMvdFdHp_0xjGsH--7hP_G6cSgT0AUpICY_2KPBHndv4bWIoF17c1NGSPouRY9pq-xQ43AblKzM",
+ "hasMore": true,
+ "appliedFilters": {
+  "count": 100
+ },
+ "jobs": [
+  {
+   "id": 155052,
+   "url": "https://jobicy.com/jobs/155052-emea-insights-lead-consumer-and-commercial-strategy",
+   "jobSlug": "155052-emea-insights-lead-consumer-and-commercial-strategy",
+   "jobTitle": "EMEA Insights Lead, Consumer and Commercial Strategy",
+   "companyName": "Reddit",
+   "companyLogo": "https://jobicy.com/data/server-nyc0409/galaxy/mercury/2020/10/Reddit.jpg",
+   "jobIndustry": [
+    "Data Science & Analytics"
+   ],
+   "jobType": [
+    "Contract"
+   ],
+   "jobGeo": "Germany",
+   "jobLevel": "Senior",
+   "jobExcerpt": "Reddit is a community of communities. It’s built on shared interests, passion, and trust, and is home to the most open and authentic conversations on the internet. Every day, Reddit users submit, vote, and comment on the topics they care most about. With 100,000+ active communities and approximately 130 million daily active unique visitors, Reddit&hellip;",
+   "jobDescription": "<p><a href=\"https://jobicy.com/company/reddit\" target=\"_blank\" rel=\"noopener\">Reddit</a> is a community of communities. It’s built on shared interests, passion, and trust, and is home to the most open and authentic conversations on the internet. Every day, Reddit users submit, vote, and comment on the topics they care most about. With 100,000+ active communities and approximately 130 million daily active unique visitors, Reddit is one of the internet’s largest sources of information. For more information, visit <a href=\"http://www.redditinc.com/\" rel=\"nofollow ugc noopener\" target=\"_blank\">www",
+   "pubDate": "2026-10-11T08:39:51+00:00"
+  },
+  {
+   "id": 155056,
+   "url": "https://jobicy.com/jobs/155056-staff-machine-learning-engineer-ads-foundational-representations",
+   "jobSlug": "155056-staff-machine-learning-engineer-ads-foundational-representations",
+   "jobTitle": "Staff Machine Learning Engineer, Ads Foundational Representations",
+   "companyName": "Reddit",
+   "companyLogo": "https://jobicy.com/data/server-nyc0409/galaxy/mercury/2020/10/Reddit.jpg",
+   "jobIndustry": [
+    "Data Science & Analytics"
+   ],
+   "jobType": [
+    "Contract"
+   ],
+   "jobGeo": "Netherlands,  UK",
+   "jobLevel": "Senior",
+   "jobExcerpt": "Reddit is a community of communities. It’s built on shared interests, passion, and trust, and is home to the most open and authentic conversations on the internet. Every day, Reddit users submit, vote, and comment on the topics they care most about. With 100,000+ active communities and approximately 130 million daily active unique visitors, Reddit&hellip;",
+   "jobDescription": "<p><a href=\"https://jobicy.com/company/reddit\" target=\"_blank\" rel=\"noopener\">Reddit</a> is a community of communities. It’s built on shared interests, passion, and trust, and is home to the most open and authentic conversations on the internet. Every day, Reddit users submit, vote, and comment on the topics they care most about. With 100,000+ active communities and approximately 130 million daily active unique visitors, Reddit is one of the internet’s largest sources of information. For more information, visit <a href=\"http://www.redditinc.com/\" rel=\"nofollow ugc noopener\" target=\"_blank\">www",
+   "pubDate": "2026-10-11T08:39:50+00:00"
+  },
+  {
+   "id": 155030,
+   "url": "https://jobicy.com/jobs/155030-junior-customer-success-manager-api-2",
+   "jobSlug": "155030-junior-customer-success-manager-api-2",
+   "jobTitle": "Junior Customer Success Manager (API)",
+   "companyName": "Vonage",
+   "companyLogo": "https://jobicy.com/data/server-nyc0409/galaxy/mercury/2025/06/1bac058d-221.jpg",
+   "jobIndustry": [
+    "Customer Support & Success"
+   ],
+   "jobType": [
+    "Full-Time"
+   ],
+   "jobGeo": "Japan",
+   "jobLevel": "Entry-Level, Junior",
+   "jobExcerpt": "Join Vonage and help us innovate cloud communications for businesses worldwide! About Vonage API Vonage API is a global leader in Communications Platform as a Service (CPaaS), enabling businesses to seamlessly integrate messaging, voice, video, and authentication capabilities into their applications. Our mission is to power meaningful conversations and connections through innovative cloud communications solutions.&hellip;",
+   "jobDescription": "<h3><strong>Join <a href=\"https://jobicy.com/company/vonage\" target=\"_blank\" rel=\"noopener\">Vonage</a> and help us innovate cloud communications for businesses worldwide!</strong></h3>\n<h3><strong>About Vonage API</strong></h3>\n<p>Vonage API is a global leader in Communications Platform as a Service (CPaaS), enabling businesses to seamlessly integrate messaging, voice, video, and authentication capabilities into their applications. Our mission is to power meaningful conversations and connections through innovative cloud communications solutions.</p>\n<h3><strong>Why this role matters:</strong><",
+   "pubDate": "2026-10-11T06:09:49+00:00"
+  }
+ ],
+ "statusCode": 200,
+ "success": true
+}

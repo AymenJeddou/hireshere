@@ -1,5 +1,5 @@
 import type { Lang } from "../i18n";
-import { card, type Ctx, loadJobs, type SJob, verdictsFor } from "./cards";
+import { card, type Ctx, loadJobs, type SJob, verdictsFor, when } from "./cards";
 import { remember, visitorCountry } from "./country";
 import { languagesFit, loadProfile } from "./profile";
 import { initSaveButtons } from "./saved";
@@ -58,7 +58,7 @@ export async function initSearch(): Promise<void> {
     job,
     vs: [],
     q: `${job.title} ${job.company}`.toLowerCase(),
-    days: Math.max(0, Math.floor((now - Date.parse(job.seen_at)) / 86400000)),
+    days: Math.max(0, Math.floor((now - Date.parse(when(job))) / 86400000)),
   }));
   let scored = "-";
   const score = (code: string) => {
@@ -168,6 +168,7 @@ export async function initSearch(): Promise<void> {
     const pd = pool("d");
     set("d:1", pd.filter((k) => k.days < 1).length);
     set("d:7", pd.filter((k) => k.days < 7).length);
+    set("d:30", pd.filter((k) => k.days < 30).length);
     set("d:", pd.length);
     set("sal:1", pool("sal").filter((k) => k.job.salary).length);
   }
@@ -244,8 +245,8 @@ export async function initSearch(): Promise<void> {
     const matches = cards.filter((k) => passes(k, st));
     matches.sort((a, b) =>
       st.sort === "new"
-        ? b.job.seen_at.localeCompare(a.job.seen_at)
-        : best(a, st) - best(b, st) || b.job.seen_at.localeCompare(a.job.seen_at),
+        ? when(b.job).localeCompare(when(a.job))
+        : best(a, st) - best(b, st) || when(b.job).localeCompare(when(a.job)),
     );
     const pages = Math.max(1, Math.ceil(matches.length / PAGE));
     page = Math.min(page, pages);

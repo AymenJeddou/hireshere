@@ -1,6 +1,6 @@
 from pipeline.http import get_json
 from pipeline.models import Board, Job
-from pipeline.text import html_to_text
+from pipeline.text import html_to_text, iso_date
 
 URL = "https://api.ashbyhq.com/posting-api/job-board/{slug}"
 
@@ -33,6 +33,7 @@ def parse(data: dict, board: Board) -> list[Job]:
                 description_text=j.get("descriptionPlain")
                 or html_to_text(j.get("descriptionHtml")),
                 apply_url=j["jobUrl"],
+                posted_at=iso_date(j.get("publishedAt")),
             )
         )
     return jobs

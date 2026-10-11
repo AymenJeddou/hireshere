@@ -40,7 +40,7 @@ export function countryName(c: Omit<Country, "code">, lang: Lang): string {
 }
 
 /** Company pages: name, website, number of jobs, countries named in their postings. */
-export const companies = companiesIndex as Record<string, { name: string; website: string; n: number; named: string[] }>;
+export const companies = companiesIndex as Record<string, { name: string; website: string; n: number; entry: number; named: string[] }>;
 
 export function companyJobs(key: string): SJob[] {
   return jobs.filter((j) => j.company_key === key);

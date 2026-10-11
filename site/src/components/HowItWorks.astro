@@ -15,7 +15,7 @@ const COPY = {
   en: {
     lede: "HiresHere answers one question: can I apply for this remote job from my country? Here is how every verdict is made, and where it can go wrong.",
     from_t: "Where the jobs come from",
-    from: `Every day we read the public job feeds of ${boards} companies’ hiring systems (${systems}) and the public Remote OK feed. These are the same postings you see on their careers pages. A job that disappears from the feed is removed the same day. We never scrape LinkedIn, Indeed or any site that forbids it.`,
+    from: `Every day we read the public job feeds of ${boards} companies’ hiring systems (${systems}) and the public Remote OK and Jobicy feeds. These are the same postings you see on their careers pages, with the date the employer posted them. A job that disappears from a company feed is removed the same day. We never scrape LinkedIn, Indeed or any site that forbids it.`,
     read_t: "How a posting is read",
     read: [
       "An AI model reads each posting and records who may apply: allowed or excluded countries and regions, required time zones, work authorization, contract type and languages. It must quote the exact sentence it relies on. We check that the sentence really appears in the posting; if it does not, the verdict cannot be “Eligible”.",
@@ -35,7 +35,7 @@ const COPY = {
   fr: {
     lede: "HiresHere répond à une seule question : puis-je postuler à ce poste en télétravail depuis mon pays ? Voici comment chaque verdict est établi, et ses limites.",
     from_t: "D’où viennent les offres",
-    from: `Chaque jour, nous lisons les flux publics des systèmes de recrutement de ${boards} entreprises (${systems}) et le flux public de Remote OK. Ce sont les mêmes annonces que sur leurs pages carrières. Une offre qui disparaît du flux est retirée le jour même. Nous ne copions jamais LinkedIn, Indeed ou d’autres sites qui l’interdisent.`,
+    from: `Chaque jour, nous lisons les flux publics des systèmes de recrutement de ${boards} entreprises (${systems}) et les flux publics de Remote OK et Jobicy. Ce sont les mêmes annonces que sur leurs pages carrières, avec la date de publication de l’employeur. Une offre qui disparaît du flux d’une entreprise est retirée le jour même. Nous ne copions jamais LinkedIn, Indeed ou d’autres sites qui l’interdisent.`,
     read_t: "Comment une annonce est lue",
     read: [
       "Un modèle d’IA lit chaque annonce et relève qui peut postuler : pays et régions acceptés ou exclus, fuseau horaire exigé, autorisation de travail requise, type de contrat et langues. Il doit citer la phrase exacte sur laquelle il s’appuie. Nous vérifions que cette phrase figure bien dans l’annonce ; sinon le verdict ne peut pas être « Éligible ».",
@@ -55,7 +55,7 @@ const COPY = {
   ar: {
     lede: "يجيب HiresHere عن سؤال واحد: هل يمكنني التقديم على هذه الوظيفة عن بُعد من بلدي؟ إليك كيف يُصدَر كل حكم، وأين قد يخطئ.",
     from_t: "من أين تأتي الوظائف",
-    from: `نقرأ يوميًا الخلاصات العامة لأنظمة التوظيف لدى ${boards} شركة (${systems}) والخلاصة العامة لموقع Remote OK. إنها الإعلانات نفسها التي تراها في صفحات التوظيف لديهم. الوظيفة التي تختفي من الخلاصة تُحذف في اليوم نفسه. لا ننسخ أبدًا من LinkedIn أو Indeed أو أي موقع يمنع ذلك.`,
+    from: `نقرأ يوميًا الخلاصات العامة لأنظمة التوظيف لدى ${boards} شركة (${systems}) والخلاصتين العامتين لموقعي Remote OK وJobicy. إنها الإعلانات نفسها التي تراها في صفحات التوظيف لديهم، مع تاريخ نشرها لدى صاحب العمل. الوظيفة التي تختفي من خلاصة الشركة تُحذف في اليوم نفسه. لا ننسخ أبدًا من LinkedIn أو Indeed أو أي موقع يمنع ذلك.`,
     read_t: "كيف يُقرأ الإعلان",
     read: [
       "يقرأ نموذج ذكاء اصطناعي كل إعلان ويسجّل من يحق له التقديم: الدول والمناطق المقبولة أو المستثناة، والمنطقة الزمنية المطلوبة، وتصريح العمل، ونوع العقد، واللغات. وعليه أن يقتبس الجملة الدقيقة التي يستند إليها. نتحقق من أن هذه الجملة موجودة فعلًا في الإعلان؛ وإلا فلا يمكن أن يكون الحكم «مؤهَّل».",

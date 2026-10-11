@@ -2,7 +2,7 @@
 
 from pipeline.http import get_json
 from pipeline.models import Board, Job
-from pipeline.text import html_to_text
+from pipeline.text import html_to_text, iso_date
 
 URL = "https://{slug}.teamtailor.com/jobs.json"
 
@@ -42,6 +42,7 @@ def parse(data: dict, board: Board) -> list[Job]:
                 employment_type_raw=", ".join(emp) if isinstance(emp, list) else emp,
                 description_text=html_to_text(it.get("content_html")),
                 apply_url=it["url"],
+                posted_at=iso_date(jp.get("datePosted") or it.get("date_published")),
             )
         )
     return jobs

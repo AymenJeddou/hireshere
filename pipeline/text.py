@@ -2,6 +2,7 @@
 
 import html
 import re
+from datetime import UTC, datetime
 from html.parser import HTMLParser
 
 _BLOCK = {"p", "div", "br", "li", "ul", "ol", "h1", "h2", "h3", "h4", "h5", "h6", "tr", "section"}
@@ -45,3 +46,18 @@ def html_to_text(raw: str | None, escaped: bool = False) -> str:
     text = re.sub(r"[ \t]+", " ", text)
     text = re.sub(r" *\n *", "\n", text)
     return re.sub(r"\n{3,}", "\n\n", text).strip()
+
+
+def iso_date(v) -> str | None:
+    """A posting date from any feed (ISO text, "... UTC", epoch ms) as ISO 8601 UTC, or None."""
+    if v in (None, ""):
+        return None
+    try:
+        if isinstance(v, int | float) or str(v).isdigit():
+            d = datetime.fromtimestamp(int(v) / 1000, UTC)
+        else:
+            d = datetime.fromisoformat(str(v).replace(" UTC", "+00:00").replace("Z", "+00:00"))
+            d = d.replace(tzinfo=d.tzinfo or UTC).astimezone(UTC)
+    except (ValueError, OverflowError, OSError):
+        return None
+    return d.replace(microsecond=0).isoformat()

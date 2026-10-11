@@ -8,7 +8,7 @@ interface Props {
 const { lang } = Astro.props;
 const boards = site.boards as Record<string, number>;
 const systems = Object.entries(SOURCES)
-  .filter(([key]) => key !== "remoteok")
+  .filter(([key]) => key !== "remoteok" && key !== "jobicy")
   .map(([key, s]) => ({ key, ...s }));
 const COPY = {
   en: {
@@ -19,6 +19,7 @@ const COPY = {
     tracked: "Companies tracked",
     boards_t: "Job boards",
     remoteok: ": public job feed. Each of these jobs links back to its page on Remote OK.",
+    jobicy: ": public remote jobs API. Each of these jobs links back to its page on Jobicy, where you apply.",
     list_t: "Company list",
     rit: ": a list of remote-friendly companies. ISC License, © 2024 Lene Saile.",
     ats: ": the mapping from companies to their hiring systems. MIT License, © 2026 Kalil Bouzigues.",
@@ -36,6 +37,7 @@ const COPY = {
     tracked: "Entreprises suivies",
     boards_t: "Sites d’offres",
     remoteok: " : flux d’offres public. Chacune de ces offres renvoie vers sa page sur Remote OK.",
+    jobicy: " : API publique d’offres en télétravail. Chacune de ces offres renvoie vers sa page sur Jobicy, où vous postulez.",
     list_t: "Liste des entreprises",
     rit: " : liste d’entreprises ouvertes au télétravail. Licence ISC, © 2024 Lene Saile.",
     ats: " : correspondance entre entreprises et systèmes de recrutement. Licence MIT, © 2026 Kalil Bouzigues.",
@@ -53,6 +55,7 @@ const COPY = {
     tracked: "الشركات المتابَعة",
     boards_t: "مواقع الوظائف",
     remoteok: ": خلاصة وظائف عامة. كل وظيفة منها تحيل إلى صفحتها على Remote OK.",
+    jobicy: ": واجهة برمجية عامة لوظائف العمل عن بُعد. كل وظيفة منها تحيل إلى صفحتها على Jobicy حيث تقدّم طلبك.",
     list_t: "قائمة الشركات",
     rit: ": قائمة بشركات تتيح العمل عن بُعد. رخصة ISC، © 2024 Lene Saile.",
     ats: ": ربط الشركات بأنظمة التوظيف لديها. رخصة MIT، © 2026 Kalil Bouzigues.",
@@ -99,6 +102,7 @@ const COPY = {
 
     <h2>{COPY.boards_t}</h2>
     <p><a href={SOURCES.remoteok.url}>Remote OK</a>{COPY.remoteok}</p>
+    <p><a href={SOURCES.jobicy.url}>Jobicy</a>{COPY.jobicy}</p>
 
     <h2>{COPY.list_t}</h2>
     <ul>

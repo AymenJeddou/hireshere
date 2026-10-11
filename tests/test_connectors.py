@@ -157,3 +157,17 @@ def test_remoteok_skips_legal_notice(fixture):
         "https://remoteOK.com/"
     )  # link back required by their terms
     assert jobs[0].salary_currency == "USD"
+
+
+def test_jobicy(fixture):
+    from pipeline.connectors import jobicy
+
+    jobs = jobicy.parse(
+        fixture("jobicy.json"), Board(ats="jobicy", slug="all", company_name="Jobicy")
+    )
+    assert len(jobs) == 3
+    j = jobs[0]
+    assert j.company_name == "Reddit" and j.apply_url.startswith("https://jobicy.com/jobs/")
+    assert j.location_raw == "Remote; Germany" and j.remote_flag_raw == "remote"
+    assert j.posted_at == "2026-10-11T08:39:51+00:00"
+    assert jobs[2].description_text.startswith("Level: Entry-Level")
