@@ -51,8 +51,10 @@ uv run python -m pipeline.seed validate
   because it holds full job descriptions. Local copy:
   `gh release download data-latest -p jobs.db.gz.enc && openssl enc -d -aes-256-cbc -pbkdf2 -iter 200000 -pass env:DB_PASSPHRASE -in jobs.db.gz.enc | gunzip > jobs.db`.
   Download before working locally and upload the re-encrypted file after, or CI and local diverge.
-- Live site: https://hireshere.app (Cloudflare Pages project `hireshere`, D1 `hireshere`; www and
-  hireshere.pages.dev 301 to it via `site/functions/_middleware.js`).
+- Live site: https://hireshere.app (Cloudflare Pages project `hireshere`, D1 `hireshere`). www 301s via a
+  Cloudflare Redirect Rule. `site/public/_routes.json` limits Functions to job pages and `/api/*`
+  (free plan: 100k invocations a day); old country URLs are static `_redirects`, and job pages fall
+  back to client-side rendering from the shell if Functions are off.
   Deploy by hand: `cd site && npx wrangler pages deploy --branch main` with CLOUDFLARE_* from `.env`.
 
 ## Git
