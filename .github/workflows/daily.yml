@@ -48,6 +48,7 @@ jobs:
           fi
 
       - name: Fetch
+        id: fetch
         run: uv run python -m pipeline.run fetch
 
       # Classify new jobs on free tiers, one request at a time (no billing since 2026-10-11):
@@ -90,7 +91,8 @@ jobs:
         run: |
           npm ci --no-audit --no-fund
           npx astro build
-          npx wrangler pages deploy --branch main --commit-dirty=true
+          # Cloudflare sometimes fails to publish with an internal error: retry once.
+          npx wrangler pages deploy --branch main --commit-dirty=true || \n            (sleep 30 && npx wrangler pages deploy --branch main --commit-dirty=true)
 
       - name: Email alerts
         if: env.RESEND_API_KEY != ''
@@ -101,7 +103,9 @@ jobs:
         continue-on-error: true
         run: uv run python -m pipeline.run telegram
 
+      # Keep the day's fetch and classification even when a later step (deploy, alerts) fails.
       - name: Upload database
+        if: always() && steps.fetch.outcome == 'success'
         run: |
           gzip -9 -k jobs.db
           gh release view "$TAG" >/dev/null 2>&1 || gh release create "$TAG" \
