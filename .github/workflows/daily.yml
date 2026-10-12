@@ -92,7 +92,8 @@ jobs:
           npm ci --no-audit --no-fund
           npx astro build
           # Cloudflare sometimes fails to publish with an internal error: retry once.
-          npx wrangler pages deploy --branch main --commit-dirty=true || \n            (sleep 30 && npx wrangler pages deploy --branch main --commit-dirty=true)
+          npx wrangler pages deploy --branch main --commit-dirty=true ||
+            (sleep 30 && npx wrangler pages deploy --branch main --commit-dirty=true)
 
       - name: Email alerts
         if: env.RESEND_API_KEY != ''
