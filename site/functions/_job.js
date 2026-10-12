@@ -27,8 +27,9 @@ export function handler(lang) {
       if (shard.ok) job = (await shard.json())[slug] ?? null;
     }
     if (!job) {
-      const page = await asset("/404");
-      return new Response(page.body, { status: 404, headers: { "content-type": "text/html; charset=utf-8" } });
+      // Closed (or never existed): 410 Gone with open jobs like it, picked in the browser.
+      const page = await asset(`/closed/${lang}`);
+      return new Response(page.body, { status: 410, headers: { "content-type": "text/html; charset=utf-8" } });
     }
     const code = visitor(request, url);
     const { title, description } = jobMeta(job, lang, code, meta);

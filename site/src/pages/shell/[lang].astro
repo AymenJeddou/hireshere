@@ -42,7 +42,7 @@ const lang = Astro.params.lang as Lang;
       document.querySelector('meta[name="description"]')?.setAttribute("content", description);
       slot.outerHTML = jobPage(job, lang, code, meta as never);
     } else {
-      location.replace("/404");
+      location.replace(`/closed/${lang}?from=${encodeURIComponent(slug)}`);
     }
   }
   init();

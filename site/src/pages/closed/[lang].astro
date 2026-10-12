@@ -1,0 +1,76 @@
+---
+// Shown (status 410) when a job link points to a posting that has closed: the Function serves it
+// for an unknown slug, and the shell's browser fallback redirects here. It suggests open jobs
+// whose company and title words match the closed job's slug.
+import Layout from "../../layouts/Layout.astro";
+import { site, world } from "../../data";
+import { href, type Lang } from "../../i18n";
+
+export function getStaticPaths() {
+  return ["en", "fr", "ar"].map((lang) => ({ params: { lang } }));
+}
+const lang = Astro.params.lang as Lang;
+const names = Object.fromEntries(world(lang).map((c) => [c.code, c.name]));
+const T = {
+  en: {
+    title: "This job has closed",
+    sub: "The employer has taken this posting down. Here are open jobs like it.",
+    all: "See all open jobs",
+  },
+  fr: {
+    title: "Cette offre est close",
+    sub: "L’employeur a retiré cette annonce. Voici des offres ouvertes qui lui ressemblent.",
+    all: "Voir toutes les offres",
+  },
+  ar: {
+    title: "أُغلقت هذه الوظيفة",
+    sub: "سحب صاحب العمل هذا الإعلان. إليك وظائف مفتوحة مشابهة.",
+    all: "عرض كل الوظائف",
+  },
+}[lang];
+---
+
+<Layout lang={lang} page="job" title={`${T.title} | ${site.product}`} description={T.sub} noindex>
+  <div class="wrap page-head closed-page" data-lang={lang} data-updated={site.updated} data-names={JSON.stringify(names)}>
+    <h1>{T.title}</h1>
+    <p class="sub">{T.sub}</p>
+    <ol class="cards" data-similar></ol>
+    <p><a class="btn btn-primary" href={href(lang, "search")}>{T.all}</a></p>
+  </div>
+</Layout>
+
+<script>
+  import type { Lang } from "../../i18n";
+  import { card, loadJobs, verdictsFor } from "../../scripts/cards";
+  import { visitorCountry } from "../../scripts/country";
+  import { initSaveButtons } from "../../scripts/saved";
+
+  const root = document.querySelector<HTMLElement>(".closed-page")!;
+  const lang = root.dataset.lang as Lang;
+  const names = JSON.parse(root.dataset.names ?? "{}");
+  const list = root.querySelector<HTMLOListElement>("[data-similar]")!;
+  // The slug is "<company>-<title words>-<6 hex>": its words describe the closed job.
+  const slug = new URLSearchParams(location.search).get("from") ?? location.pathname.split("/").pop() ?? "";
+  const words = new Set(slug.replace(/-[0-9a-f]{6}$/, "").split("-").filter((w) => w.length > 2));
+  const norm = (s: string) => s.toLowerCase().normalize("NFD").replace(/[^a-z0-9]+/g, " ");
+
+  Promise.all([loadJobs(lang), visitorCountry((c) => c in names)]).then(([jobs, code]) => {
+    const open = (j: (typeof jobs)[number]) => !code || verdictsFor(j.groups, code).length > 0;
+    const scored = jobs
+      .filter(open)
+      .map((j) => ({ j, s: norm(`${j.company} ${j.title}`).split(" ").filter((w) => words.has(w)).length }))
+      .filter((x) => x.s >= 2)
+      .sort((a, b) => b.s - a.s)
+      .slice(0, 6)
+      .map((x) => x.j);
+    const pick = scored.length ? scored : jobs.filter(open).slice(0, 6);
+    list.innerHTML = pick.map((j) => card(j, { lang, code, names, updated: root.dataset.updated ?? "" })).join("");
+    initSaveButtons(list);
+  });
+</script>
+
+<style>
+  .closed-page .cards {
+    margin-block: var(--space-6);
+  }
+</style>

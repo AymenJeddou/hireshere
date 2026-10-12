@@ -119,3 +119,8 @@ jobs:
           else
             gh release upload "$TAG" jobs.db.gz --clobber
           fi
+
+      # Check the live site like a visitor; a failure fails the run, so GitHub emails the owner.
+      - name: Check the live site
+        if: env.CLOUDFLARE_API_TOKEN != ''
+        run: uv run python -m pipeline.healthcheck
