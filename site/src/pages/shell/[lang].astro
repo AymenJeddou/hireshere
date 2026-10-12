@@ -19,6 +19,35 @@ const lang = Astro.params.lang as Lang;
   import { groupFor } from "../../scripts/cards";
   import { initSaveButtons } from "../../scripts/saved";
   import { colourMap, loadWorld } from "../../scripts/worldmap";
+  import { jobMeta, jobPage } from "../../scripts/jobpage";
+  import meta from "../../data/meta.json";
+  import type { Lang } from "../../i18n";
+
+  // Normally functions/_job.js fills the slot on the server. When Pages Functions are off
+  // (free daily limit used up), _redirects serves this shell as-is: render the job here.
+  const slot = document.getElementById("job-slot");
+  if (slot) {
+    const lang = (document.documentElement.lang || "en") as Lang;
+    const slug = location.pathname.split("/").filter(Boolean).pop() ?? "";
+    const q = new URLSearchParams(location.search).get("c")?.toUpperCase();
+    const saved = document.cookie.match(/(?:^|;\s*)hh_country=([A-Z]{2})/)?.[1];
+    const code = [q, saved].find((c) => c && c in meta.world) ?? "";
+    const shard = /^[a-z0-9-]{1,80}-[0-9a-f]{6}$/.test(slug)
+      ? await fetch(`/data/j/${slug.slice(-6, -4)}.json`).then((r) => (r.ok ? r.json() : {})).catch(() => ({}))
+      : {};
+    const job = shard[slug];
+    if (job) {
+      const { title, description } = jobMeta(job, lang, code, meta as never);
+      document.title = `${title} | ${meta.product}`;
+      document.querySelector('meta[name="description"]')?.setAttribute("content", description);
+      slot.outerHTML = jobPage(job, lang, code, meta as never);
+    } else {
+      location.replace("/404");
+    }
+  }
+  init();
+
+  function init() {
   initSaveButtons();
   // Who can apply: every country coloured by its verdict, the visitor in coral.
   const map = document.querySelector<HTMLElement>("[data-whomap]");
@@ -58,5 +87,6 @@ const lang = Astro.params.lang as Lang;
         button.textContent = label;
       }
     });
+  }
   }
 </script>

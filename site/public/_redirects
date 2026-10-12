@@ -35,3 +35,9 @@
 /ar/eg /ar/jobs?c=EG 301
 /ar/eg/ /ar/jobs?c=EG 301
 /ar/eg/:field /ar/jobs?c=EG&f=:field 301
+
+# Job pages are rendered by Functions. If Functions are off (free daily limit), serve the shell,
+# which renders the job in the browser. Functions take these paths first when they run.
+/jobs/* /shell/en 200
+/fr/jobs/* /shell/fr 200
+/ar/jobs/* /shell/ar 200
