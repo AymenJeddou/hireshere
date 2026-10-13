@@ -353,18 +353,18 @@ def test_telegram_channels_and_message():
     assert "Dev &lt;Go&gt;" in m and "سبب" in m and m.endswith("hireshere.app/ar/jobs/dev-x-abc123")
 
 
-def test_groq_parse_response():
-    from pipeline.classify import groq
+def test_compat_parse_response():
+    from pipeline.classify import compat
 
     e = ex(seniority="junior")
     data = {
         "choices": [{"message": {"content": e.model_dump_json()}}],
         "usage": {"prompt_tokens": 900, "completion_tokens": 120},
     }
-    got, tin, tout = groq.parse_response(data)
+    got, tin, tout = compat.parse_response(data)
     assert got.seniority == "junior" and (tin, tout) == (900, 120)
     with pytest.raises(gemini.ModelError):
-        groq.parse_response({"choices": []})
+        compat.parse_response({"choices": []})
 
 
 def test_sync_falls_back_to_groq_then_leaves_the_rest(monkeypatch):
@@ -372,8 +372,9 @@ def test_sync_falls_back_to_groq_then_leaves_the_rest(monkeypatch):
     import contextlib
 
     from pipeline import db
-    from pipeline.classify import groq
+    from pipeline.classify import compat
 
+    groq = compat.GROQ
     conn = db.connect(":memory:")
     jobs = [job(id=f"x:y:{i}", content_hash=f"h{i}") for i in range(5)]
     calls = {"gemini": 0, "groq": 0}
@@ -394,14 +395,14 @@ def test_sync_falls_back_to_groq_then_leaves_the_rest(monkeypatch):
     monkeypatch.setattr(groq, "generate", grq)
     monkeypatch.setattr(gemini, "make_client", lambda: contextlib.AsyncExitStack())
     monkeypatch.setattr(groq, "make_client", lambda: contextlib.AsyncExitStack())
+    monkeypatch.setattr(compat, "EXTRA", [groq])
     monkeypatch.setattr(groq, "available", lambda: True)
     monkeypatch.setattr(config, "GEMINI_RPM", 0)
-    monkeypatch.setattr(config, "GROQ_RPM", 0)
     t = asyncio.run(runner.run_sync(conn, jobs))
     assert t["done"] == 3 and t["left"] == 2 and t["errors"] == 0
-    assert t["by"] == {config.CLASSIFIER_MODEL: 2, groq.MODEL: 1}
+    assert t["by"] == {config.CLASSIFIER_MODEL: 2, groq.model: 1}
     models = [r[0] for r in conn.execute("SELECT model FROM extractions ORDER BY content_hash")]
-    assert models.count(groq.MODEL) == 1
+    assert models.count(groq.model) == 1
 
 
 def test_gemini_daily_quota_and_402_are_quota_errors():
@@ -434,3 +435,30 @@ def test_alerts_once_a_day_even_with_several_runs():
     assert due(None, now)
     assert not due("2026-10-13T08:00:00.000Z", now)  # 8 hours ago
     assert due("2026-10-12T19:00:00+00:00", now)  # 21 hours ago
+
+
+def test_compat_zero_limit_and_persistent_429_are_quota_errors(monkeypatch):
+    import asyncio
+
+    import httpx
+
+    from pipeline.classify import compat
+
+    def zero(request):
+        return httpx.Response(429, headers={"x-ratelimit-limit-req-minute": "0"}, text="{}")
+
+    async def go(handler):
+        async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as c:
+            await compat.MISTRAL.generate(c, job())
+
+    with pytest.raises(gemini.QuotaError):
+        asyncio.run(go(zero))
+
+    async def no_sleep(_):
+        return None
+
+    monkeypatch.setattr(compat.asyncio, "sleep", no_sleep)
+    with pytest.raises(gemini.QuotaError):
+        asyncio.run(
+            go(lambda r: httpx.Response(429, headers={"retry-after": "1"}, text="slow down"))
+        )

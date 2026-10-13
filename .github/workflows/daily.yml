@@ -25,6 +25,7 @@ env:
   # The snapshot holds full job descriptions, so it is stored encrypted on the release.
   DB_PASSPHRASE: ${{ secrets.DB_PASSPHRASE }}
   GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+  MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
 
 jobs:
   fetch:
@@ -75,6 +76,7 @@ jobs:
         env:
           GEMINI_RPM: "14"
           GROQ_RPM: "4"
+          MISTRAL_RPM: "50"
           CLASSIFY_MINUTES: "35"
         run: |
           uv run python -m pipeline.run classify-collect

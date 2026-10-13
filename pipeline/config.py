@@ -69,7 +69,6 @@ WORLD = {
 CLASSIFIER_MODEL = os.environ.get("CLASSIFIER_MODEL", "gemini-3.1-flash-lite")
 # Requests per minute in sync mode, kept under the free tiers (0 = no pacing).
 GEMINI_RPM = float(os.environ.get("GEMINI_RPM", "0"))
-GROQ_RPM = float(os.environ.get("GROQ_RPM", "0"))
 # Stop starting new requests after this many minutes in sync mode (0 = no limit).
 CLASSIFY_MINUTES = float(os.environ.get("CLASSIFY_MINUTES", "0"))
 PRICE_IN = float(os.environ.get("CLASSIFIER_PRICE_IN", "0.25"))

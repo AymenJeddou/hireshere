@@ -122,11 +122,10 @@ async def run_sync(conn: sqlite3.Connection, jobs: list[dict]) -> dict:
     when time or every quota runs out stay pending for the next run."""
     from collections import deque
 
-    from pipeline.classify import groq
+    from pipeline.classify import compat
 
     providers = [(gemini, config.CLASSIFIER_MODEL, config.GEMINI_RPM)]
-    if groq.available():
-        providers.append((groq, groq.MODEL, config.GROQ_RPM))
+    providers += [(p, p.model, p.rpm) for p in compat.EXTRA if p.available()]
     t = {"done": 0, "errors": 0, "input_tokens": 0, "output_tokens": 0, "left": 0, "by": {}}
     queue = deque(jobs)
     loop = asyncio.get_running_loop()
