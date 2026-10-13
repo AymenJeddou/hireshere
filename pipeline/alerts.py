@@ -11,6 +11,7 @@ import html
 import os
 import re
 import sqlite3
+from datetime import UTC, datetime
 from pathlib import Path
 from urllib.parse import quote
 
@@ -21,6 +22,18 @@ from pipeline.export import build, country_view, fresh
 
 # ponytail: Resend free tier caps at 100 emails/day; leftovers go out next run. Paid tier lifts it.
 DAILY_CAP = 95
+# The pipeline runs several times a day; each subscriber still gets at most one digest a day.
+MIN_HOURS_BETWEEN = 20
+
+
+def due(last_sent_at: str | None, now: datetime) -> bool:
+    """True when the subscriber has never had a digest or the last one is old enough."""
+    if not last_sent_at:
+        return True
+    last = datetime.fromisoformat(last_sent_at.replace("Z", "+00:00"))
+    return (now - last).total_seconds() >= MIN_HOURS_BETWEEN * 3600
+
+
 MAX_JOBS = 20
 FROM = f"{config.PRODUCT_NAME} <alerts@{config.DOMAIN}>"
 
@@ -169,10 +182,14 @@ def run(conn: sqlite3.Connection, dry_run: bool = False) -> str:
     with httpx.Client(timeout=30) as client:
         subs = _d1(
             client,
-            "SELECT email, country, family, lang, COALESCE(last_sent_at, created_at) AS since "
+            "SELECT email, country, family, lang, last_sent_at, "
+            "COALESCE(last_sent_at, created_at) AS since "
             "FROM subscribers ORDER BY since",
         )
+        now = datetime.now(UTC)
         for sub in subs:
+            if not due(sub.get("last_sent_at"), now):
+                continue
             code = sub["country"]
             if code not in config.WORLD:
                 continue

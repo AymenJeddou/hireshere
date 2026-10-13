@@ -423,3 +423,14 @@ def test_gemini_daily_quota_and_402_are_quota_errors():
     for path in ("a", "b"):
         with pytest.raises(gemini.QuotaError):
             asyncio.run(go(path))
+
+
+def test_alerts_once_a_day_even_with_several_runs():
+    from datetime import UTC, datetime
+
+    from pipeline.alerts import due
+
+    now = datetime(2026, 10, 13, 16, 0, tzinfo=UTC)
+    assert due(None, now)
+    assert not due("2026-10-13T08:00:00.000Z", now)  # 8 hours ago
+    assert due("2026-10-12T19:00:00+00:00", now)  # 21 hours ago

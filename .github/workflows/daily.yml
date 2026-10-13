@@ -1,7 +1,7 @@
 name: daily
 on:
   schedule:
-    - cron: "17 4 * * *" # once a day, 04:17 UTC
+    - cron: "17 */4 * * *" # every 4 hours: fresher jobs, more free AI capacity a day
   workflow_dispatch:
 
 concurrency:
@@ -52,14 +52,14 @@ jobs:
         run: uv run python -m pipeline.run fetch
 
       # Classify new jobs on free tiers, one request at a time (no billing since 2026-10-11):
-      # Gemini's free tier first, Groq once Gemini's daily quota is used up, at most 500 a day.
+      # Gemini and Groq free tiers side by side, 15 minutes per run (the run repeats every 4 hours).
       # Whatever is left waits for the next run. classify-collect picks up any old batch.
       - name: Classify
         if: env.GEMINI_API_KEY != ''
         env:
-          GEMINI_RPM: "10"
+          GEMINI_RPM: "14"
           GROQ_RPM: "4"
-          CLASSIFY_MINUTES: "35"
+          CLASSIFY_MINUTES: "15"
         run: |
           uv run python -m pipeline.run classify-collect
           uv run python -m pipeline.run classify --limit 500 --yes
