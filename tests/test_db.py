@@ -190,3 +190,18 @@ def test_classify_out_of_credit_does_not_fail_the_run(conn, monkeypatch):
     monkeypatch.setattr(runner, "submit_batch", other_error)
     with pytest.raises(ModelError):
         asyncio.run(run.cmd_classify(conn, None, batch=True, yes=False))
+
+
+def test_alerts_count_a_backlog_job_from_when_it_was_classified(conn):
+    from pipeline.alerts import visible_since
+
+    db.apply_result(
+        conn, FetchResult(board=B, ok=True, jobs=[job(1), job(2)]), "2026-10-10T00:00:00+00:00"
+    )
+    h1 = conn.execute("SELECT content_hash FROM jobs WHERE id = ?", (job(1).id,)).fetchone()[0]
+    conn.execute(
+        "INSERT INTO extractions VALUES (?, 'm', '{}', 0, 0, '2026-10-13T09:00:00+00:00')", (h1,)
+    )
+    seen = visible_since(conn)
+    assert seen[job(1).id] == "2026-10-13T09:00:00+00:00"  # classified later: news on the 13th
+    assert seen[job(2).id] == "2026-10-10T00:00:00+00:00"  # not classified: first seen

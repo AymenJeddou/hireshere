@@ -73,6 +73,17 @@ def unsubscribe_token(email: str, secret: str) -> str:
     return hmac.new(secret.encode(), email.encode(), hashlib.sha256).hexdigest()
 
 
+def visible_since(conn: sqlite3.Connection) -> dict[str, str]:
+    """When each open job appeared on the site: first seen, or classified if that came later
+    (a backlog job classified today is news today)."""
+    return dict(
+        conn.execute(
+            "SELECT j.id, MAX(j.first_seen_at, COALESCE(e.created_at, '')) FROM jobs j "
+            "LEFT JOIN extractions e ON e.content_hash = j.content_hash WHERE j.expired_at IS NULL"
+        )
+    )
+
+
 def pick(jobs: list[dict], first_seen: dict[str, str], since: str, family: str) -> list[dict]:
     """New eligible/likely jobs for one subscriber, eligible first, newest first."""
     hits = [
@@ -153,7 +164,7 @@ def run(conn: sqlite3.Connection, dry_run: bool = False) -> str:
         return "Alerts skipped: RESEND_API_KEY or UNSUBSCRIBE_SECRET not set."
     jobs_all = build(conn)
     per_country: dict[str, list[dict]] = {}
-    first_seen = dict(conn.execute("SELECT id, first_seen_at FROM jobs WHERE expired_at IS NULL"))
+    first_seen = visible_since(conn)
     sent = skipped = 0
     with httpx.Client(timeout=30) as client:
         subs = _d1(

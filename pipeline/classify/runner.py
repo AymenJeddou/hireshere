@@ -35,7 +35,8 @@ def triage(conn: sqlite3.Connection, limit: int | None = None) -> tuple[list[dic
     content_hash that still needs the model, plus counts."""
     rows = conn.execute(
         f"SELECT {COLS} FROM jobs WHERE expired_at IS NULL "
-        "AND classify_status IN ('pending', 'error', 'skipped') ORDER BY first_seen_at, id"
+        # Newest first: fresh jobs matter most (alerts, Telegram); the backlog fills spare capacity.
+        "AND classify_status IN ('pending', 'error', 'skipped') ORDER BY first_seen_at DESC, id"
     ).fetchall()
     known = {r[0] for r in conn.execute("SELECT content_hash FROM extractions")}
     todo: dict[str, dict] = {}
@@ -116,29 +117,32 @@ def mark_error(conn: sqlite3.Connection, content_hash: str) -> None:
 
 
 async def run_sync(conn: sqlite3.Connection, jobs: list[dict]) -> dict:
-    """One request at a time, paced for free tiers: Gemini first, then Groq once Gemini's
-    daily quota is used up. Jobs left when every provider is out stay pending for tomorrow."""
+    """Free tiers, each provider paced to its own limit and working the same queue at the same
+    time: Gemini and Groq. A provider stops at its daily quota; the others carry on. Jobs left
+    when time or every quota runs out stay pending for the next run."""
+    from collections import deque
+
     from pipeline.classify import groq
 
     providers = [(gemini, config.CLASSIFIER_MODEL, config.GEMINI_RPM)]
     if groq.available():
         providers.append((groq, groq.MODEL, config.GROQ_RPM))
     t = {"done": 0, "errors": 0, "input_tokens": 0, "output_tokens": 0, "left": 0, "by": {}}
-    queue = list(jobs)
+    queue = deque(jobs)
     loop = asyncio.get_running_loop()
     deadline = loop.time() + config.CLASSIFY_MINUTES * 60 if config.CLASSIFY_MINUTES else None
-    for mod, model, rpm in providers:
-        if not queue:
-            break
+
+    async def worker(mod, model: str, rpm: float) -> None:
         async with mod.make_client() as client:
             while queue and not (deadline and loop.time() > deadline):
-                job = queue[0]
+                job = queue.popleft()
                 started = loop.time()
                 try:
                     e, tin, tout = await mod.generate(client, job)
                 except gemini.QuotaError as err:
                     print(f"  {model}: {err}"[:200], file=sys.stderr)
-                    break  # next provider takes the rest of the queue
+                    queue.appendleft(job)  # another provider takes it
+                    return
                 except gemini.ModelError as err:
                     print(f"  error {job['id']}: {err}"[:300], file=sys.stderr)
                     mark_error(conn, job["content_hash"])
@@ -151,11 +155,12 @@ async def run_sync(conn: sqlite3.Connection, jobs: list[dict]) -> dict:
                     t["output_tokens"] += tout
                     if t["done"] % 50 == 0:
                         print(f"  {t['done']}/{len(jobs)} classified", file=sys.stderr)
-                queue.pop(0)
                 if rpm:
                     wait = 60 / rpm - (loop.time() - started)
                     if wait > 0:
                         await asyncio.sleep(wait)
+
+    await asyncio.gather(*(worker(*p) for p in providers))
     t["left"] = len(queue)
     return t
 
