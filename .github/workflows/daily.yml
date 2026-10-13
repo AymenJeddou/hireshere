@@ -1,7 +1,7 @@
 name: daily
 on:
   schedule:
-    - cron: "17 */4 * * *" # every 4 hours: fresher jobs, more free AI capacity a day
+    - cron: "17 4 * * *" # once a day, 04:17 UTC (GitHub often starts it hours late)
   workflow_dispatch:
 
 concurrency:
@@ -51,15 +51,31 @@ jobs:
         id: fetch
         run: uv run python -m pipeline.run fetch
 
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+
+      # Publish the fresh fetch right away (closed jobs gone, new data live) instead of after the
+      # slow AI step; the site is published again with the newly classified jobs at the end.
+      - name: Publish early, before the AI step
+        if: env.CLOUDFLARE_API_TOKEN != ''
+        continue-on-error: true
+        run: |
+          uv run python -m pipeline.run export
+          cd site && npm ci --no-audit --no-fund && npx astro build
+          npx wrangler pages deploy --branch main --commit-dirty=true
+
       # Classify new jobs on free tiers, one request at a time (no billing since 2026-10-11):
-      # Gemini and Groq free tiers side by side, 15 minutes per run (the run repeats every 4 hours).
+      # Gemini and Groq free tiers side by side, newest jobs first, at most 35 minutes.
       # Whatever is left waits for the next run. classify-collect picks up any old batch.
       - name: Classify
         if: env.GEMINI_API_KEY != ''
         env:
           GEMINI_RPM: "14"
           GROQ_RPM: "4"
-          CLASSIFY_MINUTES: "15"
+          CLASSIFY_MINUTES: "35"
         run: |
           uv run python -m pipeline.run classify-collect
           uv run python -m pipeline.run classify --limit 500 --yes
@@ -79,17 +95,11 @@ jobs:
           # Fail loudly (GitHub emails the owner) rather than deploy an empty site.
           uv run python -c "import json; m = json.load(open('site/src/data/meta.json')); n = m['jobs']; assert n > 0, 'export has no jobs'; print(n, 'jobs exported')"
 
-      - uses: actions/setup-node@v7.1.0
-        with:
-          node-version: 24
-          cache: npm
-          cache-dependency-path: site/package-lock.json
-
       - name: Build and deploy site
         if: env.CLOUDFLARE_API_TOKEN != ''
         working-directory: site
         run: |
-          npm ci --no-audit --no-fund
+          [ -d node_modules ] || npm ci --no-audit --no-fund
           npx astro build
           # Cloudflare sometimes fails to publish with an internal error: retry once.
           npx wrangler pages deploy --branch main --commit-dirty=true ||
