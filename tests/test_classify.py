@@ -434,7 +434,9 @@ def test_alerts_once_a_day_even_with_several_runs():
     now = datetime(2026, 10, 13, 16, 0, tzinfo=UTC)
     assert due(None, now)
     assert not due("2026-10-13T08:00:00.000Z", now)  # 8 hours ago
-    assert due("2026-10-12T19:00:00+00:00", now)  # 21 hours ago
+    assert due("2026-10-12T19:00:00+00:00", now)  # yesterday
+    # manual run at 17:54, next scheduled run starts late at 09:31: still sends (the 10-14 miss)
+    assert due("2026-10-13T17:54:06+00:00", datetime(2026, 10, 14, 9, 31, tzinfo=UTC))
 
 
 def test_compat_zero_limit_and_persistent_429_are_quota_errors(monkeypatch):

@@ -22,16 +22,14 @@ from pipeline.export import build, country_view, fresh
 
 # ponytail: Resend free tier caps at 100 emails/day; leftovers go out next run. Paid tier lifts it.
 DAILY_CAP = 95
-# The pipeline runs several times a day; each subscriber still gets at most one digest a day.
-MIN_HOURS_BETWEEN = 20
-
-
 def due(last_sent_at: str | None, now: datetime) -> bool:
-    """True when the subscriber has never had a digest or the last one is old enough."""
+    """At most one digest per UTC day, however many runs. last_sent_at is the newest job in the
+    last digest (always before the send), so an hours gap would skip a run GitHub started late."""
+    # ponytail: a run just after midnight UTC can follow one late the day before; runs start 04:17.
     if not last_sent_at:
         return True
     last = datetime.fromisoformat(last_sent_at.replace("Z", "+00:00"))
-    return (now - last).total_seconds() >= MIN_HOURS_BETWEEN * 3600
+    return last.astimezone(UTC).date() < now.date()
 
 
 MAX_JOBS = 20
