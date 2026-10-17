@@ -21,5 +21,5 @@ alerts-preview.html
 data/candidates2.csv
 .impeccable/directions/
 
-# Intermediate HTML of the technical guide (build with python docs/guide/build.py)
-docs/guide/guide.html
+# Technical guide: kept locally, not in git
+docs/guide/
