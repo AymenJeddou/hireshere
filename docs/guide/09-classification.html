@@ -1,0 +1,35 @@
+<h1><span class="n">Chapter 10</span>Classification: asking an AI the right question</h1>
+<p class="lede">The AI's only job is to read one posting and fill a strict form: where the person may live, which time zones, work authorization, seniority, and the sentence that proves it. Getting this step right is mostly about a precise prompt, a strict schema, and checking the answer.</p>
+
+<h2>Step 1: the pre-filter (no AI)</h2>
+<p>About half of all open jobs are clearly office-based. Sending them to the AI would waste free quota, so a regular-expression pre-filter skips them first:</p>
+{{lines pipeline/classify/prompt.py 43-55}}
+{{py pipeline/classify/prompt.py prefilter}}
+<p>It is <b>conservative</b>: a job is skipped only when nothing hints at remote work. A remote or hybrid flag, a remote word in the title or location, an entry-level title (interns often list only a city), or "remote" in the description all send it to the AI. An explicit office-only flag skips it. Skipped jobs are re-checked every run, so improving the pre-filter applies to old jobs too.</p>
+
+<h2>Step 2: the prompt</h2>
+<p>The system prompt defines every field, with examples and the traps found during testing. The most important rule: <b>the location field is authoritative</b>; company slogans like "we hire globally" do not make a US-only role worldwide.</p>
+{{lines pipeline/classify/prompt.py 5-12}}
+<p>Each posting is sent as a short, labelled message. Long descriptions are cut down by <code>excerpt()</code> to the opening plus every paragraph that mentions eligibility words (location, visa, time zone, contract…), at most 4,000 characters:</p>
+{{py pipeline/classify/prompt.py user_message}}
+{{py pipeline/classify/prompt.py excerpt}}
+
+<h2>Step 3: the schema</h2>
+<p>The answer must match the <code>Extraction</code> model exactly. Validators clean it: country codes are upper-cased and filtered to two letters (and "UK" becomes "GB"), regions must come from a fixed list, the quote is trimmed to 200 characters.</p>
+{{py pipeline/classify/schema.py Extraction}}
+<p>The same structure is written out as a JSON Schema, sent with every request, so the model is <b>forced</b> to answer in that shape (Gemini's <code>responseJsonSchema</code>, OpenAI-style <code>response_format: json_schema</code>):</p>
+{{py pipeline/classify/schema.py JSON_SCHEMA}}
+<div class="box"><b class="t">Structured output</b>
+<p>Without a schema, a model might answer in prose, add fields, or misspell a value. With one, the provider constrains the generation so the output parses as JSON with the expected keys and enum values. Pydantic then validates it again on our side: belt and braces.</p></div>
+
+<h2>Step 4: checking the evidence</h2>
+<p>Models sometimes paraphrase or invent a quote. Every saved extraction is checked: the quote, normalised (lower case, punctuation removed), must appear in the posting. If not, confidence drops to <i>low</i>, and low confidence can never produce a firm "You can apply" (chapter 12).</p>
+{{py pipeline/classify/runner.py verify_evidence}}
+
+<h2>Step 5: choosing what to send (triage)</h2>
+{{py pipeline/classify/runner.py triage}}
+<ul>
+<li><b>Newest first</b> (<code>ORDER BY first_seen_at DESC</code>): with a limited free quota, today's jobs matter most for alerts and Telegram.</li>
+<li><b>Reuse</b>: if an extraction with the same <code>content_hash</code> already exists (the same posting on two boards, or an unchanged repost), it is marked done without calling the AI.</li>
+<li><b>One request per distinct content</b> (<code>todo.setdefault(job["content_hash"], job)</code>).</li>
+</ul>

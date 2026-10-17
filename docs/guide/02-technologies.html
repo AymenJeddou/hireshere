@@ -1,0 +1,51 @@
+<h1><span class="n">Chapter 3</span>The technologies, one by one</h1>
+<p class="lede">HiresHere deliberately uses few tools: the Python standard library plus two packages for the pipeline, Astro for the website, and free hosted services around them. This chapter explains what each one is and why it was chosen.</p>
+
+<h2>The data pipeline (Python)</h2>
+<table>
+<tr><th>Technology</th><th>What it is</th><th>What HiresHere uses it for</th></tr>
+<tr><td><b>Python 3.12</b></td><td>The programming language of the pipeline.</td><td>Everything in <code>pipeline/</code>: fetching, database, AI calls, rules, export, emails.</td></tr>
+<tr><td><b>uv</b></td><td>A fast Python package and project manager (installs dependencies, runs commands).</td><td><code>uv sync</code> installs the exact versions in <code>uv.lock</code>; <code>uv run python -m pipeline.run fetch</code> runs a command inside that environment.</td></tr>
+<tr><td><b>httpx</b></td><td>An HTTP client library with async support.</td><td>Every network call: job feeds, Gemini, Groq, Mistral, Resend, Telegram, Cloudflare's API.</td></tr>
+<tr><td><b>Pydantic</b></td><td>Data validation with Python type hints.</td><td>The <code>Job</code> and <code>Board</code> models, and above all the <code>Extraction</code> schema that validates every AI answer.</td></tr>
+<tr><td><b>asyncio</b> (standard library)</td><td>Python's built-in way to run many network waits at the same time.</td><td>Fetching 537 boards five at a time; running two or three AI providers in parallel.</td></tr>
+<tr><td><b>SQLite</b> (standard library <code>sqlite3</code>)</td><td>A full SQL database stored in a single file.</td><td><code>jobs.db</code>: every job ever seen, its status, the AI extractions, the run history.</td></tr>
+<tr><td><b>argparse, csv, json, re, hmac, html.parser</b></td><td>Standard library modules.</td><td>The command line, the board list, JSON files, regular expressions for the pre-filter and rules, unsubscribe tokens, turning HTML into text.</td></tr>
+<tr><td><b>pytest</b></td><td>The test runner.</td><td>75 tests, run offline against saved example feeds.</td></tr>
+<tr><td><b>Ruff</b></td><td>A Python linter and formatter.</td><td>Keeps style consistent and catches mistakes: <code>ruff check</code> and <code>ruff format</code>.</td></tr>
+</table>
+
+<div class="box"><b class="t">Why so few dependencies?</b>
+<p>The owner's rule is "stdlib plus httpx and pydantic". Fewer packages means fewer updates, fewer security issues, faster installs in CI, and code a newcomer can read without learning a framework. When something can be done in a few lines with the standard library (HTML to text, HMAC, CSV), it is.</p></div>
+
+<h2>The AI models</h2>
+<table>
+<tr><th>Provider</th><th>Model</th><th>Role</th></tr>
+<tr><td><b>Google Gemini API</b></td><td><code>gemini-3.1-flash-lite</code></td><td>Main classifier. Supports a strict JSON schema for answers (<code>responseJsonSchema</code>) and a Batch API at half price. Used on the free tier since 2026-10-11.</td></tr>
+<tr><td><b>Groq</b></td><td><code>openai/gpt-oss-120b</code></td><td>Free fallback that works the queue in parallel with Gemini. OpenAI-compatible API.</td></tr>
+<tr><td><b>Mistral</b></td><td><code>mistral-small-latest</code></td><td>Third provider, wired in but idle until its free API plan is active on the account.</td></tr>
+</table>
+
+<h2>The website</h2>
+<table>
+<tr><th>Technology</th><th>What it is</th><th>Use in HiresHere</th></tr>
+<tr><td><b>Astro</b></td><td>A static site generator: you write components, it outputs plain HTML at build time.</td><td>Every page under <code>site/src/pages</code>; 2,000+ static pages built in about 20 seconds.</td></tr>
+<tr><td><b>TypeScript</b></td><td>JavaScript with types.</td><td>Browser scripts (search, filters, saved jobs, maps) and the shared rendering code for job pages.</td></tr>
+<tr><td><b>CSS</b> (no framework)</td><td>Hand-written styles with custom properties (design tokens).</td><td><code>global.css</code> (tokens, base) and <code>components.css</code> (cards, pills, layouts).</td></tr>
+<tr><td><b>Fontsource</b></td><td>Self-hosted web fonts as npm packages.</td><td>Bricolage Grotesque (headings) and DM Sans (text), served from the site itself, not from Google Fonts.</td></tr>
+<tr><td><b>Natural Earth</b> + <code>tools/world-map.mjs</code></td><td>Public-domain map data and a small script that turns it into one SVG.</td><td><code>public/world.svg</code>: one path per country, coloured in the browser by job counts or verdicts.</td></tr>
+</table>
+
+<h2>Hosting and services</h2>
+<table>
+<tr><th>Service</th><th>What HiresHere uses</th></tr>
+<tr><td><b>Cloudflare Pages</b></td><td>Hosts the static site on Cloudflare's global network at hireshere.app; deploys come from <code>wrangler pages deploy</code>.</td></tr>
+<tr><td><b>Pages Functions</b></td><td>Server code for job pages (rendered on request) and the <code>/api/*</code> endpoints (sign-up, unsubscribe, reports, employer form, visitor country).</td></tr>
+<tr><td><b>Cloudflare D1</b></td><td>SQLite in the cloud: subscribers, error reports, employer leads.</td></tr>
+<tr><td><b>Cloudflare extras</b></td><td>Email Routing (contact@hireshere.app to the owner's inbox), a Redirect Rule (www to the apex domain), Web Analytics (visitor counts and Core Web Vitals).</td></tr>
+<tr><td><b>Wrangler</b></td><td>Cloudflare's command line tool: deploys, D1 queries, Pages secrets.</td></tr>
+<tr><td><b>GitHub</b></td><td>The code repository, <b>Actions</b> (the daily workflow), <b>Releases</b> (the encrypted database snapshot), <b>Secrets</b> (API keys).</td></tr>
+<tr><td><b>Resend</b></td><td>Sends email (daily digests and welcome emails) from alerts@hireshere.app; free plan: 100 emails a day.</td></tr>
+<tr><td><b>Telegram Bot API</b></td><td>The @hireshere_bot posts new jobs to four country channels.</td></tr>
+<tr><td><b>OpenSSL</b></td><td>Encrypts the database snapshot (AES-256) before it is stored on the public repository's release.</td></tr>
+</table>

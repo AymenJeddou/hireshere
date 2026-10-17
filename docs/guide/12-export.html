@@ -1,0 +1,34 @@
+<h1><span class="n">Chapter 13</span>Export: from the database to the website's data</h1>
+<p class="lede"><code>pipeline/export.py</code> turns about 25,000 open jobs into the files the site reads: a search index per language, 256 detail shards, and two metadata files. It never exports full descriptions.</p>
+
+<h2>Reading the jobs</h2>
+{{py pipeline/export.py rows}}
+<p>Only jobs that are open and have an extraction are exported. The <code>evidence_verified</code> flag is taken out of the stored JSON before rebuilding the <code>Extraction</code>.</p>
+
+<h2>Verdicts for every country, compressed</h2>
+<p>Storing 243 verdicts per job for 12,000 jobs would be 3 million entries. Instead, countries with the same outcome are grouped:</p>
+{{py pipeline/export.py groups}}
+<p>For a job open in EMEA, the result looks like this: one group "likely, Open across EMEA, which includes {c}" listing about 110 country codes, and a group <code>"*"</code> meaning "every other country". Reasons carry a <code>{c}</code> placeholder where the country name goes, filled in later in the visitor's language. A job no country may see (<code>[]</code>) is not exported at all.</p>
+{{py pipeline/export.py for_country}}
+
+<h2>Building one job record</h2>
+{{py pipeline/export.py build}}
+<ul>
+<li>Office-only jobs are dropped (<code>WORKPLACES</code>).</li>
+<li>A short label like "EMEA" or "US · CA" (<code>scope_label</code>) summarises who may apply.</li>
+<li>The quote is shown only if it really appears in the posting and is not a company slogan.</li>
+<li>Jobs are sorted by the employer's posting date, newest first (<code>when</code>).</li>
+</ul>
+
+<h3>Slugs: readable, stable URLs</h3>
+{{py pipeline/export.py job_slug}}
+<p><code>/jobs/reddit-senior-growth-manager-contract-2a343b</code>: the company and title for humans and search engines, plus 6 hex characters of a SHA-1 of the job id so two jobs with the same title never collide. The first two of those characters choose the job's shard.</p>
+
+<h2>The files</h2>
+{{py pipeline/export.py search_record}}
+{{py pipeline/export.py write_shards}}
+<p>The search index holds only what a card needs, so it stays around 500 KB compressed per language. A job page needs more (location, apply link, time zone, department, similar jobs) and loads only its shard, one 256th of the details.</p>
+{{py pipeline/export.py export}}
+
+<div class="box idea"><b class="t">Why not prerender every job page?</b>
+<p>Cloudflare Pages' free plan allows 20,000 files per deployment. 12,000 jobs in 3 languages would be 36,000 pages. So job pages are built on request by a Function from the shards (chapter 17), and everything else is static.</p></div>

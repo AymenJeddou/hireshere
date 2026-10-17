@@ -1,0 +1,54 @@
+<h1><span class="n">Chapter 11</span>Running the AI on free tiers</h1>
+<p class="lede">The same extraction can be produced by several providers. Since October 2026 the owner has no AI budget, so HiresHere runs Gemini, Groq and Mistral side by side on their free tiers, each paced under its limits, all pulling from one shared queue.</p>
+
+<h2>Talking to Gemini (pipeline/classify/gemini.py)</h2>
+<p>This is the only file that knows Gemini's API. A request carries the system prompt, the posting, and the JSON schema; temperature 0 makes answers as repeatable as possible:</p>
+{{py pipeline/classify/gemini.py request_body}}
+{{py pipeline/classify/gemini.py parse_response}}
+<p>Errors are sorted carefully, because they mean different things:</p>
+{{py pipeline/classify/gemini.py _post}}
+<table>
+<tr><th>Answer</th><th>Meaning</th><th>What the code does</th></tr>
+<tr><td>429 with "PerDay" in the body</td><td>Free daily quota used up</td><td><code>QuotaError</code>: this provider stops for today, the others continue.</td></tr>
+<tr><td>402</td><td>Prepaid credit exhausted</td><td><code>QuotaError</code> as well.</td></tr>
+<tr><td>Other 429, or 5xx</td><td>Too fast, or a server hiccup</td><td>Retry with growing waits (8, 16, 32, 60 seconds).</td></tr>
+<tr><td>Other 4xx</td><td>A real error with this request</td><td><code>ModelError</code>: this posting is marked "error" and retried on a later run.</td></tr>
+</table>
+
+<h2>OpenAI-compatible providers (pipeline/classify/compat.py)</h2>
+<p>Groq and Mistral both speak the OpenAI "chat completions" format, so one class serves both; each provider is just configuration:</p>
+{{py pipeline/classify/compat.py Provider}}
+{{py pipeline/classify/compat.py GROQ}}
+{{py pipeline/classify/compat.py MISTRAL}}
+<div class="box idea"><b class="t">Failing gracefully</b>
+<p>A provider whose account allows zero requests a minute (the Mistral case: <code>x-ratelimit-limit-req-minute: 0</code>), or that keeps answering 429 after every retry, raises <code>QuotaError</code> and leaves the run. Without this, it would mark postings as errors and take them away from the providers that work.</p></div>
+
+<h2>Three workers, one queue (runner.run_sync)</h2>
+{{py pipeline/classify/runner.py run_sync}}
+<ul>
+<li>The queue is a <code>deque</code> (double-ended queue). Each worker takes the next job from the front with <code>popleft()</code>.</li>
+<li>On a quota error the job is put back at the front (<code>appendleft</code>) for another provider, and that worker stops.</li>
+<li><b>Pacing</b>: after each request the worker sleeps so that it never exceeds its requests per minute (Gemini 14, Groq 4, Mistral 50 in the workflow).</li>
+<li><b>Time budget</b>: <code>CLASSIFY_MINUTES = 35</code>. When it runs out, workers stop taking jobs; the rest stay pending for the next day.</li>
+<li><code>asyncio.gather</code> runs the workers at the same time and waits for all of them.</li>
+<li>Each saved extraction records which model produced it, so results can be audited later.</li>
+</ul>
+
+<h2>The classify command</h2>
+{{py pipeline/run.py cmd_classify}}
+<p>It reports what was skipped and reused, estimates tokens and cost (from the paid prices, as a reference), and runs either the free sync mode or the paid batch mode. An out-of-credit answer at batch submission does not fail the run: postings simply wait.</p>
+
+<h2>The paid Batch API (kept for later)</h2>
+<p>When there is a budget, batch mode is half price: the pipeline uploads one JSONL file with every request, Gemini processes it within hours, and a later step downloads the results. Each line carries a <code>key</code> (the content hash), because results come back keyed, not in order, and individual lines can fail while the batch succeeds.</p>
+{{py pipeline/classify/gemini.py batch_submit}}
+{{py pipeline/classify/runner.py collect}}
+
+<h2>How good are the free models?</h2>
+<p>A spot check on real postings, comparing with the stored paid Gemini results:</p>
+<table>
+<tr><th>Field</th><th>Gemini free</th><th>Groq gpt-oss-120b</th></tr>
+<tr><td>Allowed countries</td><td>8/8</td><td>8/8</td></tr>
+<tr><td>Remote or hybrid</td><td>8/8</td><td>7/8</td></tr>
+<tr><td>Seniority</td><td>8/8</td><td>6/8</td></tr>
+</table>
+<p>Gemini's free tier gives the same answers as the paid model; Groq is good enough as a parallel worker. Mistral will be checked the same way once its free plan is active.</p>

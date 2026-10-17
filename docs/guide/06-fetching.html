@@ -1,0 +1,52 @@
+<h1><span class="n">Chapter 7</span>Fetching jobs: HTTP, concurrency, connectors</h1>
+<p class="lede">The fetch step downloads the public job feeds of 537 boards in about a minute, turns each into a list of <code>Job</code> objects, and applies the diff rules. It must be fast, polite to the companies' servers, and robust to any feed failing.</p>
+
+<h2>A polite HTTP client (pipeline/http.py)</h2>
+{{py pipeline/http.py get_json}}
+<ul>
+<li><b>Retries with backoff.</b> A timeout, an HTTP 429 (too many requests) or a 5xx server error is often temporary, so it is retried after 2, then 4 seconds (<code>2**attempt</code>). A 4xx error such as 404 is not retried: the board really does not exist.</li>
+<li><b>One error type.</b> Every failure becomes a <code>FetchError</code>, so the caller has one thing to catch and a short message to store in <code>boards.last_error</code>.</li>
+<li>The client itself (<code>make_client</code>) sets the honest User-Agent, the timeout and <code>follow_redirects</code>.</li>
+</ul>
+
+<h2>Five at a time (pipeline/run.py)</h2>
+{{py pipeline/run.py fetch_board}}
+{{py pipeline/run.py fetch_all}}
+<div class="box"><b class="t">asyncio in three sentences</b>
+<p>Most of fetching is waiting for servers to answer. With <code>asyncio</code>, a single Python thread starts a request, and while waiting it starts others. A <b>semaphore</b> is a counter that lets at most N tasks inside a block at once (here five), and <code>as_completed</code> hands back each board's result the moment it finishes, so the database is updated while other downloads are still running.</p></div>
+<p><code>fetch_board</code> never lets an exception escape: a broken feed becomes a <code>FetchResult(ok=False)</code>, which rule 3 handles (no expiry) and rule 5 counts (retire after five).</p>
+
+<h3>The fetch command</h3>
+{{py pipeline/run.py cmd_fetch}}
+<p>It returns a Markdown report. Every command does this, and <code>main()</code> appends the report to <code>$GITHUB_STEP_SUMMARY</code>, so each workflow run shows a readable summary page on GitHub.</p>
+
+<h2>Connectors: one module per source</h2>
+<p>Each connector exposes two functions: <code>parse(data, board)</code>, a <b>pure function</b> that turns the feed's JSON into <code>Job</code> objects (easy to test with saved example feeds), and <code>async fetch(client, board)</code>, which downloads and calls parse. A registry maps the ATS name to its module:</p>
+{{file pipeline/connectors/__init__.py}}
+
+<h3>Greenhouse</h3>
+{{py pipeline/connectors/greenhouse.py parse}}
+<p>Greenhouse returns all jobs with <code>?content=true</code>. Its descriptions are HTML that is itself entity-escaped (<code>&amp;lt;p&amp;gt;</code>), hence <code>html_to_text(..., escaped=True)</code>. Optional metadata (employment type) is read with a small helper. <code>first_published</code> becomes <code>posted_at</code>.</p>
+
+<h3>Lever</h3>
+{{py pipeline/connectors/lever.py parse}}
+<p>Lever gives a plain-text description plus "lists" (Requirements, What you'll do) and a salary range. <code>workplaceType</code> (remote, hybrid, onsite) becomes <code>remote_flag_raw</code>, which the pre-filter uses. <code>createdAt</code> is a Unix time in milliseconds.</p>
+
+<h3>Ashby</h3>
+{{py pipeline/connectors/ashby.py parse}}
+<p>Ashby has a secondary-locations list and structured compensation. Unlisted jobs are skipped.</p>
+
+<h3>SmartRecruiters: pagination</h3>
+{{py pipeline/connectors/smartrecruiters.py fetch}}
+<p>SmartRecruiters returns 100 postings per page and no description in the list. The connector pages through all of them (needed so expiry is correct) but stops at 10 pages: bigger boards are large on-site employers and a poor fit.</p>
+
+<h3>Workable, Recruitee, Teamtailor</h3>
+<p>Workable's public widget API returns every job with its description in one request; Recruitee's offers API has explicit remote/hybrid/on-site flags; Teamtailor publishes a JSON Feed whose items carry a schema.org <code>JobPosting</code>, including <code>jobLocationType: TELECOMMUTE</code> for remote jobs.</p>
+{{py pipeline/connectors/teamtailor.py parse}}
+
+<h3>Remote OK and Jobicy: job boards with terms</h3>
+<p>These are not company systems but public job boards whose API terms allow reuse <i>with a credit and a link back</i>. Their <code>apply_url</code> is the board's own page, and the site names them as the source. Jobicy's feed only covers the last 7 days and pages with a cursor:</p>
+{{py pipeline/connectors/jobicy.py fetch}}
+
+<div class="box warn"><b class="t">The legal line</b>
+<p>HiresHere only reads feeds a company publishes for its own careers page, or board APIs whose terms allow reuse. It never scrapes LinkedIn, Indeed, Glassdoor or any site whose terms forbid it, and never republishes full descriptions on the website (only short quotes and fields). Remotive and Himalayas were left out because their terms ask not to feed other job sites.</p></div>

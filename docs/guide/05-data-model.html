@@ -1,0 +1,53 @@
+<h1><span class="n">Chapter 6</span>The data model and the database</h1>
+<p class="lede">Everything the pipeline knows lives in one SQLite file, <code>jobs.db</code>. This chapter covers the Python models, the tables, and the five rules that keep the database in step with the job feeds.</p>
+
+<h2>Pydantic models (pipeline/models.py)</h2>
+<p>A <b>Pydantic model</b> is a class whose fields have types. Creating one validates the data: a missing required field or a wrong type raises an error instead of silently storing garbage. Connectors produce <code>Job</code> objects; the fetcher wraps each board's outcome in a <code>FetchResult</code>.</p>
+{{py pipeline/models.py Job}}
+<p>Two <b>computed fields</b> are derived, never stored by hand:</p>
+<ul>
+<li><code>id</code> joins source, board and the ATS's own job id: <code>greenhouse:doximity:8132424</code>. It is stable across runs, so the same job is recognised every day.</li>
+<li><code>content_hash</code> is the first 16 hex characters of a SHA-256 over title, location and description. If the employer edits the posting, the hash changes and the job goes back to the AI; if not, its stored extraction is reused.</li>
+</ul>
+<div class="box"><b class="t">What is a hash?</b>
+<p>A hash function turns any text into a short fixed-length fingerprint. The same input always gives the same fingerprint, and a tiny change gives a completely different one. That makes it a cheap way to ask "did this posting change?" without comparing whole descriptions. The <code>\x1f</code> separator (an invisible "unit separator" character) keeps "ab" + "c" from hashing like "a" + "bc".</p></div>
+
+<h2>The tables (pipeline/db.py)</h2>
+{{py pipeline/db.py SCHEMA}}
+<table>
+<tr><th>Table</th><th>One row per</th><th>Key points</th></tr>
+<tr><td><code>boards</code></td><td>company board</td><td>Health tracking: <code>consecutive_failures</code>, <code>last_error</code>, <code>active</code>. A board failing 5 times in a row is retired.</td></tr>
+<tr><td><code>jobs</code></td><td>job ever seen</td><td><code>first_seen_at</code>, <code>last_seen_at</code>, <code>expired_at</code> (NULL while open), <code>posted_at</code> (employer's date), <code>classify_status</code>: pending, done, skipped or error.</td></tr>
+<tr><td><code>extractions</code></td><td>distinct posting content</td><td>Keyed by <code>content_hash</code>, so identical postings (the same job on several boards) are read by the AI once. Stores the model name and token counts.</td></tr>
+<tr><td><code>batches</code></td><td>Gemini batch job</td><td>For the paid Batch API mode: name, state, when submitted and finished.</td></tr>
+<tr><td><code>runs</code></td><td>fetch run</td><td>Totals per run: boards ok and failed, new, updated, expired.</td></tr>
+<tr><td><code>telegram_posts</code></td><td>(job, channel)</td><td>Created by <code>telegram.py</code>: what was already posted where, so nothing is posted twice.</td></tr>
+</table>
+
+<p>Opening the database also performs small <b>migrations</b>: when a column was added later (<code>posted_at</code>), <code>connect()</code> adds it to older files so CI and local copies keep working.</p>
+{{py pipeline/db.py connect}}
+
+<h2>The five diff rules</h2>
+<p>Each day the pipeline gets a fresh list of open jobs per board and must update the database. <code>apply_result</code> is the heart of it, and implements five rules written down in <code>docs/SPEC.md</code>:</p>
+<ol>
+<li><b>Seen again</b>: refresh <code>last_seen_at</code> and clear <code>expired_at</code> (a job can come back).</li>
+<li><b>Missing from a successful fetch</b>: the job is gone, set <code>expired_at</code>. Rolling feeds (Jobicy) are the exception: they expire by age.</li>
+<li><b>A failed fetch never expires anything.</b> If Greenhouse is down for an hour, its jobs must not vanish from the site.</li>
+<li><b>Content changed</b>: send the job back to the AI (<code>classify_status = 'pending'</code>).</li>
+<li><b>Five failures in a row</b>: retire the board.</li>
+</ol>
+{{py pipeline/db.py apply_result}}
+<div class="box"><b class="t">Reading the code</b>
+<ul>
+<li><code>with conn:</code> opens a <b>transaction</b>: either every change for this board is saved, or none is (if an error happens halfway).</li>
+<li><code>existing</code> maps each known job id to its hash, expiry and "since" date, loaded in one query instead of one per job.</li>
+<li><code>seen</code> guards against feeds that list the same job twice.</li>
+<li>The <code>CASE WHEN ? THEN 'pending' ELSE classify_status END</code> trick resets the status only when the content changed, in the same UPDATE.</li>
+</ul></div>
+
+<h3>Retiring boards removed from the list</h3>
+{{py pipeline/db.py sync_boards}}
+<p>A board removed from <code>boards.csv</code> on purpose is different from a board that fails: its jobs are expired immediately. <code>ON CONFLICT ... DO UPDATE</code> is an <b>upsert</b>: insert a new board, or update the name and website of an existing one while keeping its health history.</p>
+
+<div class="box warn"><b class="t">Where the database lives</b>
+<p><code>jobs.db</code> is never committed to git (it is about 170 MB and holds full job descriptions). The daily workflow downloads it from the <code>data-latest</code> GitHub Release, works on it, and uploads it back, encrypted with AES-256. Chapter 18 shows how.</p></div>

@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>HiresHere: the technical guide</title>
+<style>
+@font-face { font-family: "Bricolage Grotesque"; src: url("../../site/node_modules/@fontsource-variable/bricolage-grotesque/files/bricolage-grotesque-latin-standard-normal.woff2") format("woff2-variations"); font-weight: 200 800; }
+@page { size: A4; margin: 18mm 17mm 20mm; }
+@page :first { margin: 0; }
+:root { --navy: #0b3a53; --coral: #ff7a59; --ink: #1b2330; --ink2: #4a5362; --line: #dde2e8; --soft: #f3f6f8; --go: #157a43; }
+* { box-sizing: border-box; }
+html { font-size: 10.4pt; }
+body { margin: 0; color: var(--ink); font: 400 1rem/1.58 Georgia, "Times New Roman", serif; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+h1, h2, h3, h4, .cover, .toc, figcaption, .box b.t, table th { font-family: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif; }
+h1 { font-size: 2.1rem; line-height: 1.1; color: var(--navy); margin: 0 0 .6rem; letter-spacing: -.01em; break-before: page; }
+h1 .n { display: block; font-size: .95rem; color: var(--coral); letter-spacing: .02em; margin-bottom: .3rem; }
+h2 { font-size: 1.35rem; color: var(--navy); margin: 1.7rem 0 .5rem; break-after: avoid; }
+h3 { font-size: 1.08rem; margin: 1.3rem 0 .35rem; break-after: avoid; }
+h4 { font-size: .98rem; margin: 1rem 0 .25rem; break-after: avoid; color: var(--ink2); }
+p { margin: 0 0 .7rem; text-align: left; orphans: 3; widows: 3; }
+ul, ol { margin: 0 0 .8rem; padding-left: 1.3rem; }
+li { margin-bottom: .25rem; }
+a { color: var(--navy); }
+code, pre, kbd { font-family: "Cascadia Mono", Consolas, "Courier New", monospace; }
+p code, li code, td code { font-size: .86em; background: var(--soft); border: 1px solid var(--line); border-radius: 3px; padding: 0 .25em; }
+figure.code { margin: .5rem 0 1rem; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; break-inside: auto; }
+figure.code figcaption { font-size: .74rem; color: var(--ink2); background: var(--soft); border-bottom: 1px solid var(--line); padding: .3rem .6rem; }
+figure.code pre { margin: 0; padding: .55rem .7rem; font-size: .72rem; line-height: 1.42; white-space: pre-wrap; word-break: break-word; background: #fff; }
+.box { border: 1px solid var(--line); border-left: 3px solid var(--navy); background: var(--soft); border-radius: 0 6px 6px 0; padding: .6rem .8rem; margin: .7rem 0 1rem; break-inside: avoid; }
+.box.idea { border-left-color: var(--coral); }
+.box.warn { border-left-color: #a85d00; background: #fff7ec; }
+.box.try { border-left-color: var(--go); background: #eef7f1; }
+.box b.t { display: block; font-size: .82rem; text-transform: none; color: var(--navy); margin-bottom: .2rem; }
+.box p:last-child, .box ul:last-child { margin-bottom: 0; }
+table { width: 100%; border-collapse: collapse; margin: .5rem 0 1rem; font-size: .88rem; break-inside: auto; }
+th, td { border: 1px solid var(--line); padding: .32rem .45rem; vertical-align: top; text-align: left; }
+th { background: var(--soft); font-size: .8rem; }
+tr { break-inside: avoid; }
+.diagram { margin: .8rem 0 1.1rem; break-inside: avoid; text-align: center; }
+.diagram svg { max-width: 100%; height: auto; }
+.diagram svg text { font-family: "Bricolage Grotesque", sans-serif; }
+.cover { height: 297mm; background: var(--navy); color: #fff; padding: 34mm 22mm; display: flex; flex-direction: column; break-after: page; }
+.cover .k { color: var(--coral); font-size: 1.05rem; letter-spacing: .04em; margin-bottom: 1.2rem; }
+.cover h1 { color: #fff; font-size: 3.4rem; break-before: avoid; line-height: 1; margin-bottom: 1rem; }
+.cover p { font-size: 1.15rem; color: #c9dbe5; max-width: 30em; }
+.cover .meta { margin-top: auto; font-size: .9rem; color: #9fbccc; }
+.toc { break-after: page; }
+.toc h1 { break-before: avoid; }
+.toc ol { columns: 2; column-gap: 2rem; font-size: .95rem; padding-left: 2rem; }
+.toc li { margin-bottom: .35rem; break-inside: avoid; }
+.lede { font-size: 1.08rem; color: var(--ink2); }
+.small { font-size: .85rem; color: var(--ink2); }
+dl.terms dt { font-family: "Bricolage Grotesque", sans-serif; font-weight: 700; margin-top: .45rem; }
+dl.terms dd { margin: 0 0 .2rem 0; }
+</style>
+</head>
+<body>
+{{BODY}}
+</body>
+</html>

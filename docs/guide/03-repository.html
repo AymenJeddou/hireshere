@@ -1,0 +1,77 @@
+<h1><span class="n">Chapter 4</span>The repository, file by file</h1>
+<p class="lede">The repository has two halves: <code>pipeline/</code> (Python, runs in GitHub Actions) and <code>site/</code> (Astro and Cloudflare Functions). They meet in a handful of JSON files that the pipeline writes and the site reads.</p>
+
+<figure class="code"><figcaption>Repository layout (generated files and assets left out)</figcaption><pre><code>hireshere/
+├── pipeline/                 the data pipeline (Python)
+│   ├── config.py             names, domain, limits, featured countries, WORLD
+│   ├── models.py             Board, Job, FetchResult (Pydantic)
+│   ├── http.py               polite HTTP client: User-Agent, timeout, retries
+│   ├── db.py                 SQLite schema and the five diff rules
+│   ├── run.py                the command line: fetch, classify, export, alerts…
+│   ├── text.py               HTML to text, dates from any feed format
+│   ├── connectors/           one module per job source (9 of them)
+│   ├── classify/
+│   │   ├── schema.py         what the AI must extract (Extraction + JSON schema)
+│   │   ├── prompt.py         the prompt, the pre-filter, the excerpt
+│   │   ├── gemini.py         Gemini API: one call, batch submit/status/results
+│   │   ├── compat.py         OpenAI-compatible free providers (Groq, Mistral)
+│   │   ├── runner.py         triage, cost estimate, workers, storage, batch collect
+│   │   ├── verdict.py        the rules: extraction + country → verdict + reason
+│   │   └── evalset.py        hand-checked evaluation sample and scoring
+│   ├── export.py             database → JSON for the website
+│   ├── alerts.py             daily email digests (Resend)
+│   ├── telegram.py           posts to the Telegram channels
+│   ├── seed.py               builds and validates the company list
+│   ├── logos.py              finds each company's website and icon
+│   └── healthcheck.py        checks the live site after each deploy
+├── data/
+│   ├── boards.csv            the 537 company boards (ats, slug, name, website, source)
+│   ├── countries.json        243 countries: names (en, fr, ar), regions, UTC offsets
+│   ├── CREDITS.md            licences of the third-party lists
+│   └── eval/                 the evaluation sample
+├── tests/                    pytest tests and saved example feeds (fixtures/)
+├── site/                     the website
+│   ├── astro.config.mjs      static build settings
+│   ├── wrangler.jsonc        Cloudflare project and D1 binding
+│   ├── schema.sql            D1 tables: subscribers, reports, employer_leads
+│   ├── src/
+│   │   ├── pages/            one file per URL (+ fr/ and ar/ versions)
+│   │   ├── components/       Home, JobSearch, CompanyPage, Alerts…
+│   │   ├── layouts/Layout.astro   header, footer, meta tags, language switch
+│   │   ├── scripts/          browser TypeScript: cards, search, job page…
+│   │   ├── styles/           global.css (tokens), components.css
+│   │   ├── i18n.ts, i18n-ar.ts    all interface text in three languages
+│   │   ├── data.ts           build-time access to the exported JSON
+│   │   └── data/             meta.json, companies.json (written by export)
+│   ├── public/               served as is: data/ (search index, shards), logos/,
+│   │                         world.svg, _routes.json, _redirects
+│   ├── functions/            Cloudflare Pages Functions (server code)
+│   │   ├── _middleware.js    canonical host and old-URL redirects
+│   │   ├── _job.js           renders a job page from its shard
+│   │   ├── jobs/[slug].js    route for /jobs/&lt;slug&gt; (+ fr/, ar/)
+│   │   └── api/              subscribe, unsubscribe, report, employer, geo
+│   └── tools/world-map.mjs   generates world.svg from Natural Earth
+├── docs/                     SPEC, ROADMAP, DECISIONS (the "why" log), this guide
+├── .github/workflows/daily.yml    the daily automation
+├── CLAUDE.md, DESIGN.md, PRODUCT.md   working notes, design system, product truth
+└── pyproject.toml, uv.lock   Python project and exact dependency versions</code></pre></figure>
+
+<h2>The contract between the two halves</h2>
+<p>The pipeline and the website never import each other's code. They communicate through files written by <code>python -m pipeline.run export</code>:</p>
+<table>
+<tr><th>File</th><th>Read by</th><th>Contents</th></tr>
+<tr><td><code>site/src/data/meta.json</code></td><td>Astro at build time, Functions</td><td>Update time, product name, domain, counts, featured countries with verdict counts, all 243 countries with names and regions.</td></tr>
+<tr><td><code>site/src/data/companies.json</code></td><td>Astro at build time</td><td>One entry per company: name, website, number of jobs, intern/junior count, countries named in its postings.</td></tr>
+<tr><td><code>site/public/data/search-&lt;lang&gt;.json</code></td><td>The browser</td><td>One compact record per listed job (about 12,000), with verdict groups and reasons in that language.</td></tr>
+<tr><td><code>site/public/data/j/&lt;xx&gt;.json</code></td><td>Job page Function, browser fallback</td><td>256 shards with each job's full details, same-company and similar jobs.</td></tr>
+</table>
+
+<div class="box idea"><b class="t">Why a file contract?</b>
+<p>Because the two halves run in different places: the pipeline in GitHub Actions with Python, the site in the browser and on Cloudflare with JavaScript. Plain JSON files are the simplest thing both sides understand, they can be inspected with any text editor, and the site can be rebuilt from them without touching the database.</p></div>
+
+<h2>Documentation you should know about</h2>
+<ul>
+<li><code>docs/DECISIONS.md</code>: a dated log of every significant decision and its reason. When you wonder "why is it like this?", look there first.</li>
+<li><code>docs/SPEC.md</code>: the original brief. <code>docs/ROADMAP.md</code>: what is done and what is open.</li>
+<li><code>CLAUDE.md</code>: the owner's rules and the main commands. <code>DESIGN.md</code>: colours, type and components. <code>PRODUCT.md</code>: who the product is for.</li>
+</ul>

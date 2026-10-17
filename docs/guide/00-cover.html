@@ -1,0 +1,64 @@
+<section class="cover">
+  <div class="k">HiresHere · technical guide</div>
+  <h1>How HiresHere works, line by line</h1>
+  <p>Every technology, every module and the reasoning behind it: from reading 537 company job feeds each morning to showing a visitor in Tunis which remote jobs they can really apply for.</p>
+  <div class="meta">Written for Aymen Jeddou · October 2026 · repository AymenJeddou/hireshere<br>Code excerpts are copied from the source when this PDF is built, so they match the code exactly.</div>
+</section>
+
+<section class="toc">
+  <h1>Contents</h1>
+  <ol>
+    <li>How to read this guide, and a glossary</li>
+    <li>The idea and the big picture</li>
+    <li>The technologies, one by one</li>
+    <li>The repository, file by file</li>
+    <li>Configuration: countries, boards, secrets</li>
+    <li>The data model and the database</li>
+    <li>Fetching jobs: HTTP, concurrency, connectors</li>
+    <li>Cleaning text and dates</li>
+    <li>The company list and the logos</li>
+    <li>Classification: asking an AI the right question</li>
+    <li>Running the AI on free tiers</li>
+    <li>The verdict engine: rules, not AI</li>
+    <li>Export: from the database to the website's data</li>
+    <li>Email alerts, welcome email and Telegram</li>
+    <li>The website: Astro, pages and languages</li>
+    <li>The browser code: search, filters, saved jobs</li>
+    <li>Cloudflare: Pages, Functions, D1 and the edge</li>
+    <li>Automation: the daily GitHub workflow</li>
+    <li>Testing, linting and evaluation</li>
+    <li>Design decisions and trade-offs</li>
+    <li>Working on the project: common tasks</li>
+    <li>Check your understanding</li>
+  </ol>
+</section>
+
+<h1><span class="n">Chapter 1</span>How to read this guide, and a glossary</h1>
+<p class="lede">This guide explains the whole HiresHere system in the order data flows through it: from a company's job feed to a card on the website and an email in someone's inbox. Each chapter introduces a part of the system, shows the real code, and explains why it is written that way.</p>
+
+<p>You do not need to read it in one go. Chapters 2 to 4 give the map; the later chapters can be read on their own when you work on that part. Code excerpts are real: they are pulled from the repository when the PDF is built, so if you change the code and rebuild the guide, the excerpts follow.</p>
+
+<div class="box"><b class="t">Boxes you will see</b>
+<ul>
+<li><b>Blue boxes</b> explain a concept or a piece of background knowledge.</li>
+<li><b>Coral boxes</b> point out an idea worth remembering: a design choice and why it was made.</li>
+<li><b>Orange boxes</b> warn about a trap or a limit.</li>
+<li><b>Green boxes</b> suggest something to try yourself.</li>
+</ul></div>
+
+<h2>Glossary</h2>
+<dl class="terms">
+<dt>ATS (applicant tracking system)</dt><dd>The software a company uses to publish jobs and receive applications: Greenhouse, Lever, Ashby, SmartRecruiters, Workable, Recruitee, Teamtailor. Most expose a public JSON "job board" feed, which is where HiresHere reads jobs from.</dd>
+<dt>Board</dt><dd>One company's job feed on one ATS, identified by the pair (ats, slug), for example <code>(greenhouse, doximity)</code>. HiresHere tracks 537 of them.</dd>
+<dt>Connector</dt><dd>A small Python module that knows how to read one ATS's feed and turn it into HiresHere's own <code>Job</code> objects.</dd>
+<dt>Extraction</dt><dd>The structured answer the AI gives for one posting: remote type, allowed countries and regions, time zone window, work authorization, seniority, an evidence quote, and so on.</dd>
+<dt>Verdict</dt><dd>The answer to "can someone living in country X apply?": <i>eligible</i> ("You can apply"), <i>likely</i>, <i>unclear</i> ("Ask the employer") or <i>not_eligible</i> (hidden). Computed by plain Python rules from an extraction, for each of 243 countries.</dd>
+<dt>Content hash</dt><dd>A short fingerprint of a posting's title, location and description. If it does not change, the posting does not need to be read by the AI again.</dd>
+<dt>Export</dt><dd>The step that turns the database into the JSON files the website reads.</dd>
+<dt>Shard</dt><dd>One of 256 small JSON files holding the full details of the jobs whose slug hash starts with the same two hex characters. A job page loads only its shard.</dd>
+<dt>Pages Function</dt><dd>A small piece of JavaScript Cloudflare runs on its servers for a specific URL, for example to build a job page on request.</dd>
+<dt>D1</dt><dd>Cloudflare's hosted SQLite database, used for subscribers, error reports and employer requests.</dd>
+<dt>Free tier</dt><dd>The amount of a paid service you can use without paying. HiresHere runs entirely on free tiers, which shapes many decisions.</dd>
+<dt>Rate limit / quota</dt><dd>How many requests a service accepts per minute (rate limit) or per day (quota). Exceeding it returns HTTP 429.</dd>
+<dt>Idempotent</dt><dd>An operation that gives the same result if you run it twice. The daily pipeline is built so that re-running it never double-counts or double-sends.</dd>
+</dl>
