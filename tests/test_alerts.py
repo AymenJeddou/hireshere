@@ -78,3 +78,11 @@ def test_render_caps_the_list_but_counts_everything():
     subject, body, _ = render({"lang": "en", "country": "TN", "family": ""}, jobs, "u")
     assert subject.startswith(f"{MAX_JOBS + 5} new")
     assert body.count("<tr>") == MAX_JOBS
+
+
+def test_unsubscribe_token_is_hex_hmac_sha256_like_the_function():
+    from pipeline.alerts import unsubscribe_token
+
+    # RFC 4231 test case 2; site/functions/api/unsubscribe.js must produce the same hex
+    token = unsubscribe_token("what do ya want for nothing?", "Jefe")
+    assert token == "5bdcc146bf60754e6a042426089575c75a003f089d2739839dec58b964ec3843"
