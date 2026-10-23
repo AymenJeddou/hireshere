@@ -22,6 +22,8 @@ from pipeline.export import build, country_view, fresh
 
 # ponytail: Resend free tier caps at 100 emails/day; leftovers go out next run. Paid tier lifts it.
 DAILY_CAP = 95
+
+
 def due(last_sent_at: str | None, now: datetime) -> bool:
     """At most one digest per UTC day, however many runs. last_sent_at is the newest job in the
     last digest (always before the send), so an hours gap would skip a run GitHub started late."""
