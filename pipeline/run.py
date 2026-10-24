@@ -181,9 +181,12 @@ def load_dotenv(path: str = ".env") -> None:
     """Minimal .env support for local runs. Real environment variables win."""
     if os.path.exists(path):
         for line in open(path, encoding="utf-8"):
-            key, sep, value = line.strip().partition("=")
+            key, sep, value = line.strip().removeprefix("export ").partition("=")
             if sep and not key.startswith("#"):
-                os.environ.setdefault(key.strip(), value.strip())
+                value = value.strip()
+                if len(value) > 1 and value[0] == value[-1] and value[0] in "'\"":
+                    value = value[1:-1]
+                os.environ.setdefault(key.strip(), value)
 
 
 def main(argv=None) -> None:
