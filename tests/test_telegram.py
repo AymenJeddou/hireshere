@@ -10,6 +10,7 @@ def test_channels_parse_codes_chats_and_languages():
         "DZ": ("@hh_dz", "en"),
     }
     assert channels("") == {}
+    assert channels("TN= @hh_tn : FR") == {"TN": ("@hh_tn", "fr")}
 
 
 def test_message_escapes_and_links_the_language_page():

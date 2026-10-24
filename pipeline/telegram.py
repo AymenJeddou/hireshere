@@ -29,7 +29,8 @@ def channels(spec: str) -> dict[str, tuple[str, str]]:
         code, _, rest = part.partition("=")
         chat, _, lang = rest.partition(":")
         if code.upper() in config.COUNTRIES and chat:
-            out[code.upper()] = (chat, lang if lang in T else "en")
+            lang = lang.strip().lower()
+            out[code.upper()] = (chat.strip(), lang if lang in T else "en")
     return out
 
 
