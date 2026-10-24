@@ -4,12 +4,13 @@ async function remove(request, env) {
   const url = new URL(request.url);
   const email = url.searchParams.get("e") || "";
   const token = url.searchParams.get("t") || "";
+  if (!email || !/^[0-9a-f]{64}$/.test(token)) return false;
   const key = await crypto.subtle.importKey(
-    "raw", new TextEncoder().encode(env.UNSUBSCRIBE_SECRET), { name: "HMAC", hash: "SHA-256" }, false, ["sign"],
+    "raw", new TextEncoder().encode(env.UNSUBSCRIBE_SECRET), { name: "HMAC", hash: "SHA-256" }, false, ["verify"],
   );
-  const sig = new Uint8Array(await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(email)));
-  const expected = [...sig].map((b) => b.toString(16).padStart(2, "0")).join("");
-  if (!email || token !== expected) return false;
+  // verify() compares in constant time, unlike a string ===
+  const sig = Uint8Array.from(token.match(/../g), (h) => parseInt(h, 16));
+  if (!(await crypto.subtle.verify("HMAC", key, sig, new TextEncoder().encode(email)))) return false;
   await env.DB.prepare("DELETE FROM subscribers WHERE email = ?").bind(email).run();
   return true;
 }
