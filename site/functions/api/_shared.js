@@ -21,5 +21,7 @@ export async function readForm(request) {
   } catch {
     return null; // malformed body: a 400, not an uncaught 500
   }
-  return (key) => String(form.get(key) ?? "").trim();
+  const get = (key) => String(form.get(key) ?? "").trim();
+  get.all = (key) => form.getAll(key).map(String);
+  return get;
 }
