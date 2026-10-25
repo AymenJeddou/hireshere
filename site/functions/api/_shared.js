@@ -15,6 +15,11 @@ export function json(body, status = 200) {
 export async function readForm(request) {
   const type = request.headers.get("content-type") || "";
   if (!type.includes("form")) return null;
-  const form = await request.formData();
+  let form;
+  try {
+    form = await request.formData();
+  } catch {
+    return null; // malformed body: a 400, not an uncaught 500
+  }
   return (key) => String(form.get(key) ?? "").trim();
 }
