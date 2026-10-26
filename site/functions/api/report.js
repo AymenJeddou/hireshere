@@ -5,6 +5,7 @@ const KINDS = ["wrong_verdict", "closed", "other"];
 export async function onRequestPost({ request, env }) {
   const get = await readForm(request);
   if (!get) return json({ error: "bad request" }, 400);
+  if (get("website")) return json({ ok: true }); // honeypot: quietly drop bots
   const job = get("job");
   const country = get("country");
   const kind = get("kind");

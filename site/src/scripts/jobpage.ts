@@ -240,6 +240,7 @@ export function jobPage(job: Detail, lang: Lang, code: string, meta: Meta): stri
         <form class="report-form" method="post" action="/api/report" data-g="${esc(JSON.stringify(mini))}">
           <input type="hidden" name="job" value="${esc(job.id)}">
           <input type="hidden" name="verdict" value="${esc(mine?.v ?? "")}">
+          <div class="hp" aria-hidden="true"><label>Website <input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
           <label class="field"><span>${esc(tr(lang, "alerts_country"))}</span><select name="country">${reportOptions}</select></label>
           <fieldset>
             <legend class="legend-label">${esc(tr(lang, "report_q"))}</legend>
