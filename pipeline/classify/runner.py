@@ -78,7 +78,15 @@ def verify_evidence(e: Extraction, job: dict) -> bool:
     quote = re.sub(
         r"^(location field|workplace flag|title)\s*:\s*", "", e.evidence_quote, flags=re.I
     )
-    ok = bool(quote) and _norm(quote) in source
+    # Models shorten long sentences with "..." or "…": every piece must appear, in order.
+    pieces = [_norm(p) for p in re.split(r"\.{3}|…", quote)]
+    ok, at = bool(_norm(quote)), 0
+    for p in filter(None, pieces):
+        at = source.find(p, at)
+        if at < 0:
+            ok = False
+            break
+        at += len(p)
     if not ok:
         e.confidence = "low"
     return ok

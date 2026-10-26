@@ -20,6 +20,13 @@ def test_evidence_found_with_field_prefix_and_case():
     assert verify_evidence(_e("we hire anywhere in emea"), JOB)
 
 
+def test_shortened_quote_matches_its_pieces_in_order():
+    assert verify_evidence(_e("We hire anywhere … overlap with CET hours"), JOB)
+    assert verify_evidence(_e("We hire...in EMEA"), JOB)
+    assert not verify_evidence(_e("overlap with CET … We hire anywhere"), JOB)
+    assert not verify_evidence(_e("..."), JOB)
+
+
 def test_missing_or_invented_evidence_lowers_confidence():
     e = _e("Open to candidates worldwide")
     assert not verify_evidence(e, JOB) and e.confidence == "low"
