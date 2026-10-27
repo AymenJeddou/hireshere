@@ -22,7 +22,7 @@ def parse(data: dict, board: Board) -> list[Job]:
                 source_job_id=j["shortcode"],
                 company_name=board.company_name,
                 title=j["title"].strip(),
-                location_raw=("Remote; " if remote else "") + "; ".join(p for p in places if p),
+                location_raw="; ".join(["Remote"] * remote + [p for p in places if p]),
                 remote_flag_raw="remote" if remote else None,
                 department=j.get("department") or None,
                 employment_type_raw=j.get("employment_type") or None,

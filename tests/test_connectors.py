@@ -171,3 +171,14 @@ def test_jobicy(fixture):
     assert j.location_raw == "Remote; Germany" and j.remote_flag_raw == "remote"
     assert j.posted_at == "2026-10-11T08:39:51+00:00"
     assert jobs[2].description_text.startswith("Level: Entry-Level")
+
+
+def test_workable_remote_without_a_place():
+    from pipeline.connectors import workable
+
+    data = {"jobs": [{"shortcode": "A1", "title": "Dev", "telecommuting": True, "shortlink": "u"},
+                     {"shortcode": "B2", "title": "Ops", "city": "Tunis", "country": "Tunisia",
+                      "shortlink": "v"}]}  # fmt: skip
+    a, b = workable.parse(data, Board(ats="workable", slug="x", company_name="X"))
+    assert a.location_raw == "Remote" and a.remote_flag_raw == "remote"
+    assert b.location_raw == "Tunis, Tunisia" and b.remote_flag_raw is None
