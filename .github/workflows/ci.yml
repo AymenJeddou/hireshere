@@ -36,4 +36,5 @@ jobs:
       - working-directory: site
         run: |
           npm ci --no-audit --no-fund
+          npm run check:i18n
           npx astro build
