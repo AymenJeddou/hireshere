@@ -1,3 +1,4 @@
+from pipeline.connectors._each import each
 from pipeline.http import get_json
 from pipeline.models import Board, Job
 from pipeline.text import html_to_text, iso_date
@@ -14,25 +15,23 @@ def _meta(job: dict, name: str) -> str | None:
 
 
 def parse(data: dict, board: Board) -> list[Job]:
-    jobs = []
-    for j in data["jobs"]:
+    def one(j: dict) -> Job:
         depts = j.get("departments") or []
-        jobs.append(
-            Job(
-                source="greenhouse",
-                board_slug=board.slug,
-                source_job_id=str(j["id"]),
-                company_name=board.company_name,
-                title=j["title"].strip(),
-                location_raw=((j.get("location") or {}).get("name") or "").strip(),
-                department=depts[0]["name"] if depts else None,
-                employment_type_raw=_meta(j, "employment type"),
-                description_text=html_to_text(j.get("content"), escaped=True),
-                apply_url=j["absolute_url"],
-                posted_at=iso_date(j.get("first_published")),
-            )
+        return Job(
+            source="greenhouse",
+            board_slug=board.slug,
+            source_job_id=str(j["id"]),
+            company_name=board.company_name,
+            title=j["title"].strip(),
+            location_raw=((j.get("location") or {}).get("name") or "").strip(),
+            department=depts[0]["name"] if depts else None,
+            employment_type_raw=_meta(j, "employment type"),
+            description_text=html_to_text(j.get("content"), escaped=True),
+            apply_url=j["absolute_url"],
+            posted_at=iso_date(j.get("first_published")),
         )
-    return jobs
+
+    return each(data["jobs"], one)
 
 
 async def fetch(client, board: Board) -> list[Job]:

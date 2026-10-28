@@ -182,3 +182,17 @@ def test_workable_remote_without_a_place():
     a, b = workable.parse(data, Board(ats="workable", slug="x", company_name="X"))
     assert a.location_raw == "Remote" and a.remote_flag_raw == "remote"
     assert b.location_raw == "Tunis, Tunisia" and b.remote_flag_raw is None
+
+
+def test_one_malformed_posting_does_not_fail_the_board(fixture):
+    data = fixture("greenhouse_doximity.json")
+    n = len(greenhouse.parse(data, Board(ats="greenhouse", slug="x", company_name="X")))
+    data["jobs"].append({"id": 1, "title": None, "absolute_url": "u"})  # no usable title
+    jobs = greenhouse.parse(data, Board(ats="greenhouse", slug="x", company_name="X"))
+    assert len(jobs) == n
+
+
+def test_a_feed_that_changed_shape_still_fails():
+    with pytest.raises(KeyError):
+        lever.parse([{"id": "a"}, {"id": "b"}], Board(ats="lever", slug="x", company_name="X"))
+    assert lever.parse([], Board(ats="lever", slug="x", company_name="X")) == []
