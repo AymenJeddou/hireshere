@@ -1,5 +1,6 @@
 """SmartRecruiters list endpoint is paginated and has no description (see DECISIONS.md)."""
 
+from pipeline.connectors._each import each
 from pipeline.http import FetchError, get_json
 from pipeline.models import Board, Job
 from pipeline.text import iso_date
@@ -16,27 +17,25 @@ def _location(loc: dict) -> str:
 
 
 def parse(data: dict, board: Board) -> list[Job]:
-    jobs = []
-    for j in data["content"]:
+    def one(j: dict) -> Job | None:
         loc = j.get("location") or {}
         flag = "remote" if loc.get("remote") else "hybrid" if loc.get("hybrid") else "onsite"
-        jobs.append(
-            Job(
-                source="smartrecruiters",
-                board_slug=board.slug,
-                source_job_id=str(j["id"]),
-                company_name=board.company_name,
-                title=j["name"].strip(),
-                location_raw=_location(loc),
-                remote_flag_raw=flag,
-                department=(j.get("department") or {}).get("label")
-                or (j.get("function") or {}).get("label"),
-                employment_type_raw=(j.get("typeOfEmployment") or {}).get("label"),
-                apply_url=f"https://jobs.smartrecruiters.com/{board.slug}/{j['id']}",
-                posted_at=iso_date(j.get("releasedDate")),
-            )
+        return Job(
+            source="smartrecruiters",
+            board_slug=board.slug,
+            source_job_id=str(j["id"]),
+            company_name=board.company_name,
+            title=j["name"].strip(),
+            location_raw=_location(loc),
+            remote_flag_raw=flag,
+            department=(j.get("department") or {}).get("label")
+            or (j.get("function") or {}).get("label"),
+            employment_type_raw=(j.get("typeOfEmployment") or {}).get("label"),
+            apply_url=f"https://jobs.smartrecruiters.com/{board.slug}/{j['id']}",
+            posted_at=iso_date(j.get("releasedDate")),
         )
-    return jobs
+
+    return each(data["content"], one)
 
 
 async def fetch(client, board: Board) -> list[Job]:
