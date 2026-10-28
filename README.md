@@ -14,14 +14,14 @@ Most "remote" jobs are remote only inside one country or region. The location ru
 
 ```mermaid
 flowchart LR
-  A["~540 company job boards<br/>Greenhouse, Lever, Ashby,<br/>SmartRecruiters, Workable,<br/>Recruitee, Teamtailor + Remote OK"] -->|daily fetch| B[(SQLite<br/>diff and expiry)]
-  B -->|remote and hybrid postings,<br/>once per content hash| C["Gemini batch<br/>fills a Pydantic schema"]
+  A["~540 company job boards<br/>Greenhouse, Lever, Ashby,<br/>SmartRecruiters, Workable,<br/>Recruitee, Teamtailor<br/>+ Remote OK, Jobicy"] -->|daily fetch| B[(SQLite<br/>diff and expiry)]
+  B -->|remote and hybrid postings,<br/>once per content hash| C["Gemini, Groq or Mistral<br/>fill a Pydantic schema"]
   C --> D["Python rules<br/>verdict per country"]
   D --> E["Astro site on Cloudflare Pages<br/>+ email alerts + Telegram"]
 ```
 
 1. **Fetch.** A GitHub Actions job reads each company's public job feed straight from its hiring system, keeps the employer's posting date, and expires jobs the day they disappear.
-2. **Extract.** Each remote or hybrid posting is read once by `gemini-3.1-flash-lite` in batch mode, which fills a typed schema: remote type, allowed countries and regions, time zone window, work authorization, seniority, and an evidence quote. A quote that is not verbatim in the posting lowers the confidence.
+2. **Extract.** Each remote or hybrid posting is read once by `gemini-3.1-flash-lite` (free tier, with Groq and Mistral working the same queue when Gemini's daily quota runs out; batch mode when billing is on), which fills a typed schema: remote type, allowed countries and regions, time zone window, work authorization, seniority, and an evidence quote. A quote that is not verbatim in the posting lowers the confidence.
 3. **Decide.** Plain Python rules (`pipeline/classify/verdict.py`) turn one extraction into a verdict for each of 243 countries at export time, so adding a country costs no AI calls.
 4. **Publish.** A static Astro site on Cloudflare Pages, job pages rendered by Pages Functions, D1 for sign-ups, daily email alerts (Resend) and Telegram channels.
 
@@ -44,9 +44,9 @@ uv sync
 uv run pytest -q
 uv run python -m pipeline.run fetch --limit 20   # quick run against 20 boards
 uv run python -m pipeline.run stats
-uv run python -m pipeline.run classify --batch    # needs GEMINI_API_KEY
+uv run python -m pipeline.run classify --limit 20 # needs GEMINI_API_KEY (or GROQ_API_KEY)
 uv run python -m pipeline.run export
-cd site && npm install && npx astro build
+cd site && npm install && npm run check:i18n && npx astro build
 ```
 
 Copy `.env.example` to `.env` for keys and overrides.
@@ -55,7 +55,7 @@ Copy `.env.example` to `.env` for keys and overrides.
 
 - `pipeline/connectors/`: one module per hiring system, each a pure `parse()` plus `fetch()`.
 - `pipeline/db.py`: the SQLite schema and the diff rules (new, updated, expired).
-- `pipeline/classify/`: schema, prompt and pre-filter, Gemini batch client, the per-country verdict.
+- `pipeline/classify/`: schema, prompt and pre-filter, the Gemini client and the OpenAI-compatible free providers, the per-country verdict.
 - `pipeline/export.py`: search index and job detail shards for the site.
 - `site/`: Astro site and Cloudflare Pages Functions.
 - `docs/`: [spec](docs/SPEC.md), [roadmap](docs/ROADMAP.md), and [design decisions](docs/DECISIONS.md), each with its reasoning.
