@@ -34,6 +34,7 @@ uv run python -m pipeline.seed validate
 ## Layout
 
 - `pipeline/connectors/<ats>.py`: `parse(data, board)` (pure, tested) and `fetch(client, board)`.
+  `parse` builds each posting through `_each.each`, so one malformed posting is skipped, not fatal.
 - `pipeline/db.py`: schema and the five diff rules. `apply_result` is the heart of it.
 - `pipeline/run.py`: CLI and the concurrent fetcher. Loads `.env` for local runs.
 - `pipeline/classify/`: `schema.py` (what the model extracts), `prompt.py` (prompt, pre-filter,
