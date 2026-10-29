@@ -24,7 +24,11 @@ export function handler(lang) {
     let job = null;
     if (SLUG.test(slug)) {
       const shard = await asset(`/data/j/${slug.slice(-6, -4)}.json`);
-      if (shard.ok) job = (await shard.json())[slug] ?? null;
+      const all = shard.ok ? await shard.json() : {};
+      job = all[slug] ?? null;
+      // The title part of a slug changes when the employer edits the title; the hash never does.
+      const moved = job ? null : Object.keys(all).find((k) => k.endsWith(slug.slice(-7)));
+      if (moved) return Response.redirect(new URL(url.pathname.replace(/[^/]+$/, moved) + url.search, url), 301);
     }
     if (!job) {
       // Closed (or never existed): 410 Gone with open jobs like it, picked in the browser.

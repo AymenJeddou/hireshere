@@ -36,7 +36,10 @@ const lang = Astro.params.lang as Lang;
       ? await fetch(`/data/j/${slug.slice(-6, -4)}.json`).then((r) => (r.ok ? r.json() : {})).catch(() => ({}))
       : {};
     const job = shard[slug];
-    if (job) {
+    const moved = job ? null : Object.keys(shard).find((k) => k.endsWith(slug.slice(-7)));
+    if (moved) {
+      location.replace(location.pathname.replace(/[^/]+$/, moved) + location.search);
+    } else if (job) {
       const { title, description } = jobMeta(job, lang, code, meta as never);
       document.title = `${title} | ${meta.product}`;
       document.querySelector('meta[name="description"]')?.setAttribute("content", description);
