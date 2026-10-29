@@ -1,5 +1,6 @@
 """Teamtailor career sites publish a JSON Feed with a schema.org JobPosting per item."""
 
+from pipeline.connectors._each import each
 from pipeline.http import get_json
 from pipeline.models import Board, Job
 from pipeline.text import html_to_text, iso_date
@@ -13,8 +14,7 @@ def _place(p: dict) -> str:
 
 
 def parse(data: dict, board: Board) -> list[Job]:
-    jobs = []
-    for it in data["items"]:
+    def one(it: dict) -> Job | None:
         jp = it.get("_jobposting") or {}
         places = jp.get("jobLocation") or []
         if isinstance(places, dict):
@@ -28,24 +28,21 @@ def parse(data: dict, board: Board) -> list[Job]:
             + [r.get("name", "") for r in req if r.get("name")]
         )
         emp = jp.get("employmentType")
-        jobs.append(
-            Job(
-                source="teamtailor",
-                board_slug=board.slug,
-                source_job_id=str(it["id"]),
-                company_name=board.company_name,
-                title=it["title"].strip(),
-                location_raw=("Remote; " if remote else "") + location
-                if remote or location
-                else "",
-                remote_flag_raw="remote" if remote else None,
-                employment_type_raw=", ".join(emp) if isinstance(emp, list) else emp,
-                description_text=html_to_text(it.get("content_html")),
-                apply_url=it["url"],
-                posted_at=iso_date(jp.get("datePosted") or it.get("date_published")),
-            )
+        return Job(
+            source="teamtailor",
+            board_slug=board.slug,
+            source_job_id=str(it["id"]),
+            company_name=board.company_name,
+            title=it["title"].strip(),
+            location_raw=("Remote; " if remote else "") + location if remote or location else "",
+            remote_flag_raw="remote" if remote else None,
+            employment_type_raw=", ".join(emp) if isinstance(emp, list) else emp,
+            description_text=html_to_text(it.get("content_html")),
+            apply_url=it["url"],
+            posted_at=iso_date(jp.get("datePosted") or it.get("date_published")),
         )
-    return jobs
+
+    return each(data["items"], one)
 
 
 async def fetch(client, board: Board) -> list[Job]:

@@ -1,3 +1,4 @@
+from pipeline.connectors._each import each
 from pipeline.http import get_json
 from pipeline.models import Board, Job
 from pipeline.text import html_to_text, iso_date
@@ -6,10 +7,9 @@ URL = "https://{slug}.recruitee.com/api/offers/"
 
 
 def parse(data: dict, board: Board) -> list[Job]:
-    jobs = []
-    for j in data["offers"]:
+    def one(j: dict) -> Job | None:
         if j.get("status", "published") != "published":
-            continue
+            return None
         locs = [x.get("name") or "" for x in j.get("locations") or []] or [j.get("location") or ""]
         flag = (
             "remote"
@@ -21,28 +21,27 @@ def parse(data: dict, board: Board) -> list[Job]:
             else None
         )
         sal = j.get("salary") or {}
-        jobs.append(
-            Job(
-                source="recruitee",
-                board_slug=board.slug,
-                source_job_id=str(j["id"]),
-                company_name=board.company_name,
-                title=j["title"].strip(),
-                location_raw="; ".join(x for x in [j.get("location") or "", *locs[1:]] if x),
-                remote_flag_raw=flag,
-                department=j.get("department"),
-                employment_type_raw=j.get("employment_type_code"),
-                salary_min=sal.get("min"),
-                salary_max=sal.get("max"),
-                salary_currency=sal.get("currency"),
-                description_text=html_to_text(
-                    f"{j.get('description') or ''}{j.get('requirements') or ''}"
-                ),
-                apply_url=j["careers_url"],
-                posted_at=iso_date(j.get("published_at") or j.get("created_at")),
-            )
+        return Job(
+            source="recruitee",
+            board_slug=board.slug,
+            source_job_id=str(j["id"]),
+            company_name=board.company_name,
+            title=j["title"].strip(),
+            location_raw="; ".join(x for x in [j.get("location") or "", *locs[1:]] if x),
+            remote_flag_raw=flag,
+            department=j.get("department"),
+            employment_type_raw=j.get("employment_type_code"),
+            salary_min=sal.get("min"),
+            salary_max=sal.get("max"),
+            salary_currency=sal.get("currency"),
+            description_text=html_to_text(
+                f"{j.get('description') or ''}{j.get('requirements') or ''}"
+            ),
+            apply_url=j["careers_url"],
+            posted_at=iso_date(j.get("published_at") or j.get("created_at")),
         )
-    return jobs
+
+    return each(data["offers"], one)
 
 
 async def fetch(client, board: Board) -> list[Job]:
