@@ -26,6 +26,10 @@ def test_scope_label():
 def test_slugs_are_stable_and_shardable():
     assert slugify("  Senior C++ / Rust Engineer (EMEA)!  ") == "senior-c-rust-engineer-emea"
     assert len(slugify("x" * 100)) == 60
+    assert job_slug("a:b:1", "Ça", "Développeur (Télétravail)").startswith(
+        "ca-developpeur-teletravail-"
+    )
+    assert job_slug("a:b:1", "", "مطور برمجيات").startswith("job-")
     slug = job_slug("greenhouse:acme:123", "Acme", "Backend Engineer")
     assert slug.startswith("acme-backend-engineer-") and slug == job_slug(
         "greenhouse:acme:123", "Acme", "Backend Engineer"

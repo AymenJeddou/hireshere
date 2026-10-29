@@ -11,6 +11,7 @@ import hashlib
 import json
 import re
 import sqlite3
+import unicodedata
 from collections import Counter, defaultdict
 from datetime import UTC, datetime
 from pathlib import Path
@@ -52,7 +53,12 @@ def slugify(text: str) -> str:
 
 
 def job_slug(jid: str, company: str, title: str) -> str:
-    return f"{slugify(f'{company} {title}')}-{hashlib.sha1(jid.encode()).hexdigest()[:6]}"
+    """Only the hash identifies the job: old slugs redirect (site/functions/_job.js), so accents
+    can fold to their base letter here ("Développeur" -> "developpeur"). Company keys and logo
+    file names keep plain slugify, since nothing redirects those."""
+    plain = unicodedata.normalize("NFKD", f"{company} {title}").encode("ascii", "ignore").decode()
+    words = slugify(plain) or "job"  # titles in Arabic or CJK have no ASCII letters
+    return f"{words}-{hashlib.sha1(jid.encode()).hexdigest()[:6]}"
 
 
 def shard(slug: str) -> str:
