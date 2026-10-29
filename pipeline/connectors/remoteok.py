@@ -4,6 +4,7 @@ Terms: link back to the job's Remote OK URL and name Remote OK as the source. ap
 their page, and the site credits them. The first array element is a legal notice, not a job.
 """
 
+from pipeline.connectors._each import each
 from pipeline.http import get_json
 from pipeline.models import Board, Job
 from pipeline.text import html_to_text, iso_date
@@ -12,28 +13,26 @@ URL = "https://remoteok.com/api"
 
 
 def parse(data: list, board: Board) -> list[Job]:
-    jobs = []
-    for j in data:
+    def one(j: dict) -> Job | None:
         if "id" not in j or "position" not in j:
-            continue  # the legal notice
-        jobs.append(
-            Job(
-                source="remoteok",
-                board_slug=board.slug,
-                source_job_id=str(j["id"]),
-                company_name=(j.get("company") or "").strip() or board.company_name,
-                title=j["position"].strip(),
-                location_raw=("Remote; " + j["location"]) if j.get("location") else "Remote",
-                remote_flag_raw="remote",
-                salary_min=j.get("salary_min") or None,
-                salary_max=j.get("salary_max") or None,
-                salary_currency="USD" if j.get("salary_min") or j.get("salary_max") else None,
-                description_text=html_to_text(j.get("description")),
-                apply_url=j["url"],
-                posted_at=iso_date(j.get("date")),
-            )
+            return None  # the legal notice
+        return Job(
+            source="remoteok",
+            board_slug=board.slug,
+            source_job_id=str(j["id"]),
+            company_name=(j.get("company") or "").strip() or board.company_name,
+            title=j["position"].strip(),
+            location_raw=("Remote; " + j["location"]) if j.get("location") else "Remote",
+            remote_flag_raw="remote",
+            salary_min=j.get("salary_min") or None,
+            salary_max=j.get("salary_max") or None,
+            salary_currency="USD" if j.get("salary_min") or j.get("salary_max") else None,
+            description_text=html_to_text(j.get("description")),
+            apply_url=j["url"],
+            posted_at=iso_date(j.get("date")),
         )
-    return jobs
+
+    return each(data, one)
 
 
 async def fetch(client, board: Board) -> list[Job]:
