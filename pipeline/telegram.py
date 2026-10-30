@@ -81,12 +81,18 @@ def run(conn: sqlite3.Connection) -> str:
                 )
             sent = 0
             for job in new[:PER_RUN]:
-                r = client.post(
-                    f"https://api.telegram.org/bot{token}/sendMessage",
-                    json={"chat_id": chat, "text": message(job, lang), "parse_mode": "HTML"},
-                )
+                # Actions logs are public: report only the status, never the URL (it holds the
+                # token) or the response body (it can echo the channel).
+                try:
+                    r = client.post(
+                        f"https://api.telegram.org/bot{token}/sendMessage",
+                        json={"chat_id": chat, "text": message(job, lang), "parse_mode": "HTML"},
+                    )
+                except httpx.HTTPError as e:
+                    report.append(f"{code}: send failed, {type(e).__name__}")
+                    break
                 if r.status_code >= 400:
-                    report.append(f"{code}: send failed, HTTP {r.status_code} {r.text[:200]}")
+                    report.append(f"{code}: send failed, HTTP {r.status_code}")
                     break
                 conn.execute(
                     "INSERT OR IGNORE INTO telegram_posts VALUES (?, ?, datetime('now'))",
