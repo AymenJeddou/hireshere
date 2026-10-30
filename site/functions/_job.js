@@ -6,6 +6,13 @@ import { jobMeta, jobPage } from "../src/scripts/jobpage.ts";
 
 const SLUG = /^[a-z0-9-]{1,80}-[0-9a-f]{6}$/;
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
+// Same as public/_headers, which Pages applies to static files only.
+const HTML = {
+  "content-type": "text/html; charset=utf-8",
+  "x-content-type-options": "nosniff",
+  "referrer-policy": "strict-origin-when-cross-origin",
+  "x-frame-options": "DENY",
+};
 const valid = (c) => (typeof c === "string" && c in meta.world ? c : "");
 
 /** ?c= first, then the country picked on the site (cookie), then where Cloudflare sees them. */
@@ -33,7 +40,7 @@ export function handler(lang) {
     if (!job) {
       // Closed (or never existed): 410 Gone with open jobs like it, picked in the browser.
       const page = await asset(`/closed/${lang}`);
-      return new Response(page.body, { status: 410, headers: { "content-type": "text/html; charset=utf-8" } });
+      return new Response(page.body, { status: 410, headers: HTML });
     }
     const code = visitor(request, url);
     const { title, description } = jobMeta(job, lang, code, meta);
@@ -45,6 +52,6 @@ export function handler(lang) {
       .replaceAll("__TITLE__", () => esc(title))
       .replaceAll("__DESC__", () => esc(description))
       .replace('<div id="job-slot"></div>', () => jobPage(job, lang, code, meta));
-    return new Response(html, { headers: { "content-type": "text/html; charset=utf-8", vary: "Cookie" } });
+    return new Response(html, { headers: { ...HTML, vary: "Cookie" } });
   };
 }
