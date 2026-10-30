@@ -8,7 +8,7 @@ export const FAMILIES = ["", "engineering", "data", "design", "product", "market
 export function json(body, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { "content-type": "application/json", "cache-control": "no-store" },
+    headers: { "content-type": "application/json", "cache-control": "no-store", "x-content-type-options": "nosniff" },
   });
 }
 
