@@ -11,6 +11,7 @@ import html
 import os
 import re
 import sqlite3
+import time
 from datetime import UTC, datetime
 from pathlib import Path
 from urllib.parse import quote
@@ -22,6 +23,7 @@ from pipeline.export import build, country_view, fresh
 
 # ponytail: Resend free tier caps at 100 emails/day; leftovers go out next run. Paid tier lifts it.
 DAILY_CAP = 95
+SEND_GAP = 0.6  # seconds between sends: Resend allows 2 requests a second
 
 
 def due(last_sent_at: str | None, now: datetime) -> bool:
@@ -209,6 +211,7 @@ def run(conn: sqlite3.Connection, dry_run: bool = False) -> str:
             if dry_run:
                 Path("alerts-preview.html").write_text(body, "utf-8")
                 return f"Dry run: {len(subs)} subscribers, first digest: {subject!r} -> alerts-preview.html"
+            time.sleep(SEND_GAP)
             r = client.post(
                 "https://api.resend.com/emails",
                 headers={"Authorization": f"Bearer {key}"},
