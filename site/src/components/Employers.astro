@@ -60,10 +60,10 @@ const t = fr
       <div class="hp" aria-hidden="true">
         <label>Website <input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
       </div>
-      <label class="field"><span>{t.company}</span><input name="company" required maxlength="120" /></label>
+      <label class="field"><span>{t.company}</span><input name="company" required maxlength="120" autocomplete="organization" /></label>
       <label class="field">
         <span>{t.careers}</span>
-        <input name="careers" type="url" required maxlength="300" placeholder="https://" />
+        <input name="careers" type="url" required maxlength="300" placeholder="https://" autocomplete="url" inputmode="url" />
       </label>
       <fieldset class="emp-countries">
         <legend class="legend-label">{t.where}</legend>
@@ -76,7 +76,7 @@ const t = fr
           ))
         }
       </fieldset>
-      <label class="field"><span>{t.email}</span><input name="email" type="email" required maxlength="200" /></label>
+      <label class="field"><span>{t.email}</span><input name="email" type="email" required maxlength="200" autocomplete="email" inputmode="email" /></label>
       <label class="field"><span>{t.note}</span><textarea name="note" maxlength="1000" rows="3"></textarea></label>
       <button class="btn btn-primary" type="submit">{t.send}</button>
       <p class="form-msg" role="status" aria-live="polite"></p>
