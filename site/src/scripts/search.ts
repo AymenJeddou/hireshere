@@ -10,6 +10,9 @@ type V = "eligible" | "likely" | "unclear";
 const DEFAULT_V: V[] = ["eligible", "likely"];
 const RANK: Record<V, number> = { eligible: 0, likely: 1, unclear: 2 };
 
+/** Lowercase without accents, so "developpeur" finds "Développeur" and the other way round. */
+const fold = (t: string) => t.normalize("NFD").replace(/\p{M}/gu, "").toLowerCase();
+
 type Strings = Record<string, string | Record<string, string>>;
 type State = {
   q: string;
@@ -57,7 +60,7 @@ export async function initSearch(): Promise<void> {
   const cards: Card[] = jobs.map((job) => ({
     job,
     vs: [],
-    q: `${job.title} ${job.company}`.toLowerCase(),
+    q: fold(`${job.title} ${job.company}`),
     days: Math.max(0, Math.floor((now - Date.parse(when(job))) / 86400000)),
   }));
   let scored = "-";
@@ -76,7 +79,7 @@ export async function initSearch(): Promise<void> {
   function read(): State {
     const fd = new FormData(form);
     return {
-      q: bandQ.value.trim().toLowerCase(),
+      q: fold(bandQ.value.trim()),
       c: bandC.value,
       v: fd.getAll("v").map(String) as V[],
       f: fd.getAll("f").map(String),
