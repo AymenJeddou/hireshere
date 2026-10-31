@@ -168,7 +168,8 @@ def _d1(client: httpx.Client, sql: str, params: list | None = None) -> list[dict
         json={"sql": sql, "params": params or []},
         headers={"Authorization": f"Bearer {os.environ['CLOUDFLARE_API_TOKEN']}"},
     )
-    r.raise_for_status()
+    if r.status_code >= 400:  # not raise_for_status: its message holds the account URL
+        raise RuntimeError(f"D1 query failed: HTTP {r.status_code}")
     return r.json()["result"][0]["results"]
 
 
@@ -212,22 +213,26 @@ def run(conn: sqlite3.Connection, dry_run: bool = False) -> str:
                 Path("alerts-preview.html").write_text(body, "utf-8")
                 return f"Dry run: {len(subs)} subscribers, first digest: {subject!r} -> alerts-preview.html"
             time.sleep(SEND_GAP)
-            r = client.post(
-                "https://api.resend.com/emails",
-                headers={"Authorization": f"Bearer {key}"},
-                json={
-                    "from": FROM,
-                    "reply_to": config.CONTACT_EMAIL,
-                    "to": [sub["email"]],
-                    "subject": subject,
-                    "html": body,
-                    "text": text,
-                    "headers": {
-                        "List-Unsubscribe": f"<{unsub}>",
-                        "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
-                    },
-                },  # fmt: skip
-            )
+            try:
+                r = client.post(
+                    "https://api.resend.com/emails",
+                    headers={"Authorization": f"Bearer {key}"},
+                    json={
+                        "from": FROM,
+                        "reply_to": config.CONTACT_EMAIL,
+                        "to": [sub["email"]],
+                        "subject": subject,
+                        "html": body,
+                        "text": text,
+                        "headers": {
+                            "List-Unsubscribe": f"<{unsub}>",
+                            "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+                        },
+                    },  # fmt: skip
+                )
+            except httpx.HTTPError as e:
+                print(f"  send failed for a subscriber: {type(e).__name__}")
+                continue
             if r.status_code >= 400:
                 # the response body may echo the address, so only the status is logged
                 print(f"  send failed for a subscriber: HTTP {r.status_code}")
