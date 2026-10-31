@@ -45,6 +45,8 @@ CREATE TABLE IF NOT EXISTS jobs (
 );
 CREATE INDEX IF NOT EXISTS jobs_board ON jobs (source, board_slug);
 CREATE INDEX IF NOT EXISTS jobs_classify ON jobs (classify_status);
+-- save() and the extractions join look jobs up by content hash: 300 saves took 2.9 s without it.
+CREATE INDEX IF NOT EXISTS jobs_hash ON jobs (content_hash);
 CREATE TABLE IF NOT EXISTS extractions (
     content_hash TEXT PRIMARY KEY,
     model TEXT NOT NULL,
