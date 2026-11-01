@@ -10,6 +10,7 @@
 | 5 | Job, company and field pages, saved jobs and applied tracker, profile, employer page, getting-paid guide, AR (RTL) UI, Workable/Recruitee/Teamtailor/Remote OK | done (2026-10-10) |
 | 6 | Worldwide: verdicts for every country, visitor country by default, job pages from Pages Functions | done (2026-10-11) |
 | 7 | Data quality: employer posting dates, hybrid and entry-level jobs classified, Jobicy, 162 junior-friendly companies, levels on company pages | done (2026-10-11) |
+| 7.1 | Hardening: per-posting error isolation in connectors, slug redirects, security headers, paced and log-safe alerts and Telegram, i18n check in CI, data-file tests | done (2026-11-01) |
 
 ## Open items
 
