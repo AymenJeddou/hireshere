@@ -1,0 +1,18 @@
+# Monthly, grouped update PRs: one for GitHub Actions, one for the site's npm packages.
+# Python packages are pinned in uv.lock and updated by hand (uv lock --upgrade).
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      actions:
+        patterns: ["*"]
+  - package-ecosystem: npm
+    directory: /site
+    schedule:
+      interval: monthly
+    groups:
+      site:
+        patterns: ["*"]
