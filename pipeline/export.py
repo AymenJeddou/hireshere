@@ -155,7 +155,7 @@ def build(conn: sqlite3.Connection) -> list[dict]:
                 "location": location or "",
                 "url": url,
                 "seen_at": seen,
-                "posted_at": posted,
+                "posted_at": posted if posted and posted[:10] <= seen[:10] else None,
                 "slug": job_slug(jid, company, title),
                 "company_key": key,
                 "logo": logos.get(key, ""),
@@ -186,8 +186,10 @@ def build(conn: sqlite3.Connection) -> list[dict]:
 
 
 def when(j: dict) -> str:
-    """When the employer posted it, else when we first saw it."""
-    return j.get("posted_at") or j["seen_at"]
+    """When the employer posted it, else when we first saw it. A posting date after we first
+    saw the job is an employer typo (2027 for 2026) and would stay "new" for a year."""
+    posted = j.get("posted_at")
+    return posted if posted and posted[:10] <= j["seen_at"][:10] else j["seen_at"]
 
 
 def fresh(j: dict, now: datetime | None = None) -> bool:

@@ -46,6 +46,20 @@ def test_fresh_uses_posting_date_before_first_seen():
     assert fresh({"posted_at": "2026-10-11T00:00:00+00:00", "seen_at": "x"}, now)
 
 
+def test_posting_dates_after_first_seen_are_ignored():
+    from pipeline.export import when
+
+    seen = "2026-11-01T08:00:00+00:00"
+    assert when({"posted_at": "2026-10-30T00:00:00+00:00", "seen_at": seen}).startswith(
+        "2026-10-30"
+    )
+    assert when({"posted_at": "2026-11-01T20:00:00+00:00", "seen_at": seen}).startswith(
+        "2026-11-01T20"
+    )
+    assert when({"posted_at": "2027-10-30T00:00:00+00:00", "seen_at": seen}) == seen
+    assert when({"posted_at": None, "seen_at": seen}) == seen
+
+
 def test_search_record_trims_quote_and_picks_language():
     j = {"id": "1", "slug": "s", "title": "T", "company": "C", "company_key": "c", "family": "data",
          "seniority": "mid", "engagement": "employee", "languages": [], "seen_at": "2026-10-20",
