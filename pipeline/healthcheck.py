@@ -40,7 +40,8 @@ def main(argv=None) -> int:
     jobs = [f"/jobs/{j['slug']}" for j in index[:3]]
     if index:
         jobs.append(f"/fr/jobs/{index[0]['slug']}")
-    paths = ["/", "/jobs", "/api/geo", *jobs]
+    # The search page is empty without its index; search engines need the sitemap.
+    paths = ["/", "/jobs", "/api/geo", "/data/search-en.json", "/sitemap.xml", *jobs]
     base = f"https://{config.DOMAIN}"
     fail, warn = ["not run"], []
     with httpx.Client(timeout=30, headers={"User-Agent": config.USER_AGENT}) as client:
