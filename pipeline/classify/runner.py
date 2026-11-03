@@ -109,8 +109,9 @@ def save(
             ),
         )
         conn.execute(
+            # 'skipped' too: triage re-queues skipped jobs once the pre-filter lets them through
             "UPDATE jobs SET classify_status = 'done' WHERE content_hash = ? "
-            "AND classify_status IN ('pending', 'error')",
+            "AND classify_status IN ('pending', 'error', 'skipped')",
             (job["content_hash"],),
         )
 

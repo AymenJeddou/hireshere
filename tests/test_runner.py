@@ -76,3 +76,20 @@ def test_triage_skips_reuses_dedupes_newest_first():
     assert [x["content_hash"] for x in triage(conn, limit=1)[0]] == [newest.content_hash]
     status = {k[-1]: v for k, v in conn.execute("SELECT id, classify_status FROM jobs")}
     assert status["1"] == "skipped" and status["2"] == "done" and status["3"] == "pending"
+
+
+def test_save_marks_a_requeued_skipped_job_done():
+    from pipeline import db
+    from pipeline.classify.runner import save
+    from pipeline.models import Board, FetchResult, Job
+
+    b = Board(ats="lever", slug="acme", company_name="Acme")
+    conn = db.connect(":memory:")
+    db.sync_boards(conn, [b])
+    job = Job(source="lever", board_slug="acme", source_job_id="1", company_name="Acme",
+              title="Engineer", location_raw="Remote", apply_url="https://x/1")  # fmt: skip
+    db.apply_result(conn, FetchResult(board=b, ok=True, jobs=[job]), "2026-11-03")
+    conn.execute("UPDATE jobs SET classify_status = 'skipped'")
+    row = dict(job.model_dump(), description_text="")
+    save(conn, row, _e("Remote"), 10, 5, "m")
+    assert conn.execute("SELECT classify_status FROM jobs").fetchone()[0] == "done"
