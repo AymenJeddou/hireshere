@@ -27,6 +27,7 @@ uv run python -m pipeline.run classify-collect                         # store f
 uv run python -m pipeline.classify.evalset sample|score [--country TN]
 uv run python -m pipeline.run export            # site/src/data/{meta,companies}.json, site/public/data/
 cd site && npm install && npx astro build       # static site in site/dist
+cd site && npm run check:i18n                   # en, fr, ar: same keys and {placeholders}
 uv run python -m pipeline.seed build --rit <remote-jobs clone> --ats <ats-scrapers clone> [--extra N]
 uv run python -m pipeline.seed validate
 ```
