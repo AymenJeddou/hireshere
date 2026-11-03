@@ -40,3 +40,39 @@ def test_estimate_batch_is_half_price():
     tin2, tout2, usd2 = estimate(jobs, batch=True)
     assert (tin, tout) == (tin2, tout2) and tin > 1000 and usd2 == usd / 2
     assert estimate([], batch=True) == (0, 0, 0)
+
+
+def test_triage_skips_reuses_dedupes_newest_first():
+    import json
+
+    from pipeline import db
+    from pipeline.classify.runner import triage
+    from pipeline.models import Board, FetchResult, Job
+
+    b = Board(ats="lever", slug="acme", company_name="Acme")
+    conn = db.connect(":memory:")
+    db.sync_boards(conn, [b])
+
+    def j(n, location="Remote", desc="d"):
+        return Job(source="lever", board_slug="acme", source_job_id=str(n), company_name="Acme",
+                   title="Engineer", location_raw=location, description_text=desc,
+                   apply_url=f"https://x/{n}")  # fmt: skip
+
+    office, known, twin_a, twin_b, newest = (
+        j(1, "Paris"), j(2, desc="old"), j(3, desc="same"), j(4, desc="same"), j(5, desc="new"),
+    )  # fmt: skip
+    order = [office, known, twin_a, twin_b, newest]  # each fetch lists every open job so far
+    for n in range(len(order)):
+        db.apply_result(
+            conn, FetchResult(board=b, ok=True, jobs=order[: n + 1]), f"2026-11-0{n + 1}"
+        )
+    conn.execute(
+        "INSERT INTO extractions VALUES (?, 'm', ?, 0, 0, '')", (known.content_hash, json.dumps({}))
+    )
+
+    jobs, counts = triage(conn)
+    assert counts == {"skipped": 1, "reused": 1}
+    assert [x["content_hash"] for x in jobs] == [newest.content_hash, twin_a.content_hash]
+    assert [x["content_hash"] for x in triage(conn, limit=1)[0]] == [newest.content_hash]
+    status = {k[-1]: v for k, v in conn.execute("SELECT id, classify_status FROM jobs")}
+    assert status["1"] == "skipped" and status["2"] == "done" and status["3"] == "pending"
