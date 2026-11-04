@@ -26,6 +26,8 @@ from pipeline.run import fetch_all, load_boards
 ATS = ["greenhouse", "lever", "ashby", "smartrecruiters"]
 CANDIDATES = "data/candidates.csv"
 FIELDS = ["ats", "slug", "company_name", "website", "source_of_entry"]
+# Top-ups checked by noise(); remoteintech boards are curated and kept as they are.
+PRUNABLE = {"ats-scrapers", "ats-scrapers+entry"}
 CAREERS_URL = {
     "greenhouse": r"greenhouse\.io/(?:embed/job_board\?for=)?([\w-]+)",
     "lever": r"jobs\.lever\.co/([\w-]+)",
@@ -172,7 +174,7 @@ async def validate(boards: list[Board]) -> list[Board]:
             dropped[f"{b.ats}/{b.slug}"] = res.error
         elif not res.jobs:
             dropped[f"{b.ats}/{b.slug}"] = "no open jobs"
-        elif b.source_of_entry == "ats-scrapers" and (why := noise(res.jobs)):
+        elif b.source_of_entry in PRUNABLE and (why := noise(res.jobs)):
             dropped[f"{b.ats}/{b.slug}"] = why
         else:
             keep.append(b)
@@ -193,7 +195,7 @@ def prune(db_path: str, path: str = config.BOARDS_CSV) -> None:
             (b.ats, b.slug),
         ).fetchall()
         why = noise([SimpleNamespace(**dict(j)) for j in jobs])
-        if b.source_of_entry == "ats-scrapers" and why:
+        if b.source_of_entry in PRUNABLE and why:
             print(f"prune {b.ats}/{b.slug} ({b.company_name}): {why}", file=sys.stderr)
         else:
             keep.append(b.model_dump())

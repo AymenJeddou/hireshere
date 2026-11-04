@@ -14,7 +14,7 @@
 
 ## Open items
 
-- Entry-level coverage: watch how many of the new intern/junior postings come out remote or hybrid after the first classify run; drop added boards whose jobs all turn out office-only (`seed prune` style).
+- Entry-level coverage: `seed prune` now also checks the junior-friendly boards (`ats-scrapers+entry`); run it after a few classify runs to drop boards whose jobs all turn out office-only.
 
 - Telegram: live since 2026-10-10 (@hireshere_bot posts to 4 private channels by id, secret TELEGRAM_CHANNELS). Make the channels public to be findable.
 - Native review of the Arabic interface and verdict reasons.
