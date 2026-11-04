@@ -72,3 +72,38 @@ def test_search_record_trims_quote_and_picks_language():
     assert len(rec["quote"]) == 160 and rec["quote"].endswith("…")
     assert rec["posted_at"] == "2026-10-19" and "logo" not in rec
     assert rec["groups"] == [{"v": "eligible", "r": "Ouvert", "c": "*"}]
+
+
+def test_shards_hold_related_and_similar_jobs(tmp_path, monkeypatch):
+    import json
+
+    from pipeline import export
+
+    monkeypatch.setattr(export, "RELATED", 2)
+
+    def j(n, co, fam="data"):
+        slug = f"{co}-role-{n:06x}"
+        return {"id": str(n), "slug": slug, "title": f"Role {n}", "company": co.title(),
+                "company_key": co, "family": fam, "named": ["TN", "XX"],
+                "groups": [{"v": "eligible", "r": {}, "c": "*"}]}  # fmt: skip
+
+    jobs = [
+        j(1, "acme"),
+        j(2, "acme"),
+        j(3, "acme"),
+        j(4, "beta"),
+        j(5, "gamma"),
+        j(6, "delta", "ops"),
+    ]
+    (tmp_path / "stale.json").write_text("{}")
+    export.write_shards(jobs, tmp_path)
+    assert not (tmp_path / "stale.json").exists()
+    rec = json.loads((tmp_path / f"{export.shard(jobs[0]['slug'])}.json").read_text("utf-8"))[
+        jobs[0]["slug"]
+    ]
+    assert rec["company_n"] == 3 and rec["company_named"] == ["TN"]
+    assert [m[0] for m in rec["more"]] == [jobs[1]["slug"], jobs[2]["slug"]]
+    assert [s[0] for s in rec["similar"]] == [
+        jobs[3]["slug"],
+        jobs[4]["slug"],
+    ]  # same field, other companies
