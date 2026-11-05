@@ -51,6 +51,8 @@ cd site && npm install && npm run check:i18n && npx astro build
 
 Copy `.env.example` to `.env` for keys and overrides.
 
+The production database is not published (it holds full job descriptions, which the site never republishes), so a local run starts empty: `fetch` fills it from the public feeds in a few minutes, and `classify` needs a free Gemini or Groq key. Without a key, `export` still builds the site from whatever is already classified.
+
 ## Layout
 
 - `pipeline/connectors/`: one module per hiring system, each a pure `parse()` plus `fetch()`.
