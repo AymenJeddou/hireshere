@@ -7,6 +7,11 @@ __pycache__/
 *.db
 *.db.gz
 *.db-journal
+*.db-wal
+*.db-shm
+# the encrypted snapshot is downloaded next to jobs.db (see CLAUDE.md); it lives on the release
+*.db.gz.enc
+.claude/
 data/candidates.csv
 node_modules/
 site/node_modules/
