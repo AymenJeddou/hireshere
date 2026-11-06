@@ -88,7 +88,9 @@ def cmd_stats(conn) -> str:
     open_ = "expired_at IS NULL"
     out = [f"## {config.PRODUCT_NAME} stats", ""]
     total = q(f"SELECT COUNT(*) FROM jobs WHERE {open_}").fetchone()[0]
-    boards = q(f"SELECT COUNT(DISTINCT source || board_slug) FROM jobs WHERE {open_}").fetchone()[0]
+    boards = q(
+        f"SELECT COUNT(DISTINCT source || ':' || board_slug) FROM jobs WHERE {open_}"
+    ).fetchone()[0]
     active = q("SELECT COUNT(*) FROM boards WHERE active = 1").fetchone()[0]
     out.append(f"Open jobs: **{total}** from **{boards}** boards ({active} active boards)\n")
 
@@ -98,6 +100,14 @@ def cmd_stats(conn) -> str:
             GROUP BY source ORDER BY n DESC"""
     ):
         out.append(f"| {r['source']} | {r['b']} | {r['n']} |")
+
+    queue = dict(
+        q(f"SELECT classify_status, COUNT(*) FROM jobs WHERE {open_} GROUP BY classify_status")
+    )
+    out.append(
+        "\nClassification: "
+        + ", ".join(f"{queue.get(s, 0)} {s}" for s in ("done", "pending", "error", "skipped"))
+    )
 
     run = q("SELECT * FROM runs WHERE finished_at IS NOT NULL ORDER BY id DESC LIMIT 1").fetchone()
     if run:

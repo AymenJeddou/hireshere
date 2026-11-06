@@ -205,3 +205,12 @@ def test_alerts_count_a_backlog_job_from_when_it_was_classified(conn):
     seen = visible_since(conn)
     assert seen[job(1).id] == "2026-10-13T09:00:00+00:00"  # classified later: news on the 13th
     assert seen[job(2).id] == "2026-10-10T00:00:00+00:00"  # not classified: first seen
+
+
+def test_stats_counts_boards_and_the_classification_queue(conn):
+    db.apply_result(conn, ok(job(1), job(2)), "2026-11-06")
+    db.apply_result(conn, ok(job(3, OTHER), board=OTHER), "2026-11-06")
+    conn.execute("UPDATE jobs SET classify_status = 'done' WHERE id LIKE '%:1'")
+    out = run.cmd_stats(conn)
+    assert "Open jobs: **3** from **2** boards" in out
+    assert "Classification: 1 done, 2 pending, 0 error, 0 skipped" in out
