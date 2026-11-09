@@ -39,7 +39,7 @@ def main(argv=None) -> int:
         index = json.load(f)
     jobs = [f"/jobs/{j['slug']}" for j in index[:3]]
     if index:
-        jobs.append(f"/fr/jobs/{index[0]['slug']}")
+        jobs += [f"/fr/jobs/{index[0]['slug']}", f"/ar/jobs/{index[0]['slug']}"]
     # The search page is empty without its index; search engines need the sitemap.
     paths = ["/", "/jobs", "/api/geo", "/data/search-en.json", "/sitemap.xml", *jobs]
     base = f"https://{config.DOMAIN}"
