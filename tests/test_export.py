@@ -107,3 +107,12 @@ def test_shards_hold_related_and_similar_jobs(tmp_path, monkeypatch):
         jobs[3]["slug"],
         jobs[4]["slug"],
     ]  # same field, other companies
+
+
+def test_company_slogans_are_not_shown_as_evidence():
+    from pipeline.export import _slogan
+
+    assert _slogan("We are a fully remote company with team members in 30 countries")
+    assert not _slogan("This role is open to candidates located anywhere in EMEA")
+    assert not _slogan("Our team is remote, and this position is open worldwide")
+    assert not _slogan("Location: Remote (Africa)")
