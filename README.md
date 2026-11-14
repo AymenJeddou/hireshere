@@ -25,14 +25,14 @@ flowchart LR
 3. **Decide.** Plain Python rules (`pipeline/classify/verdict.py`) turn one extraction into a verdict for each of 243 countries at export time, so adding a country costs no AI calls.
 4. **Publish.** A static Astro site on Cloudflare Pages, job pages rendered by Pages Functions, D1 for sign-ups, daily email alerts (Resend) and Telegram channels.
 
-## Numbers (11 October 2026)
+## Numbers (14 November 2026)
 
 | | |
 |---|---|
-| Jobs listed | 11,566 from 597 companies |
+| Jobs listed | 9,331 from 880 companies (job boards plus Remote OK and Jobicy employers) |
 | Company boards tracked | 537 |
 | Countries with a verdict | 243 |
-| Cost to classify 4,563 new postings | $1.85 (Gemini batch) |
+| Cost to classify 4,563 new postings | $1.85 (Gemini batch, 11 October); free tiers since |
 | Hosting | free tiers (GitHub Actions, Cloudflare Pages, D1) |
 
 ## Run it locally
